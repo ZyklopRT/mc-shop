@@ -11,6 +11,9 @@ importers:
       '@auth/prisma-adapter':
         specifier: ^2.7.2
         version: 2.10.0(@prisma/client@6.10.1(prisma@6.10.1(typescript@5.8.3))(typescript@5.8.3))
+      '@minecraft-js/rcon':
+        specifier: ^1.1.0
+        version: 1.1.0
       '@prisma/client':
         specifier: ^6.5.0
         version: 6.10.1(prisma@6.10.1(typescript@5.8.3))(typescript@5.8.3)
@@ -342,6 +345,17 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@minecraft-js/bufwrapper@1.4.6':
+    resolution: {integrity: sha512-+VD3Zq2S3q4EHsHNCFmNJKJbVSNBFROxMKEmwnC43GP2/AI+kb/gDro4UOq3lup4EGK0xNPTejUe1Qjq/sXt3Q==}
+
+  '@minecraft-js/rcon@1.1.0':
+    resolution: {integrity: sha512-U3X88Ju3WENHZzqMVDs4tEMKZ++DUPO4uqSO8WCsOnmFLG5bT7sxQff3/gfpKFejVJM6KV50UtF6ISJgdEINSw==}
+    engines: {node: '>=18.x'}
+
+  '@minecraft-js/uuid@1.0.3':
+    resolution: {integrity: sha512-IOomvwaBUGctcSreU2QFLwlQoFyJItBrsEt9sMFylg7+cyuS7IwoMFvbbfeC3uFrfmudQQqD8/TUOG4zcbHGVg==}
+    engines: {node: '>=18.x'}
 
   '@napi-rs/wasm-runtime@0.2.11':
     resolution: {integrity: sha512-9DPkXtvHydrcOsopiYpUgPHpmj0HWZKMUnL2dZqpvC42lsratuBG06V5ipyno0fUek5VlFsNQ+AcFATSrJXgMA==}
@@ -2063,6 +2077,9 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
+  varint@6.0.0:
+    resolution: {integrity: sha512-cXEIW6cfr15lFv563k4GuVuW/fiwjknytD37jIOLSdSWuOI6WnO/oKwmP2FQTU2l01LP8/M5TSAJpzUaGe3uWg==}
+
   which-boxed-primitive@1.1.1:
     resolution: {integrity: sha512-TbX3mj8n0odCBFVlY8AxkqcHASw3L60jIuF8jFP78az3C2YhmGvqbHBpAjTRH2/xqYunrJ9g1jSyjCjpoWzIAA==}
     engines: {node: '>= 0.4'}
@@ -2313,6 +2330,17 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@minecraft-js/bufwrapper@1.4.6':
+    dependencies:
+      '@minecraft-js/uuid': 1.0.3
+      varint: 6.0.0
+
+  '@minecraft-js/rcon@1.1.0':
+    dependencies:
+      '@minecraft-js/bufwrapper': 1.4.6
+
+  '@minecraft-js/uuid@1.0.3': {}
 
   '@napi-rs/wasm-runtime@0.2.11':
     dependencies:
@@ -4171,6 +4199,8 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
+
+  varint@6.0.0: {}
 
   which-boxed-primitive@1.1.1:
     dependencies:
