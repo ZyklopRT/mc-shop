@@ -1,0 +1,75 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# MC Shop Administration - Project Overview
+
+## Project Description
+
+This is a web application for administrating Minecraft shops through RCON (Remote Console) connection. The website serves as an administrative interface for managing virtual shops on a Minecraft server.
+
+### Core Concept
+- **Shop Management**: Shops are administrative shells that represent what items can be purchased, where they're located, and their prices
+- **Server Integration**: Actual purchases happen directly on the Minecraft server via RCON
+- **No Stock Tracking**: The application does not support showing current stock levels as transactions occur server-side
+
+## Architecture & Technology Stack
+
+### Backend Principles
+- **Server Actions**: All backend logic uses Next.js server actions for seamless client-server communication
+- **Zod Validation**: All data validation on the server side uses Zod schemas for type safety and runtime validation
+- **Database**: Prisma ORM with schema defined in [schema.prisma](mdc:prisma/schema.prisma)
+- **Authentication**: NextAuth.js configured in [config.ts](mdc:src/server/auth/config.ts)
+
+### Frontend Principles
+- **Zod Validation**: Client-side validation also uses Zod schemas to ensure data consistency
+- **ShadCN UI**: All UI components should use ShadCN/UI library configured via [components.json](mdc:components.json)
+- **Component Installation**: Install new ShadCN components via CLI when needed: `npx shadcn@latest add [component-name]`
+- **Type Safety**: Full TypeScript integration across the application
+
+## Project Structure
+
+### Key Files
+- **Main Layout**: [layout.tsx](mdc:src/app/layout.tsx) - Root application layout
+- **Home Page**: [page.tsx](mdc:src/app/page.tsx) - Main landing page
+- **Auth Config**: [config.ts](mdc:src/server/auth/config.ts) - Authentication configuration
+- **Database**: [db.ts](mdc:src/server/db.ts) - Database connection and configuration
+- **Utilities**: [utils.ts](mdc:src/lib/utils.ts) - Shared utility functions
+- **Global Styles**: [globals.css](mdc:src/styles/globals.css) - TailwindCSS base styles
+
+### Development Configuration
+- **TypeScript**: [tsconfig.json](mdc:tsconfig.json) - TypeScript configuration
+- **Next.js**: [next.config.js](mdc:next.config.js) - Next.js build configuration
+- **ESLint**: [eslint.config.js](mdc:eslint.config.js) - Code linting rules
+- **Prettier**: [prettier.config.js](mdc:prettier.config.js) - Code formatting rules
+
+## Development Guidelines
+
+### Data Validation
+1. **Server Actions**: Always validate input data using Zod schemas before processing
+2. **Client Forms**: Use Zod schemas for form validation on the frontend
+3. **Type Safety**: Ensure all data flows are properly typed from database to UI
+
+### UI Development
+1. **ShadCN First**: Always check if a ShadCN component exists before creating custom components
+2. **CLI Installation**: Use `npx shadcn@latest add [component]` to install new ShadCN components
+3. **Consistent Styling**: Follow the design system established by ShadCN and TailwindCSS
+
+### Backend Development
+1. **Server Actions Only**: Avoid traditional API routes, use Next.js server actions for all backend logic
+2. **Database Operations**: Use Prisma for all database interactions
+3. **RCON Integration**: Implement RCON commands for Minecraft server communication
+
+## Security Considerations
+- Authentication required for all administrative functions
+- Validate all RCON commands before execution
+- Sanitize all user inputs through Zod schemas
+- Use environment variables for sensitive configuration
+
+## Future Considerations
+- RCON connection management and error handling
+- Shop category and item management interfaces
+- Price management and bulk operations
+- Server status monitoring and health checks
+
