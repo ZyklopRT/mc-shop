@@ -3,20 +3,26 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { Checkbox } from "~/components/ui/checkbox";
 import { createShop } from "~/server/actions/shops";
 import { createShopSchema, type CreateShopData } from "~/lib/validations/shop";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
 
-type CreateShopForm = CreateShopData;
+// Form schema with required isActive field
+const createShopFormSchema = createShopSchema.extend({
+  isActive: z.boolean(),
+});
+
+type CreateShopForm = z.infer<typeof createShopFormSchema>;
 
 export default function NewShopPage() {
   const { data: session, status } = useSession();
@@ -29,8 +35,12 @@ export default function NewShopPage() {
     handleSubmit,
     formState: { errors },
     setValue,
+    control,
   } = useForm<CreateShopForm>({
-    resolver: zodResolver(createShopSchema),
+    resolver: zodResolver(createShopFormSchema),
+    defaultValues: {
+      isActive: true,
+    },
   });
 
   const onSubmit = async (data: CreateShopForm) => {
@@ -199,6 +209,24 @@ export default function NewShopPage() {
                 Enter the coordinates where your shop is located in Minecraft.
                 This helps other players find your shop.
               </p>
+            </div>
+
+            {/* Active Status */}
+            <div className="flex items-center space-x-2">
+              <Controller
+                name="isActive"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="isActive"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+              <Label htmlFor="isActive" className="text-sm font-medium">
+                Shop is active and visible to other players
+              </Label>
             </div>
 
             {/* Error Display */}

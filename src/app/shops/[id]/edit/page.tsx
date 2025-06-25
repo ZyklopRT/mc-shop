@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
@@ -49,6 +49,7 @@ export default function EditShopPage() {
     formState: { errors, isDirty },
     reset,
     setValue,
+    control,
   } = useForm<EditShopForm>({
     resolver: zodResolver(updateShopSchema.omit({ shopId: true })),
   });
@@ -361,7 +362,17 @@ export default function EditShopPage() {
 
             {/* Active Status */}
             <div className="flex items-center space-x-2">
-              <Checkbox id="isActive" {...register("isActive")} />
+              <Controller
+                name="isActive"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="isActive"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
               <Label htmlFor="isActive" className="text-sm font-medium">
                 Shop is active and visible to other players
               </Label>

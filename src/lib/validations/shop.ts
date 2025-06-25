@@ -10,6 +10,7 @@ export const createShopSchema = z.object({
   locationX: z.number().int().optional(),
   locationY: z.number().int().optional(),
   locationZ: z.number().int().optional(),
+  isActive: z.boolean().optional().default(true),
 });
 
 export const updateShopSchema = z.object({
