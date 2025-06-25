@@ -15,6 +15,10 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    // RCON Configuration
+    MINECRAFT_RCON_HOST: z.string().optional(),
+    MINECRAFT_RCON_PORT: z.coerce.number().optional(),
+    MINECRAFT_RCON_PASSWORD: z.string().optional(),
   },
 
   /**
@@ -32,10 +36,11 @@ export const env = createEnv({
    */
   runtimeEnv: {
     AUTH_SECRET: process.env.AUTH_SECRET,
-    AUTH_DISCORD_ID: process.env.AUTH_DISCORD_ID,
-    AUTH_DISCORD_SECRET: process.env.AUTH_DISCORD_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    MINECRAFT_RCON_HOST: process.env.MINECRAFT_RCON_HOST,
+    MINECRAFT_RCON_PORT: process.env.MINECRAFT_RCON_PORT,
+    MINECRAFT_RCON_PASSWORD: process.env.MINECRAFT_RCON_PASSWORD,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

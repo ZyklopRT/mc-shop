@@ -1,6 +1,7 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
 
 import { db } from "~/server/db";
 
@@ -12,18 +13,26 @@ import { db } from "~/server/db";
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: {
+    user: DefaultSession["user"] & {
       id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
+      mcUsername: string;
+    };
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    id?: string;
+    mcUsername?: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  }
 }
+
+// Validation schema for login credentials
+const loginSchema = z.object({
+  mcUsername: z.string().min(1, "Minecraft username is required"),
+  password: z.string().min(1, "Password is required"),
+});
 
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
@@ -32,25 +41,87 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    DiscordProvider,
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
+    Credentials({
+      name: "credentials",
+      credentials: {
+        mcUsername: {
+          label: "Minecraft Username",
+          type: "text",
+          placeholder: "Enter your Minecraft username",
+        },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "Enter your password",
+        },
+      },
+      async authorize(credentials) {
+        try {
+          // Validate the credentials using Zod
+          const { mcUsername, password } = loginSchema.parse(credentials);
+
+          // Find user in database
+          const user = await db.user.findUnique({
+            where: { mcUsername },
+            select: {
+              id: true,
+              mcUsername: true,
+              password: true,
+              name: true,
+              email: true,
+              image: true,
+            },
+          });
+
+          if (!user) {
+            console.log("User not found:", mcUsername);
+            return null;
+          }
+
+          // Verify password
+          const isPasswordValid = await bcrypt.compare(password, user.password);
+          if (!isPasswordValid) {
+            console.log("Invalid password for user:", mcUsername);
+            return null;
+          }
+
+          // Return user object (password excluded)
+          return {
+            id: user.id,
+            mcUsername: user.mcUsername,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          };
+        } catch (error) {
+          console.error("Authorization error:", error);
+          return null;
+        }
+      },
+    }),
   ],
-  adapter: PrismaAdapter(db),
+  session: {
+    strategy: "jwt" as const,
+  },
   callbacks: {
-    session: ({ session, user }) => ({
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.id = user.id;
+        token.mcUsername = user.mcUsername;
+      }
+      return token;
+    },
+    session: ({ session, token }) => ({
       ...session,
       user: {
         ...session.user,
-        id: user.id,
+        id: token.id as string,
+        mcUsername: token.mcUsername as string,
       },
     }),
+  },
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
   },
 } satisfies NextAuthConfig;

@@ -55,7 +55,13 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id               String    @id @default(cuid())
+    mcUsername       String    @unique // Minecraft username - primary identifier
+    password         String    // Hashed password
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
+    
+    // NextAuth fields (kept for compatibility, but not used)
     name          String?
     email         String?   @unique
     emailVerified DateTime?
@@ -63,6 +69,19 @@ model User {
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+}
+
+// Model for storing temporary OTP codes during registration
+model RegistrationOTP {
+    id         String   @id @default(cuid())
+    mcUsername String   @unique
+    otpCode    String   // The 6-digit OTP code
+    expiresAt  DateTime // When the OTP expires
+    createdAt  DateTime @default(now())
+    verified   Boolean  @default(false) // Whether the OTP has been verified
+    
+    @@index([mcUsername])
+    @@index([otpCode])
 }
 
 model VerificationToken {
