@@ -29,7 +29,6 @@ export async function startRegistration(
   try {
     const { mcUsername } = stepOneSchema.parse(data);
 
-    // Check if user already exists
     const existingUser = await db.user.findUnique({
       where: { mcUsername },
     });
@@ -42,7 +41,6 @@ export async function startRegistration(
       };
     }
 
-    // First, check if the player is online
     const playerOnlineCheck = await checkPlayerOnline({
       playerName: mcUsername,
     });
@@ -62,11 +60,9 @@ export async function startRegistration(
       };
     }
 
-    // Generate new OTP
     const otpCode = generateOTP();
     const expiresAt = createOTPExpiration();
 
-    // Try to send OTP via tellraw command to player via RCON
     const tellrawCommand = formatOTPTellrawCommand(mcUsername, otpCode);
     const rconResult = await sendTellrawCommand({
       playerName: mcUsername,
@@ -81,12 +77,10 @@ export async function startRegistration(
       };
     }
 
-    // Delete any existing OTP for this username (upsert-like behavior)
     await db.registrationOTP.deleteMany({
       where: { mcUsername },
     });
 
-    // Store new OTP in database
     await db.registrationOTP.create({
       data: {
         mcUsername,
@@ -117,7 +111,6 @@ export async function verifyOTP(data: unknown): Promise<RegistrationResult> {
   try {
     const { mcUsername, otpCode } = stepTwoSchema.parse(data);
 
-    // Find the OTP record
     const otpRecord = await db.registrationOTP.findUnique({
       where: { mcUsername },
     });
@@ -131,7 +124,6 @@ export async function verifyOTP(data: unknown): Promise<RegistrationResult> {
     }
 
     if (isOTPExpired(otpRecord.expiresAt)) {
-      // Clean up expired OTP
       await db.registrationOTP.delete({
         where: { mcUsername },
       });
@@ -150,7 +142,6 @@ export async function verifyOTP(data: unknown): Promise<RegistrationResult> {
       };
     }
 
-    // Mark OTP as verified
     await db.registrationOTP.update({
       where: { mcUsername },
       data: { verified: true },
@@ -180,7 +171,6 @@ export async function completeRegistration(
   try {
     const { mcUsername, password } = completeRegistrationSchema.parse(data);
 
-    // Verify OTP was completed
     const otpRecord = await db.registrationOTP.findUnique({
       where: { mcUsername },
     });
@@ -197,13 +187,11 @@ export async function completeRegistration(
       };
     }
 
-    // Check if user was created in the meantime
     const existingUser = await db.user.findUnique({
       where: { mcUsername },
     });
 
     if (existingUser) {
-      // Clean up OTP
       await db.registrationOTP.delete({
         where: { mcUsername },
       });
@@ -214,24 +202,20 @@ export async function completeRegistration(
       };
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user
     await db.user.create({
       data: {
         mcUsername,
         password: hashedPassword,
-        name: mcUsername, // Set name to username for display
+        name: mcUsername,
       },
     });
 
-    // Clean up OTP
     await db.registrationOTP.delete({
       where: { mcUsername },
     });
 
-    // Send success message to player
     await sendMessageToPlayer({
       playerName: mcUsername,
       message:

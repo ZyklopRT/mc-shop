@@ -95,7 +95,11 @@ export class MinecraftRconService {
         try {
           client.disconnect();
         } catch (disconnectError) {
-          this.log("warn", "Error during disconnect");
+          const errorMsg =
+            disconnectError instanceof Error
+              ? disconnectError.message
+              : "Unknown error";
+          this.log("warn", `Error during disconnect: ${errorMsg}`);
         }
       }
     }

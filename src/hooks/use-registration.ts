@@ -37,7 +37,6 @@ export function useRegistration() {
         toast.success(result.message, "Code sent to your Minecraft chat");
         setCurrentStep(2);
       } else {
-        // Determine toast type based on error content
         const errorMsg = result.error;
 
         if (errorMsg.includes("not currently online")) {
@@ -137,11 +136,9 @@ export function useRegistration() {
           "Welcome! You'll be redirected to login shortly.",
         );
         setCurrentStep(4);
-        // Show info toast about redirect
         setTimeout(() => {
           toast.info("Redirecting...", "Taking you to the login page");
         }, 2000);
-        // Redirect to login after a short delay
         setTimeout(() => {
           router.push("/auth/login");
         }, 9000);
@@ -177,7 +174,6 @@ export function useRegistration() {
     setIsLoading(true);
 
     try {
-      // Show info toast for resending
       toast.info(
         "Resending Code...",
         "Sending a new verification code to your Minecraft chat",
@@ -199,31 +195,34 @@ export function useRegistration() {
         if (errorMsg.includes("not currently online")) {
           toast.warning(
             "Player Offline",
-            "You need to be online in Minecraft to receive the code.",
-          );
-        } else if (errorMsg.includes("Unable to connect")) {
-          toast.error(
-            "Server Error",
-            "Cannot connect to the Minecraft server right now.",
+            "Please join the server and try again.",
           );
         } else {
           toast.error("Resend Failed", errorMsg);
         }
       }
     } catch (error) {
-      toast.error(
-        "Resend Error",
-        "Failed to resend verification code. Please try again.",
-      );
+      console.error("Resend code error:", error);
+      toast.error("Resend Error", "Failed to resend code. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const goBack = () => {
-    updateRegistrationData({ otpCode: "" });
+  const resetRegistration = () => {
     setCurrentStep(1);
-    toast.info("Returning to Start", "You can enter a different username");
+    setRegistrationData({
+      mcUsername: "",
+      otpCode: "",
+      password: "",
+      confirmPassword: "",
+    });
+  };
+
+  const goBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep((prev) => (prev - 1) as RegistrationStep);
+    }
   };
 
   const goToLogin = () => {
@@ -239,6 +238,7 @@ export function useRegistration() {
     handleOTPComplete,
     handleStepThree,
     handleResendCode,
+    resetRegistration,
     goBack,
     goToLogin,
   };

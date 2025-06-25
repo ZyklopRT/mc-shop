@@ -1,5 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-
 export type RegistrationStep = 1 | 2 | 3 | 4;
 
 export interface RegistrationState {
@@ -13,7 +11,6 @@ export interface StepConfig {
   id: RegistrationStep;
   title: string;
   description: string;
-  icon: LucideIcon;
 }
 
 export type RegistrationResult =

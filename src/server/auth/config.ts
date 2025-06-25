@@ -28,7 +28,6 @@ declare module "next-auth" {
   }
 }
 
-// Validation schema for login credentials
 const loginSchema = z.object({
   mcUsername: z.string().min(1, "Minecraft username is required"),
   password: z.string().min(1, "Password is required"),
@@ -40,6 +39,7 @@ const loginSchema = z.object({
  * @see https://next-auth.js.org/configuration/options
  */
 export const authConfig = {
+  trustHost: true,
   providers: [
     Credentials({
       name: "credentials",
@@ -57,10 +57,8 @@ export const authConfig = {
       },
       async authorize(credentials) {
         try {
-          // Validate the credentials using Zod
           const { mcUsername, password } = loginSchema.parse(credentials);
 
-          // Find user in database
           const user = await db.user.findUnique({
             where: { mcUsername },
             select: {
@@ -78,14 +76,12 @@ export const authConfig = {
             return null;
           }
 
-          // Verify password
           const isPasswordValid = await bcrypt.compare(password, user.password);
           if (!isPasswordValid) {
             console.log("Invalid password for user:", mcUsername);
             return null;
           }
 
-          // Return user object (password excluded)
           return {
             id: user.id,
             mcUsername: user.mcUsername,

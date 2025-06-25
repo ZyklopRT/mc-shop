@@ -10,7 +10,6 @@ export default function TestRconPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>("");
 
-  // State for player online check
   const [checkPlayerName, setCheckPlayerName] = useState("");
   const [isCheckLoading, setIsCheckLoading] = useState(false);
   const [checkResult, setCheckResult] = useState<string>("");
@@ -84,7 +83,6 @@ export default function TestRconPage() {
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="mx-auto max-w-2xl space-y-6">
-        {/* Send Message Section */}
         <div className="rounded-lg bg-white p-6 shadow-md">
           <h1 className="mb-6 text-2xl font-bold text-gray-800">
             Test RCON Connection
@@ -148,7 +146,6 @@ export default function TestRconPage() {
           )}
         </div>
 
-        {/* Check Player Online Section */}
         <div className="rounded-lg bg-white p-6 shadow-md">
           <h2 className="mb-6 text-xl font-bold text-gray-800">
             Check Player Online Status
@@ -194,17 +191,21 @@ export default function TestRconPage() {
           )}
         </div>
 
-        {/* Environment Variables Info */}
         <div className="rounded-lg bg-white p-6 shadow-md">
           <div className="text-xs text-gray-500">
-            <h3 className="mb-2 font-medium">
-              Environment Variables Required:
-            </h3>
-            <ul className="space-y-1">
-              <li>• MINECRAFT_RCON_HOST</li>
-              <li>• MINECRAFT_RCON_PORT (default: 25575)</li>
-              <li>• MINECRAFT_RCON_PASSWORD</li>
-            </ul>
+            <h3 className="mb-2 font-medium">Environment Configuration:</h3>
+            <p>
+              MINECRAFT_RCON_HOST:{" "}
+              {process.env.NEXT_PUBLIC_RCON_HOST ?? "Not set"}
+            </p>
+            <p>
+              MINECRAFT_RCON_PORT:{" "}
+              {process.env.NEXT_PUBLIC_RCON_PORT ?? "Not set"}
+            </p>
+            <p>
+              MINECRAFT_RCON_PASSWORD:{" "}
+              {process.env.NEXT_PUBLIC_RCON_PASSWORD ? "Set" : "Not set"}
+            </p>
           </div>
         </div>
       </div>
