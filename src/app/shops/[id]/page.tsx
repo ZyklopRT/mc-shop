@@ -5,46 +5,18 @@ import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
-import { getShopDetails } from "~/server/actions/shop-actions";
+import { getShopDetails } from "~/server/actions/shops";
 import { getItemImageUrl } from "~/lib/utils/item-images";
+import type { ShopWithItems } from "~/lib/types/shop";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Package, Plus, Edit } from "lucide-react";
-
-interface ShopItem {
-  id: string;
-  price: number;
-  currency: string;
-  isAvailable: boolean;
-  item: {
-    id: string;
-    nameEn: string;
-    nameDe: string;
-    filename: string;
-  };
-}
-
-interface Shop {
-  id: string;
-  name: string;
-  description: string | null;
-  locationX: number | null;
-  locationY: number | null;
-  locationZ: number | null;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  owner: {
-    mcUsername: string;
-  };
-  shopItems: ShopItem[];
-}
 
 export default function ShopDetailsPage() {
   const params = useParams();
   const { data: session } = useSession();
   const shopId = params.id as string;
 
-  const [shop, setShop] = useState<Shop | null>(null);
+  const [shop, setShop] = useState<ShopWithItems | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,9 +28,9 @@ export default function ShopDetailsPage() {
 
   const loadShop = async () => {
     try {
-      const result = await getShopDetails(shopId);
+      const result = await getShopDetails({ shopId, includeItems: true });
       if (result.success) {
-        setShop(result.shop);
+        setShop(result.data.shop);
       } else {
         setError(result.error);
       }
@@ -84,7 +56,7 @@ export default function ShopDetailsPage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
-          <p className="mb-4 text-gray-600">{error || "Shop not found"}</p>
+          <p className="mb-4 text-gray-600">{error ?? "Shop not found"}</p>
           <Button asChild>
             <Link href="/shops">Back to Shops</Link>
           </Button>
@@ -240,7 +212,7 @@ export default function ShopDetailsPage() {
                       </p>
                       <div className="mt-2 flex items-center justify-between">
                         <span className="text-lg font-bold text-green-600">
-                          {shopItem.price} {shopItem.currency}
+                          {shopItem.price.toString()} {shopItem.currency}
                         </span>
                         {!shopItem.isAvailable && (
                           <span className="text-xs text-red-600">

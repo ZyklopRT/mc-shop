@@ -39,14 +39,21 @@ export default async function HomePage() {
                 asChild
                 className="w-full bg-yellow-500 text-black hover:bg-yellow-600"
               >
-                <Link href="/test-rcon">Test RCON Connection</Link>
+                <Link href="/shops">Manage My Shops</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 className="w-full border-white/30 text-white hover:bg-white/10"
               >
-                <Link href="/shops">Manage Shops</Link>
+                <Link href="/shops/browse">Browse All Shops</Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="w-full border-white/30 text-white hover:bg-white/10"
+              >
+                <Link href="/test-rcon">Test RCON Connection</Link>
               </Button>
             </CardContent>
           </Card>
@@ -73,6 +80,13 @@ export default async function HomePage() {
                 className="w-full border-white/30 text-white hover:bg-white/10"
               >
                 <Link href="/auth/login">Sign In</Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="w-full border-white/30 text-white hover:bg-white/10"
+              >
+                <Link href="/shops/browse">Browse Shops</Link>
               </Button>
             </CardContent>
           </Card>

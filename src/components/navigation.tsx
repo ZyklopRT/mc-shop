@@ -23,6 +23,12 @@ export function Navigation() {
               >
                 Browse Items
               </Link>
+              <Link
+                href="/shops/browse"
+                className="text-gray-600 transition-colors hover:text-gray-900"
+              >
+                Browse Shops
+              </Link>
               {session?.user && (
                 <Link
                   href="/shops"

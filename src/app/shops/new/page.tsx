@@ -10,22 +10,12 @@ import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { createShop } from "~/server/actions/shop-actions";
+import { createShop } from "~/server/actions/shops";
+import { createShopSchema, type CreateShopData } from "~/lib/validations/shop";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-const createShopSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Shop name is required")
-    .max(100, "Shop name too long"),
-  description: z.string().max(500, "Description too long").optional(),
-  locationX: z.number().int().optional(),
-  locationY: z.number().int().optional(),
-  locationZ: z.number().int().optional(),
-});
-
-type CreateShopForm = z.infer<typeof createShopSchema>;
+type CreateShopForm = CreateShopData;
 
 export default function NewShopPage() {
   const { data: session, status } = useSession();
@@ -58,7 +48,7 @@ export default function NewShopPage() {
       const result = await createShop(formData);
 
       if (result.success) {
-        router.push(`/shops/${result.shop.id}`);
+        router.push(`/shops/${result.data.id}`);
       } else {
         setError(result.error);
       }

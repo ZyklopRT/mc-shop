@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
-import { getUserShops } from "~/server/actions/shop-actions";
+import { getShops } from "~/server/actions/shops";
 import Link from "next/link";
 import { MapPin, Package, Plus } from "lucide-react";
 
@@ -18,6 +18,9 @@ interface Shop {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  owner: {
+    mcUsername: string;
+  };
   _count: {
     shopItems: number;
   };
@@ -40,9 +43,9 @@ export default function ShopsPage() {
 
   const loadShops = async () => {
     try {
-      const result = await getUserShops();
+      const result = await getShops();
       if (result.success) {
-        setShops(result.shops);
+        setShops(result.data.shops);
       } else {
         setError(result.error);
       }
@@ -125,7 +128,7 @@ export default function ShopsPage() {
                 <div className="mb-4 flex items-start justify-between">
                   <div>
                     <h3 className="text-lg font-semibold">{shop.name}</h3>
-                    <div className="flex items-center gap-2">
+                    <div className="mb-1 flex items-center gap-2">
                       <div
                         className={`h-2 w-2 rounded-full ${shop.isActive ? "bg-green-500" : "bg-gray-400"}`}
                       />
@@ -133,6 +136,9 @@ export default function ShopsPage() {
                         {shop.isActive ? "Active" : "Inactive"}
                       </span>
                     </div>
+                    <p className="text-sm text-gray-500">
+                      Owner: {shop.owner.mcUsername}
+                    </p>
                   </div>
                 </div>
 
