@@ -14,6 +14,7 @@ import { createShop } from "~/server/actions/shops";
 import { createShopSchema, type CreateShopData } from "~/lib/validations/shop";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "~/lib/utils/toast";
 
 type CreateShopForm = CreateShopData;
 
@@ -48,12 +49,18 @@ export default function NewShopPage() {
       const result = await createShop(formData);
 
       if (result.success) {
+        toast.success(
+          "Shop Created",
+          "Your shop has been created successfully",
+        );
         router.push(`/shops/${result.data.id}`);
       } else {
         setError(result.error);
+        toast.error("Creation Failed", result.error);
       }
     } catch (err) {
       setError("An unexpected error occurred");
+      toast.error("Creation Failed", "An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }

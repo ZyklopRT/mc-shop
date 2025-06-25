@@ -7,6 +7,7 @@ import { Card } from "~/components/ui/card";
 import { getShops } from "~/server/actions/shops";
 import Link from "next/link";
 import { MapPin, Package, Plus } from "lucide-react";
+import { toast } from "~/lib/utils/toast";
 
 interface Shop {
   id: string;
@@ -51,6 +52,7 @@ export default function ShopsPage() {
       }
     } catch (err) {
       setError("Failed to load shops");
+      toast.error("Loading Failed", "Failed to load your shops");
     } finally {
       setIsLoading(false);
     }

@@ -27,6 +27,7 @@ import { updateShopSchema, type UpdateShopData } from "~/lib/validations/shop";
 import type { ShopWithItems } from "~/lib/types/shop";
 import Link from "next/link";
 import { ArrowLeft, Trash2, Save } from "lucide-react";
+import { toast } from "~/lib/utils/toast";
 
 type EditShopForm = Omit<UpdateShopData, "shopId">;
 
@@ -114,13 +115,19 @@ export default function EditShopPage() {
           isActive: result.data.isActive,
         });
 
-        // Show success message (you might want to add a toast here)
+        // Show success message
+        toast.success(
+          "Shop Updated",
+          "Your shop has been updated successfully",
+        );
         router.push(`/shops/${shop.id}`);
       } else {
         setError(result.error);
+        toast.error("Update Failed", result.error);
       }
     } catch (err) {
       setError("An unexpected error occurred");
+      toast.error("Update Failed", "An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -136,12 +143,18 @@ export default function EditShopPage() {
       const result = await deleteShop({ shopId: shop.id });
 
       if (result.success) {
+        toast.success(
+          "Shop Deleted",
+          "Your shop has been deleted successfully",
+        );
         router.push("/shops");
       } else {
         setError(result.error);
+        toast.error("Delete Failed", result.error);
       }
     } catch (err) {
       setError("Failed to delete shop");
+      toast.error("Delete Failed", "Failed to delete shop");
     } finally {
       setIsDeleting(false);
     }

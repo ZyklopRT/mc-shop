@@ -8,6 +8,7 @@ import { searchShops, getShops } from "~/server/actions/shops";
 import type { ShopWithDetails } from "~/lib/types/shop";
 import Link from "next/link";
 import { MapPin, Package, Search, Store } from "lucide-react";
+import { toast } from "~/lib/utils/toast";
 
 export default function BrowseShopsPage() {
   const [shops, setShops] = useState<ShopWithDetails[]>([]);
@@ -31,11 +32,19 @@ export default function BrowseShopsPage() {
       const result = await getShops({ isActive: true, limit: 50, offset: 0 });
       if (result.success) {
         setShops(result.data.shops);
+        if (result.data.shops.length > 0) {
+          toast.success(
+            "Shops Loaded",
+            `Found ${result.data.shops.length} active shops`,
+          );
+        }
       } else {
         setError(result.error);
+        toast.error("Loading Failed", result.error);
       }
     } catch (err) {
       setError("Failed to load shops");
+      toast.error("Loading Failed", "Failed to load shops");
     } finally {
       setIsLoading(false);
     }
@@ -61,11 +70,17 @@ export default function BrowseShopsPage() {
 
       if (result.success) {
         setShops(result.data.shops);
+        toast.success(
+          "Search Complete",
+          `Found ${result.data.shops.length} shop${result.data.shops.length === 1 ? "" : "s"} matching "${searchQuery.trim()}"`,
+        );
       } else {
         setError(result.error);
+        toast.error("Search Failed", result.error);
       }
     } catch (err) {
       setError("Search failed");
+      toast.error("Search Failed", "Failed to search shops");
     } finally {
       setIsSearching(false);
     }
