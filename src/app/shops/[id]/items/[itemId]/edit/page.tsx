@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -74,28 +74,12 @@ export default function EditShopItemPage() {
     formState: { errors, isDirty },
     reset,
     watch,
+    setValue,
   } = useForm<EditShopItemForm>({
     resolver: zodResolver(editShopItemFormSchema),
   });
 
-  useEffect(() => {
-    if (shopItemId) {
-      void loadShopItem();
-    }
-  }, [shopItemId, loadShopItem]);
-  useEffect(() => {
-    if (shopItem?.shop && "ownerId" in shopItem.shop && session?.user?.id) {
-      const isOwner = session.user.id === shopItem.shop.ownerId;
-      if (!isOwner) {
-        toast.error(
-          "You don't have permission to edit this shop item. Redirecting...",
-        );
-        router.push(`/shops/${shopId}`);
-      }
-    }
-  }, [shopItem, session?.user?.id, shopId, router]);
-
-  const loadShopItem = async () => {
+  const loadShopItem = useCallback(async () => {
     try {
       setError(null);
       const result = await getShopItem(shopItemId);
@@ -118,7 +102,24 @@ export default function EditShopItemPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [shopItemId, reset]);
+
+  useEffect(() => {
+    if (shopItemId) {
+      void loadShopItem();
+    }
+  }, [shopItemId, loadShopItem]);
+  useEffect(() => {
+    if (shopItem?.shop && "ownerId" in shopItem.shop && session?.user?.id) {
+      const isOwner = session.user.id === shopItem.shop.ownerId;
+      if (!isOwner) {
+        toast.error(
+          "You don't have permission to edit this shop item. Redirecting...",
+        );
+        router.push(`/shops/${shopId}`);
+      }
+    }
+  }, [shopItem, session?.user?.id, shopId, router]);
 
   const onSubmit = async (data: EditShopItemForm) => {
     if (!session?.user?.id) {
@@ -331,7 +332,7 @@ export default function EditShopItemPage() {
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(CURRENCY_TYPES).map(([key, value]) => (
+                  {Object.entries(CURRENCY_TYPES).map(([_key, value]) => (
                     <SelectItem key={value} value={value}>
                       {currencyDisplayNames[value]}
                     </SelectItem>
@@ -349,7 +350,7 @@ export default function EditShopItemPage() {
               <Switch
                 id="isAvailable"
                 checked={watch("isAvailable") ?? true}
-                onCheckedChange={(checked) =>
+                onCheckedChange={(checked: boolean) =>
                   setValue("isAvailable", checked, {
                     shouldDirty: true,
                     shouldValidate: true,

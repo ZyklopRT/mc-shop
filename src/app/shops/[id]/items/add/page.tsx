@@ -35,11 +35,11 @@ import { SimpleItemSelector } from "~/components/shops/simple-item-selector";
 import { CURRENCY_TYPES, currencyDisplayNames } from "~/lib/validations/shop";
 import { z } from "zod";
 import { addItemToShop } from "~/server/actions/shop-items";
-import { getShopDetails } from "~/server/actions/shops";
+
 import { toast } from "sonner";
 import Link from "next/link";
 import { ArrowLeft, Plus, DollarSign, Coins, Package } from "lucide-react";
-import type { MinecraftItem, Shop } from "@prisma/client";
+import type { MinecraftItem } from "@prisma/client";
 import { ItemPreviewLarge } from "~/components/items/item-preview";
 
 // Form schema for this page with required amount
@@ -58,10 +58,7 @@ export default function AddItemToShopPage() {
   const shopId = params.id as string;
 
   const [selectedItem, setSelectedItem] = useState<MinecraftItem | null>(null);
-  const [shop, setShop] = useState<Shop | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingShop, setIsLoadingShop] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<AddItemFormData>({
     resolver: zodResolver(addItemFormSchema),
@@ -71,24 +68,6 @@ export default function AddItemToShopPage() {
       currency: CURRENCY_TYPES.EMERALDS,
     },
   });
-
-  // Load shop details
-  const loadShop = async () => {
-    try {
-      const result = await getShopDetails({ shopId, includeItems: false });
-      if (result.success) {
-        setShop(result.data.shop);
-      } else {
-        toast.error(result.error);
-        router.push("/shops");
-      }
-    } catch {
-      setError("Failed to load shop");
-      toast.error("Failed to load shop");
-    } finally {
-      setIsLoadingShop(false);
-    }
-  };
 
   const onSubmit = async (data: AddItemFormData) => {
     if (!selectedItem) {
@@ -119,7 +98,6 @@ export default function AddItemToShopPage() {
         toast.error(result.error);
       }
     } catch {
-      setError("Failed to add item to shop");
       toast.error("Failed to add item to shop");
     } finally {
       setIsLoading(false);
@@ -136,37 +114,13 @@ export default function AddItemToShopPage() {
     }
   };
 
-  if (isLoadingShop) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center">
-          <p>Loading shop details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!shop) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="p-6 text-center">
-          <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
-          <p className="mb-4 text-gray-600">Shop not found</p>
-          <Button asChild>
-            <Link href="/shops">Back to Shops</Link>
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
       <div className="mb-8">
         <Button variant="outline" asChild className="mb-4">
           <Link href={`/shops/${shopId}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to {shop.name}
+            Back to Shop
           </Link>
         </Button>
 

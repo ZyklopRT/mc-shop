@@ -19,8 +19,6 @@ import type {
   ShopWithItems,
   ShopListResponse,
   ShopDetailsResponse,
-  shopIncludeBasic,
-  shopIncludeWithItems,
 } from "~/lib/types/shop";
 import {
   validateShopOwnership,
@@ -28,25 +26,6 @@ import {
   buildShopOrderBy,
   handleShopError,
 } from "~/server/utils/shop-utils";
-
-const shopIncludeWithItemsAndOwner = {
-  owner: {
-    select: {
-      mcUsername: true,
-    },
-  },
-  shopItems: {
-    include: {
-      item: true,
-    },
-    where: {
-      isAvailable: true,
-    },
-    orderBy: {
-      createdAt: "desc" as const,
-    },
-  },
-};
 
 /**
  * Create a new shop

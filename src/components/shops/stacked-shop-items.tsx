@@ -73,7 +73,7 @@ export function StackedShopItems({
     <div className={`flex flex-col items-start gap-3 ${className}`}>
       {/* Item Icons Side by Side */}
       <div className="flex items-center">
-        {displayItems.map((shopItem, index) => (
+        {displayItems.map((shopItem, _index) => (
           <Avatar
             key={shopItem.id}
             className="border-background h-8 w-8 border transition-transform hover:scale-110"

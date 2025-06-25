@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm, Controller } from "react-hook-form";
@@ -53,7 +53,7 @@ export default function EditShopPage() {
     resolver: zodResolver(updateShopSchema.omit({ shopId: true })),
   });
 
-  const loadShop = async () => {
+  const loadShop = useCallback(async () => {
     try {
       setError(null);
       const result = await getShopDetails({ shopId, includeItems: true });
@@ -78,7 +78,7 @@ export default function EditShopPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [shopId, reset]);
 
   useEffect(() => {
     if (shopId) {

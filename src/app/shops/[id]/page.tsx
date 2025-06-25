@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { getShopDetails } from "~/server/actions/shops";
-import { CURRENCY_TYPES } from "~/lib/validations/shop";
+
 import type { ShopWithItems } from "~/lib/types/shop";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Package, Plus, Edit } from "lucide-react";
-import { Badge } from "~/components/ui/badge";
+
 import { ItemPreview } from "~/components/items/item-preview";
 
 export default function ShopDetailsPage() {
@@ -23,20 +23,26 @@ export default function ShopDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadShop = async () => {
-    try {
-      const result = await getShopDetails({ shopId, includeItems: true });
-      if (result.success) {
-        setShop(result.data.shop);
-      } else {
-        setError(result.error);
+  useEffect(() => {
+    const loadShop = async () => {
+      try {
+        const result = await getShopDetails({ shopId, includeItems: true });
+        if (result.success) {
+          setShop(result.data.shop);
+        } else {
+          setError(result.error);
+        }
+      } catch {
+        setError("Failed to load shop");
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      setError("Failed to load shop");
-    } finally {
-      setIsLoading(false);
+    };
+
+    if (shopId) {
+      void loadShop();
     }
-  };
+  }, [shopId]);
 
   if (isLoading) {
     return (

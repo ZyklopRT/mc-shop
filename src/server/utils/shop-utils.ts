@@ -6,7 +6,6 @@ import type {
   ShopSortOptions,
   ShopPermissions,
   ShopWithDetails,
-  ShopWithItems,
   ShopItemWithItem,
 } from "~/lib/types/shop";
 
