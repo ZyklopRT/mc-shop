@@ -4,27 +4,15 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
-import { getShops } from "~/server/actions/shops";
+import { getMyShopsWithItems } from "~/server/actions/shops";
 import Link from "next/link";
-import { MapPin, Package, Plus } from "lucide-react";
+import { Plus, Package } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
+import { ShopCard } from "~/components/shops/shop-card";
+import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
 
-interface Shop {
-  id: string;
-  name: string;
-  description: string | null;
-  locationX: number | null;
-  locationY: number | null;
-  locationZ: number | null;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  owner: {
-    mcUsername: string;
-  };
-  _count: {
-    shopItems: number;
-  };
+interface Shop extends ShopWithDetails {
+  shopItems: ShopItemWithItem[];
 }
 
 export default function ShopsPage() {
@@ -35,7 +23,7 @@ export default function ShopsPage() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      loadShops();
+      void loadShops();
     } else if (status === "unauthenticated") {
       setIsLoading(false);
       setError("Please login to view your shops");
@@ -44,7 +32,7 @@ export default function ShopsPage() {
 
   const loadShops = async () => {
     try {
-      const result = await getShops();
+      const result = await getMyShopsWithItems();
       if (result.success) {
         setShops(result.data.shops);
       } else {
@@ -125,63 +113,12 @@ export default function ShopsPage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {shops.map((shop) => (
-            <Card key={shop.id} className="overflow-hidden">
-              <div className="p-6">
-                <div className="mb-4 flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold">{shop.name}</h3>
-                    <div className="mb-1 flex items-center gap-2">
-                      <div
-                        className={`h-2 w-2 rounded-full ${shop.isActive ? "bg-green-500" : "bg-gray-400"}`}
-                      />
-                      <span className="text-sm text-gray-600">
-                        {shop.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500">
-                      Owner: {shop.owner.mcUsername}
-                    </p>
-                  </div>
-                </div>
-
-                {shop.description && (
-                  <p className="mb-4 line-clamp-2 text-sm text-gray-600">
-                    {shop.description}
-                  </p>
-                )}
-
-                <div className="mb-4 space-y-2">
-                  {shop.locationX !== null &&
-                    shop.locationY !== null &&
-                    shop.locationZ !== null && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPin className="h-4 w-4" />
-                        <span>
-                          {shop.locationX}, {shop.locationY}, {shop.locationZ}
-                        </span>
-                      </div>
-                    )}
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Package className="h-4 w-4" />
-                    <span>{shop._count.shopItems} items</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                  >
-                    <Link href={`/shops/${shop.id}`}>View</Link>
-                  </Button>
-                  <Button asChild size="sm" className="flex-1">
-                    <Link href={`/shops/${shop.id}/edit`}>Edit</Link>
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            <ShopCard
+              key={shop.id}
+              shop={shop}
+              currentUserId={session?.user?.id}
+              showEditButton={true}
+            />
           ))}
         </div>
       )}

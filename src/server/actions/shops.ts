@@ -49,7 +49,7 @@ export async function createShop(
         ownerId: session.user.id,
       },
       include: {
-        owner: { select: { mcUsername: true } },
+        owner: { select: { mcUsername: true, id: true } },
         _count: { select: { shopItems: true } },
       },
     });
@@ -322,6 +322,189 @@ export async function searchShops(
       };
     }
     return handleShopError(error, "Search shops");
+  }
+}
+
+/**
+ * Get user's own shops with first 5 items included
+ */
+export async function getMyShopsWithItems(params?: {
+  limit?: number;
+  offset?: number;
+}): Promise<
+  ShopActionResult<{
+    shops: (ShopWithDetails & { shopItems: ShopItemWithItem[] })[];
+    total: number;
+    hasMore: boolean;
+  }>
+> {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return { success: false, error: "Authentication required" };
+    }
+
+    const { limit = 20, offset = 0 } = params ?? {};
+
+    const where = { ownerId: session.user.id };
+    const orderBy = buildShopOrderBy({ field: "updatedAt", direction: "desc" });
+
+    const [shops, total] = await Promise.all([
+      db.shop.findMany({
+        where,
+        include: {
+          owner: { select: { mcUsername: true, id: true } },
+          _count: { select: { shopItems: true } },
+          shopItems: {
+            include: { item: true },
+            orderBy: { createdAt: "desc" },
+            take: 5, // Only get first 5 items for display
+          },
+        },
+        orderBy,
+        take: limit,
+        skip: offset,
+      }),
+      db.shop.count({ where }),
+    ]);
+
+    const hasMore = offset + limit < total;
+
+    return {
+      success: true,
+      data: {
+        shops: shops as (ShopWithDetails & { shopItems: ShopItemWithItem[] })[],
+        total,
+        hasMore,
+      },
+    };
+  } catch (error) {
+    return handleShopError(error, "Get my shops with items");
+  }
+}
+
+/**
+ * Get shops for browsing with first 5 items included
+ */
+export async function getShopsForBrowse(params?: {
+  limit?: number;
+  offset?: number;
+}): Promise<
+  ShopActionResult<{
+    shops: (ShopWithDetails & { shopItems: ShopItemWithItem[] })[];
+    total: number;
+    hasMore: boolean;
+  }>
+> {
+  try {
+    const { limit = 20, offset = 0 } = params ?? {};
+
+    const where = { isActive: true };
+    const orderBy = buildShopOrderBy({ field: "updatedAt", direction: "desc" });
+
+    const [shops, total] = await Promise.all([
+      db.shop.findMany({
+        where,
+        include: {
+          owner: { select: { mcUsername: true } },
+          _count: { select: { shopItems: true } },
+          shopItems: {
+            include: { item: true },
+            where: { isAvailable: true },
+            orderBy: { createdAt: "desc" },
+            take: 5, // Only get first 5 items for stacked display
+          },
+        },
+        orderBy,
+        take: limit,
+        skip: offset,
+      }),
+      db.shop.count({ where }),
+    ]);
+
+    const hasMore = offset + limit < total;
+
+    return {
+      success: true,
+      data: {
+        shops,
+        total,
+        hasMore,
+      },
+    };
+  } catch (error) {
+    return handleShopError(error, "Get shops for browse");
+  }
+}
+
+/**
+ * Search shops for browsing with first 5 items included
+ */
+export async function searchShopsForBrowse(
+  data: z.infer<typeof searchShopsSchema>,
+): Promise<
+  ShopActionResult<{
+    shops: (ShopWithDetails & { shopItems: ShopItemWithItem[] })[];
+    total: number;
+    hasMore: boolean;
+  }>
+> {
+  try {
+    const { query, limit, offset } = searchShopsSchema.parse(data);
+
+    const where = {
+      AND: [
+        { isActive: true },
+        {
+          OR: [
+            { name: { contains: query, mode: "insensitive" as const } },
+            { description: { contains: query, mode: "insensitive" as const } },
+          ],
+        },
+      ],
+    };
+
+    const orderBy = buildShopOrderBy({ field: "updatedAt", direction: "desc" });
+
+    const [shops, total] = await Promise.all([
+      db.shop.findMany({
+        where,
+        include: {
+          owner: { select: { mcUsername: true } },
+          _count: { select: { shopItems: true } },
+          shopItems: {
+            include: { item: true },
+            where: { isAvailable: true },
+            orderBy: { createdAt: "desc" },
+            take: 5, // Only get first 5 items for stacked display
+          },
+        },
+        orderBy,
+        take: limit,
+        skip: offset,
+      }),
+      db.shop.count({ where }),
+    ]);
+
+    const hasMore = offset + limit < total;
+
+    return {
+      success: true,
+      data: {
+        shops,
+        total,
+        hasMore,
+      },
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: error.errors[0]?.message ?? "Validation error",
+      };
+    }
+    return handleShopError(error, "Search shops for browse");
   }
 }
 

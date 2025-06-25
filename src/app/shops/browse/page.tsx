@@ -4,14 +4,20 @@ import { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
-import { searchShops, getShops } from "~/server/actions/shops";
-import type { ShopWithDetails } from "~/lib/types/shop";
+import {
+  searchShopsForBrowse,
+  getShopsForBrowse,
+} from "~/server/actions/shops";
+import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
 import Link from "next/link";
-import { MapPin, Package, Search, Store } from "lucide-react";
+import { Search, Store } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
+import { ShopCard } from "~/components/shops/shop-card";
 
 export default function BrowseShopsPage() {
-  const [shops, setShops] = useState<ShopWithDetails[]>([]);
+  const [shops, setShops] = useState<
+    (ShopWithDetails & { shopItems: ShopItemWithItem[] })[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +35,7 @@ export default function BrowseShopsPage() {
       setHasSearched(false);
 
       // Get all active shops (without user filter)
-      const result = await getShops({ isActive: true, limit: 50, offset: 0 });
+      const result = await getShopsForBrowse({ limit: 50, offset: 0 });
       if (result.success) {
         setShops(result.data.shops);
       } else {
@@ -56,7 +62,7 @@ export default function BrowseShopsPage() {
       setError(null);
       setHasSearched(true);
 
-      const result = await searchShops({
+      const result = await searchShopsForBrowse({
         query: searchQuery.trim(),
         limit: 50,
         offset: 0,
@@ -169,61 +175,7 @@ export default function BrowseShopsPage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {shops.map((shop) => (
-            <Card
-              key={shop.id}
-              className="overflow-hidden transition-shadow hover:shadow-lg"
-            >
-              <div className="p-6">
-                <div className="mb-4 flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="mb-2 text-lg font-semibold">{shop.name}</h3>
-                    <div className="mb-2 flex items-center gap-2">
-                      <div
-                        className={`h-2 w-2 rounded-full ${shop.isActive ? "bg-green-500" : "bg-gray-400"}`}
-                      />
-                      <span className="text-sm text-gray-600">
-                        {shop.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </div>
-                    <p className="mb-3 text-sm text-gray-500">
-                      Owner:{" "}
-                      <span className="font-medium">
-                        {shop.owner.mcUsername}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                {shop.description && (
-                  <p className="mb-4 line-clamp-2 text-sm text-gray-600">
-                    {shop.description}
-                  </p>
-                )}
-
-                <div className="mb-4 space-y-2">
-                  {shop.locationX !== null &&
-                    shop.locationY !== null &&
-                    shop.locationZ !== null && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPin className="h-4 w-4" />
-                        <span>
-                          {shop.locationX}, {shop.locationY}, {shop.locationZ}
-                        </span>
-                      </div>
-                    )}
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Package className="h-4 w-4" />
-                    <span>{shop._count.shopItems} items available</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button asChild className="flex-1">
-                    <Link href={`/shops/${shop.id}`}>View Shop</Link>
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            <ShopCard key={shop.id} shop={shop} showEditButton={false} />
           ))}
         </div>
       )}
