@@ -215,21 +215,35 @@ export async function getShopDetails(
   data: z.infer<typeof getShopDetailsSchema>,
 ): Promise<ShopActionResult<ShopDetailsResponse>> {
   try {
+    const session = await auth();
     const { shopId, includeItems } = getShopDetailsSchema.parse(data);
+
+    // First get the shop to check ownership
+    const shopWithOwner = await db.shop.findUnique({
+      where: { id: shopId },
+      select: { ownerId: true },
+    });
+
+    if (!shopWithOwner) {
+      return { success: false, error: "Shop not found" };
+    }
+
+    const isOwner = session?.user?.id === shopWithOwner.ownerId;
 
     const shop = await db.shop.findUnique({
       where: { id: shopId },
       include: includeItems
         ? {
-            owner: { select: { mcUsername: true } },
+            owner: { select: { mcUsername: true, id: true } },
             shopItems: {
               include: { item: true },
-              where: { isAvailable: true },
-              orderBy: { createdAt: "desc" },
+              // Show all items to shop owner, only available items to others
+              where: isOwner ? {} : { isAvailable: true },
+              orderBy: [{ isAvailable: "desc" }, { createdAt: "desc" }],
             },
           }
         : {
-            owner: { select: { mcUsername: true } },
+            owner: { select: { mcUsername: true, id: true } },
             _count: { select: { shopItems: true } },
           },
     });

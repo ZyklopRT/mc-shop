@@ -310,6 +310,7 @@ export default function AddItemToShopPage() {
                       price={form.watch("price")}
                       amount={form.watch("amount")}
                       currency={form.watch("currency")}
+                      isAvailable={true}
                       className="bg-muted/50"
                     />
                   </div>

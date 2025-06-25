@@ -15,6 +15,7 @@ interface ItemPreviewProps {
   price?: number;
   amount?: number;
   currency?: string;
+  isAvailable?: boolean;
   showRotatingImages?: boolean;
   imageSize?: "sm" | "md" | "lg";
   className?: string;
@@ -26,6 +27,7 @@ export function ItemPreview({
   price,
   amount,
   currency,
+  isAvailable = true,
   showRotatingImages = true,
   imageSize = "md",
   className,
@@ -94,7 +96,9 @@ export function ItemPreview({
   };
 
   return (
-    <Card className={`relative ${className}`}>
+    <Card
+      className={`relative ${className} ${!isAvailable ? "opacity-60" : ""}`}
+    >
       {onEdit && (
         <Button
           size="sm"
@@ -104,6 +108,16 @@ export function ItemPreview({
         >
           <Pencil className="h-4 w-4" />
         </Button>
+      )}
+
+      {!isAvailable && (
+        <div
+          className={`absolute top-2 ${onEdit ? "right-12" : "right-2"} z-10`}
+        >
+          <Badge variant="destructive" className="text-xs">
+            Out of Stock
+          </Badge>
+        </div>
       )}
 
       <CardContent className="p-4">
@@ -184,6 +198,7 @@ export function ItemPreviewCompact({
   price,
   amount,
   currency,
+  isAvailable,
   className,
   onEdit,
 }: Omit<ItemPreviewProps, "imageSize" | "showRotatingImages">) {
@@ -193,6 +208,7 @@ export function ItemPreviewCompact({
       price={price}
       amount={amount}
       currency={currency}
+      isAvailable={isAvailable}
       imageSize="sm"
       showRotatingImages={true}
       className={className}
@@ -206,6 +222,7 @@ export function ItemPreviewLarge({
   price,
   amount,
   currency,
+  isAvailable,
   className,
 }: ItemPreviewProps) {
   return (
@@ -214,6 +231,7 @@ export function ItemPreviewLarge({
       price={price}
       amount={amount}
       currency={currency}
+      isAvailable={isAvailable}
       imageSize="lg"
       showRotatingImages={true}
       className={className}

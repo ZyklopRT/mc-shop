@@ -68,7 +68,7 @@ export async function addItemToShop(
       data: validatedData,
       include: {
         item: true,
-        shop: { select: { name: true } },
+        shop: { select: { name: true, ownerId: true } },
       },
     });
 
@@ -111,7 +111,7 @@ export async function updateShopItem(
       data: updateData,
       include: {
         item: true,
-        shop: { select: { name: true } },
+        shop: { select: { name: true, ownerId: true } },
       },
     });
 
@@ -185,7 +185,7 @@ export async function getShopItems(
       where,
       include: {
         item: true,
-        shop: { select: { name: true } },
+        shop: { select: { name: true, ownerId: true } },
       },
       orderBy: [{ isAvailable: "desc" }, { createdAt: "desc" }],
     });

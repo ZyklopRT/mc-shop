@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
@@ -15,6 +15,7 @@ import { ItemPreviewCompact } from "~/components/items/item-preview";
 
 export default function ShopDetailsPage() {
   const params = useParams();
+  const router = useRouter();
   const { data: session } = useSession();
   const shopId = params.id as string;
 
@@ -67,7 +68,7 @@ export default function ShopDetailsPage() {
     );
   }
 
-  const isOwner = session?.user?.mcUsername === shop.owner.mcUsername;
+  const isOwner = session?.user?.id === shop.owner.id;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -199,24 +200,17 @@ export default function ShopDetailsPage() {
                       price={shopItem.price}
                       amount={shopItem.amount}
                       currency={shopItem.currency}
+                      isAvailable={shopItem.isAvailable}
                       onEdit={
                         isOwner
                           ? () => {
-                              // TODO: Navigate to edit item page or open edit modal
-                              console.log("Edit item:", shopItem.id);
+                              router.push(
+                                `/shops/${shop.id}/items/${shopItem.id}/edit`,
+                              );
                             }
                           : undefined
                       }
                     />
-                    {!shopItem.isAvailable && (
-                      <div
-                        className={`absolute top-2 ${isOwner ? "right-12" : "right-2"}`}
-                      >
-                        <Badge variant="destructive" className="text-xs">
-                          Out of Stock
-                        </Badge>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>

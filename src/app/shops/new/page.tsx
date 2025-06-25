@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { Checkbox } from "~/components/ui/checkbox";
+import { Switch } from "~/components/ui/switch";
 import { createShop } from "~/server/actions/shops";
 import { createShopSchema, type CreateShopData } from "~/lib/validations/shop";
 import Link from "next/link";
@@ -217,7 +217,7 @@ export default function NewShopPage() {
                 name="isActive"
                 control={control}
                 render={({ field }) => (
-                  <Checkbox
+                  <Switch
                     id="isActive"
                     checked={field.value}
                     onCheckedChange={field.onChange}

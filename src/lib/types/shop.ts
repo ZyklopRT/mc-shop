@@ -7,20 +7,20 @@ export type ShopActionResult<T = unknown> =
 
 // Shop with related data types
 export interface ShopWithDetails extends Shop {
-  owner: Pick<User, "mcUsername">;
+  owner: Pick<User, "mcUsername" | "id">;
   _count: {
     shopItems: number;
   };
 }
 
 export interface ShopWithItems extends Shop {
-  owner: Pick<User, "mcUsername">;
+  owner: Pick<User, "mcUsername" | "id">;
   shopItems: ShopItemWithItem[];
 }
 
 export interface ShopItemWithItem extends ShopItem {
   item: MinecraftItem;
-  shop?: Pick<Shop, "name">;
+  shop?: Pick<Shop, "name" | "ownerId">;
 }
 
 export interface ShopItemWithShop extends ShopItem {
@@ -64,12 +64,12 @@ export interface ShopItemResponse {
 
 // Prisma include options for reusability
 export const shopIncludeBasic = {
-  owner: { select: { mcUsername: true } },
+  owner: { select: { mcUsername: true, id: true } },
   _count: { select: { shopItems: true } },
 } as const;
 
 export const shopIncludeWithItems = {
-  owner: { select: { mcUsername: true } },
+  owner: { select: { mcUsername: true, id: true } },
   shopItems: {
     include: { item: true },
     where: { isAvailable: true },
