@@ -1,0 +1,215 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# MC Shop Application Architecture
+
+## Core Architecture Principles
+
+### Backend: Server Actions First
+- **No API Routes**: All backend logic uses Next.js server actions located in [src/server/actions/](mdc:src/server/actions/)
+- **Server Action Pattern**: Actions are async functions that handle form submissions and data mutations
+- **Database Layer**: All database operations use Prisma ORM with schema at [prisma/schema.prisma](mdc:prisma/schema.prisma)
+- **Authentication**: NextAuth.js configured in [src/server/auth/config.ts](mdc:src/server/auth/config.ts)
+
+### Frontend: Type-Safe React with ShadCN
+- **Component Library**: Exclusively use ShadCN UI components from [src/components/ui/](mdc:src/components/ui/)
+- **Component Installation**: `npx shadcn@latest add [component-name]` for new components
+- **Layout Structure**: Root layout in [src/app/layout.tsx](mdc:src/app/layout.tsx) with nested layouts
+- **Navigation**: Centralized navigation component at [src/components/navigation.tsx](mdc:src/components/navigation.tsx)
+
+## File Structure Patterns
+
+### Server Actions (`src/server/actions/`)
+```
+actions/
+├── item-actions.ts          # Item management actions
+├── rcon-actions.ts          # Minecraft server communication
+├── registration-actions.ts  # User registration flow
+└── shops/                   # Shop-related actions grouped by feature
+```
+
+### Validation Schemas (`src/lib/validations/`)
+```
+validations/
+├── auth.ts    # Authentication and user validation schemas
+└── shop.ts    # Shop management validation schemas
+```
+
+### Types (`src/lib/types/`)
+```
+types/
+├── auth.ts    # Authentication-related types
+└── shop.ts    # Shop management types
+```
+
+### Pages (`src/app/`)
+```
+app/
+├── page.tsx                 # Home page
+├── layout.tsx              # Root layout
+├── auth/                   # Authentication pages
+├── shops/                  # Shop management pages
+├── items/                  # Item management pages
+└── admin/                  # Administrative functions
+```
+
+## Validation Pattern with Zod
+
+### Server-Side Validation
+```typescript
+// In server actions
+import { z } from 'zod'
+
+const schema = z.object({
+  name: z.string().min(1),
+  price: z.number().positive()
+})
+
+export async function createShop(formData: FormData) {
+  const validatedFields = schema.safeParse({
+    name: formData.get('name'),
+    price: Number(formData.get('price'))
+  })
+  
+  if (!validatedFields.success) {
+    return { error: 'Invalid fields' }
+  }
+  
+  // Process validated data
+}
+```
+
+### Client-Side Validation
+```typescript
+// In components
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { shopSchema } from '@/lib/validations/shop'
+
+const form = useForm({
+  resolver: zodResolver(shopSchema),
+  defaultValues: { name: '', price: 0 }
+})
+```
+
+## Server Action Patterns
+
+### Standard Action Structure
+1. **Input Validation**: Always validate with Zod schemas first
+2. **Authentication Check**: Verify user permissions when needed
+3. **Database Operations**: Use Prisma for data persistence
+4. **Error Handling**: Return structured error responses
+5. **Success Response**: Return success data or redirect
+
+### Example Action Pattern
+```typescript
+// src/server/actions/example-actions.ts
+export async function createExample(formData: FormData) {
+  // 1. Validate input
+  const validatedFields = exampleSchema.safeParse(/* ... */)
+  if (!validatedFields.success) return { error: 'Invalid input' }
+  
+  // 2. Check authentication
+  const session = await auth()
+  if (!session?.user) return { error: 'Unauthorized' }
+  
+  // 3. Database operation
+  try {
+    const result = await db.example.create({ data: validatedFields.data })
+    return { success: true, data: result }
+  } catch (error) {
+    return { error: 'Database error' }
+  }
+}
+```
+
+## Frontend Component Patterns
+
+### Page Components
+- Use async server components for initial data loading
+- Handle loading states with Suspense boundaries
+- Implement error boundaries for error handling
+
+### Form Components
+- Use `react-hook-form` with Zod validation
+- Implement optimistic updates where appropriate
+- Show loading states during form submission
+
+### UI Components
+- Extend ShadCN components rather than creating from scratch
+- Use compound component patterns for complex UI
+- Implement proper accessibility attributes
+
+## Custom Hooks (`src/hooks/`)
+
+### Registration Hook Example
+- [use-registration.ts](mdc:src/hooks/use-registration.ts) - Multi-step registration flow
+- Manages state transitions between registration steps
+- Handles form validation and submission
+
+### Shop Management Hook
+- [use-shop-management.ts](mdc:src/lib/hooks/use-shop-management.ts) - Shop CRUD operations
+- Encapsulates shop creation, editing, and deletion logic
+- Provides loading states and error handling
+
+## Database Patterns
+
+### Prisma Configuration
+- Main database connection in [src/server/db.ts](mdc:src/server/db.ts)
+- Schema definitions in [prisma/schema.prisma](mdc:prisma/schema.prisma)
+- Seed data management in [prisma/seed.ts](mdc:prisma/seed.ts)
+
+### Migration Strategy
+- Use Prisma migrations for schema changes
+- Keep migration files in [prisma/migrations/](mdc:prisma/migrations/)
+- Test migrations in development before production
+
+## Authentication Flow
+
+### NextAuth Configuration
+- Provider setup in [src/server/auth/config.ts](mdc:src/server/auth/config.ts)
+- Session management through [src/server/auth/index.ts](mdc:src/server/auth/index.ts)
+- Route protection using middleware in [middleware.ts](mdc:middleware.ts)
+
+### Registration Process
+- Multi-step registration with validation at each step
+- User data collection spread across multiple forms
+- Final account creation through server actions
+
+## Utility Patterns
+
+### Constants
+- Registration steps in [src/lib/constants/registration-steps.ts](mdc:src/lib/constants/registration-steps.ts)
+- Centralized configuration values
+
+### Utils
+- Shared utilities in [src/lib/utils.ts](mdc:src/lib/utils.ts)
+- Specialized utils like [src/lib/utils/item-images.ts](mdc:src/lib/utils/item-images.ts)
+- Toast notifications in [src/lib/utils/toast.ts](mdc:src/lib/utils/toast.ts)
+
+## RCON Integration
+
+### Minecraft Server Communication
+- RCON client setup in [src/server/rcon.ts](mdc:src/server/rcon.ts)
+- Action handlers in [src/server/actions/rcon-actions.ts](mdc:src/server/actions/rcon-actions.ts)
+- Command execution with proper error handling
+
+## Development Best Practices
+
+1. **Type Safety**: Use TypeScript extensively with proper type definitions
+2. **Validation**: Validate all inputs with Zod on both client and server
+3. **Error Handling**: Implement comprehensive error handling in all actions
+4. **Loading States**: Provide proper loading feedback in UI components
+5. **Accessibility**: Use semantic HTML and proper ARIA attributes
+6. **Performance**: Implement proper caching and optimization strategies
+
+## Adding New Features
+
+1. **Create Types**: Define TypeScript interfaces in [src/lib/types/](mdc:src/lib/types/)
+2. **Add Validation**: Create Zod schemas in [src/lib/validations/](mdc:src/lib/validations/)
+3. **Server Actions**: Implement backend logic in [src/server/actions/](mdc:src/server/actions/)
+4. **UI Components**: Build frontend using ShadCN components
+5. **Pages**: Create route pages in [src/app/](mdc:src/app/)
+6. **Database**: Update Prisma schema if needed and run migrations
