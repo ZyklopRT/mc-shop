@@ -67,8 +67,9 @@ model ShopItem {
   itemId        String        // References MinecraftItem.id
   
   // Pricing and availability
-  price         Decimal       @db.Decimal(10, 2)
-  currency      String        @default("coins") // e.g., "coins", "diamonds", etc.
+  price         Float
+  amount        Int           @default(1) // How many items are sold as a bundle (e.g., 32 iron ore)
+  currency      String        @default("emeralds") // "emeralds" or "emerald_blocks"
   isAvailable   Boolean       @default(true)
   
   // Metadata

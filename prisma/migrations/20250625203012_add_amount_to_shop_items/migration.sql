@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "ShopItem" ADD COLUMN     "amount" INTEGER NOT NULL DEFAULT 1;

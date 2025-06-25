@@ -6,10 +6,12 @@ import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { getShopDetails } from "~/server/actions/shops";
-import { getItemImageUrl } from "~/lib/utils/item-images";
+import { CURRENCY_TYPES } from "~/lib/validations/shop";
 import type { ShopWithItems } from "~/lib/types/shop";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Package, Plus, Edit } from "lucide-react";
+import { Badge } from "~/components/ui/badge";
+import { ItemPreviewCompact } from "~/components/items/item-preview";
 
 export default function ShopDetailsPage() {
   const params = useParams();
@@ -22,7 +24,7 @@ export default function ShopDetailsPage() {
 
   useEffect(() => {
     if (shopId) {
-      loadShop();
+      void loadShop();
     }
   }, [shopId]);
 
@@ -189,39 +191,33 @@ export default function ShopDetailsPage() {
                 )}
               </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
                 {shop.shopItems.map((shopItem) => (
-                  <Card key={shopItem.id} className="overflow-hidden">
-                    <div className="aspect-square bg-gray-100 p-4">
-                      <img
-                        src={getItemImageUrl(shopItem.item.filename, "default")}
-                        alt={shopItem.item.nameEn}
-                        className="h-full w-full object-contain"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/items/default/minecraft__barrier.png";
-                        }}
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-sm font-semibold">
-                        {shopItem.item.nameEn}
-                      </h3>
-                      <p className="mt-1 text-xs text-gray-600">
-                        {shopItem.item.id}
-                      </p>
-                      <div className="mt-2 flex items-center justify-between">
-                        <span className="text-lg font-bold text-green-600">
-                          {shopItem.price.toString()} {shopItem.currency}
-                        </span>
-                        {!shopItem.isAvailable && (
-                          <span className="text-xs text-red-600">
-                            Out of Stock
-                          </span>
-                        )}
+                  <div key={shopItem.id} className="relative">
+                    <ItemPreviewCompact
+                      item={shopItem.item}
+                      price={shopItem.price}
+                      amount={shopItem.amount}
+                      currency={shopItem.currency}
+                      onEdit={
+                        isOwner
+                          ? () => {
+                              // TODO: Navigate to edit item page or open edit modal
+                              console.log("Edit item:", shopItem.id);
+                            }
+                          : undefined
+                      }
+                    />
+                    {!shopItem.isAvailable && (
+                      <div
+                        className={`absolute top-2 ${isOwner ? "right-12" : "right-2"}`}
+                      >
+                        <Badge variant="destructive" className="text-xs">
+                          Out of Stock
+                        </Badge>
                       </div>
-                    </div>
-                  </Card>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
