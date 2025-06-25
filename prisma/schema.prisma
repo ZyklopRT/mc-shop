@@ -14,16 +14,77 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model MinecraftItem {
+  id          String   @id // The minecraft item ID (e.g., "ars_nouveau:abjuration_essence")
+  nameEn      String   // English name
+  nameDe      String   // German name  
+  filename    String   // Image filename
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  shopItems   ShopItem[]
+  
+  // Optimized indexes for search
+  @@index([nameEn])
+  @@index([nameDe]) 
+  @@index([id])
+}
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
+model Shop {
+  id            String    @id @default(cuid())
+  name          String    // Shop name
+  description   String?   // Optional description
+  
+  // Location in Minecraft world
+  locationX     Int?      // X coordinate
+  locationY     Int?      // Y coordinate  
+  locationZ     Int?      // Z coordinate
+  
+  // Future fields
+  imageUrl      String?   // Shop image URL
+  isActive      Boolean   @default(true)
+  
+  // Metadata
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  ownerId       String    // References User.id
+  owner         User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  shopItems     ShopItem[]
+  
+  // Indexes
+  @@index([ownerId])
     @@index([name])
+  @@index([isActive])
+  @@index([locationX, locationY, locationZ]) // For location-based searches
+}
+
+model ShopItem {
+  id            String        @id @default(cuid())
+  shopId        String
+  itemId        String        // References MinecraftItem.id
+  
+  // Pricing and availability
+  price         Decimal       @db.Decimal(10, 2)
+  currency      String        @default("coins") // e.g., "coins", "diamonds", etc.
+  isAvailable   Boolean       @default(true)
+  
+  // Metadata
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // Relations
+  shop          Shop          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  item          MinecraftItem @relation(fields: [itemId], references: [id])
+  
+  // Constraints and indexes
+  @@unique([shopId, itemId]) // Prevent duplicate items in same shop
+  @@index([shopId])
+  @@index([itemId])
+  @@index([price])
+  @@index([isAvailable])
 }
 
 // Necessary for Next auth
@@ -68,7 +129,9 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+    
+    // Shop relations
+    shops         Shop[]    // A user can have multiple shops
 }
 
 // Model for storing temporary OTP codes during registration

@@ -11,10 +11,27 @@ export function Navigation() {
     <nav className="border-b bg-white shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center space-x-8">
             <Link href="/" className="text-xl font-bold text-gray-900">
               MC Shop Admin
             </Link>
+
+            <div className="hidden items-center space-x-6 md:flex">
+              <Link
+                href="/items"
+                className="text-gray-600 transition-colors hover:text-gray-900"
+              >
+                Browse Items
+              </Link>
+              {session?.user && (
+                <Link
+                  href="/shops"
+                  className="text-gray-600 transition-colors hover:text-gray-900"
+                >
+                  My Shops
+                </Link>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center space-x-4">
