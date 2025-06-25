@@ -48,17 +48,10 @@ export default function EditShopPage() {
     handleSubmit,
     formState: { errors, isDirty },
     reset,
-    setValue,
     control,
   } = useForm<EditShopForm>({
     resolver: zodResolver(updateShopSchema.omit({ shopId: true })),
   });
-
-  useEffect(() => {
-    if (shopId) {
-      loadShop();
-    }
-  }, [shopId]);
 
   const loadShop = async () => {
     try {
@@ -80,12 +73,18 @@ export default function EditShopPage() {
       } else {
         setError(result.error);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to load shop details");
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (shopId) {
+      void loadShop();
+    }
+  }, [shopId, loadShop]);
 
   const onSubmit = async (data: EditShopForm) => {
     if (!shop) return;
@@ -126,7 +125,7 @@ export default function EditShopPage() {
         setError(result.error);
         toast.error("Update Failed", result.error);
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
       toast.error("Update Failed", "An unexpected error occurred");
     } finally {
@@ -153,7 +152,7 @@ export default function EditShopPage() {
         setError(result.error);
         toast.error("Delete Failed", result.error);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to delete shop");
       toast.error("Delete Failed", "Failed to delete shop");
     } finally {
@@ -208,7 +207,7 @@ export default function EditShopPage() {
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold">Shop Not Found</h1>
           <p className="mb-4 text-gray-600">
-            The shop you're looking for doesn't exist.
+            The shop you&apos;re looking for doesn&apos;t exist.
           </p>
           <Button asChild>
             <Link href="/shops">Back to Shops</Link>
@@ -227,7 +226,7 @@ export default function EditShopPage() {
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold">Access Denied</h1>
           <p className="mb-4 text-gray-600">
-            You don't have permission to edit this shop.
+            You don&apos;t have permission to edit this shop.
           </p>
           <Button asChild>
             <Link href={`/shops/${shop.id}`}>View Shop</Link>
@@ -250,7 +249,9 @@ export default function EditShopPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold">Edit Shop</h1>
-              <p className="text-gray-600">Update your shop information</p>
+              <p className="text-gray-600">
+                Update your shop&apos;s information
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <div
@@ -414,9 +415,9 @@ export default function EditShopPage() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete Shop</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to delete "{shop.name}"? This action
-                      cannot be undone. All shop items and data will be
-                      permanently removed.
+                      Are you sure you want to delete &ldquo;{shop.name}&rdquo;?
+                      This action cannot be undone. All shop items and data will
+                      be permanently removed.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

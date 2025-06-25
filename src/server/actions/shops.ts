@@ -29,6 +29,25 @@ import {
   handleShopError,
 } from "~/server/utils/shop-utils";
 
+const shopIncludeWithItemsAndOwner = {
+  owner: {
+    select: {
+      mcUsername: true,
+    },
+  },
+  shopItems: {
+    include: {
+      item: true,
+    },
+    where: {
+      isAvailable: true,
+    },
+    orderBy: {
+      createdAt: "desc" as const,
+    },
+  },
+};
+
 /**
  * Create a new shop
  */

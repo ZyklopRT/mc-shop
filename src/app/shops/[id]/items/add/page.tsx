@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -61,6 +61,7 @@ export default function AddItemToShopPage() {
   const [shop, setShop] = useState<Shop | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingShop, setIsLoadingShop] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<AddItemFormData>({
     resolver: zodResolver(addItemFormSchema),
@@ -72,12 +73,6 @@ export default function AddItemToShopPage() {
   });
 
   // Load shop details
-  useEffect(() => {
-    if (shopId) {
-      void loadShop();
-    }
-  }, [shopId]);
-
   const loadShop = async () => {
     try {
       const result = await getShopDetails({ shopId, includeItems: false });
@@ -87,9 +82,9 @@ export default function AddItemToShopPage() {
         toast.error(result.error);
         router.push("/shops");
       }
-    } catch (error) {
-      toast.error("Failed to load shop details");
-      router.push("/shops");
+    } catch {
+      setError("Failed to load shop");
+      toast.error("Failed to load shop");
     } finally {
       setIsLoadingShop(false);
     }
@@ -123,7 +118,8 @@ export default function AddItemToShopPage() {
       } else {
         toast.error(result.error);
       }
-    } catch (error) {
+    } catch {
+      setError("Failed to add item to shop");
       toast.error("Failed to add item to shop");
     } finally {
       setIsLoading(false);

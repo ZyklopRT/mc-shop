@@ -33,7 +33,7 @@ export async function bulkImportItemsFromFile() {
     // Read the JSON file
     const filePath = join(process.cwd(), "public", "items.json");
     const fileContent = await readFile(filePath, "utf-8");
-    const jsonData = JSON.parse(fileContent);
+    const jsonData = JSON.parse(fileContent) as unknown;
 
     // Validate the data
     const items = bulkImportSchema.parse(jsonData);

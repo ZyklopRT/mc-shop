@@ -12,7 +12,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Switch } from "~/components/ui/switch";
 import { createShop } from "~/server/actions/shops";
-import { createShopSchema, type CreateShopData } from "~/lib/validations/shop";
+import { createShopSchema } from "~/lib/validations/shop";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
@@ -25,7 +25,7 @@ const createShopFormSchema = createShopSchema.extend({
 type CreateShopForm = z.infer<typeof createShopFormSchema>;
 
 export default function NewShopPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +34,6 @@ export default function NewShopPage() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
     control,
   } = useForm<CreateShopForm>({
     resolver: zodResolver(createShopFormSchema),
@@ -68,7 +67,7 @@ export default function NewShopPage() {
         setError(result.error);
         toast.error("Creation Failed", result.error);
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
       toast.error("Creation Failed", "An unexpected error occurred");
     } finally {
@@ -257,7 +256,7 @@ export default function NewShopPage() {
               sell
             </li>
             <li>
-              • Add a helpful description explaining your shop's specialty
+              • Add a helpful description explaining your shop&apos;s specialty
             </li>
             <li>• Include coordinates so players can easily find your shop</li>
             <li>• You can always edit these details later</li>

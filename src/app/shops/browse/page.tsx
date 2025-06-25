@@ -25,7 +25,7 @@ export default function BrowseShopsPage() {
   const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
-    loadAllShops();
+    void loadAllShops();
   }, []);
 
   const loadAllShops = async () => {
@@ -42,7 +42,7 @@ export default function BrowseShopsPage() {
         setError(result.error);
         toast.error("Loading Failed", result.error);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to load shops");
       toast.error("Loading Failed", "Failed to load shops");
     } finally {
@@ -53,7 +53,7 @@ export default function BrowseShopsPage() {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) {
-      loadAllShops();
+      void loadAllShops();
       return;
     }
 
@@ -74,7 +74,7 @@ export default function BrowseShopsPage() {
         setError(result.error);
         toast.error("Search Failed", result.error);
       }
-    } catch (err) {
+    } catch {
       setError("Search failed");
       toast.error("Search Failed", "Failed to search shops");
     } finally {
@@ -85,7 +85,7 @@ export default function BrowseShopsPage() {
   const clearSearch = () => {
     setSearchQuery("");
     setHasSearched(false);
-    loadAllShops();
+    void loadAllShops();
   };
 
   if (isLoading) {
@@ -113,7 +113,7 @@ export default function BrowseShopsPage() {
 
         {/* Search */}
         <Card className="p-4">
-          <form onSubmit={handleSearch} className="flex gap-2">
+          <form onSubmit={(e) => void handleSearch(e)} className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <Input

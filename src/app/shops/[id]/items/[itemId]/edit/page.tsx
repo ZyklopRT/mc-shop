@@ -5,8 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { ArrowLeft, Trash2, Save, Eye, Pencil } from "lucide-react";
+import type { z } from "zod";
+import { ArrowLeft, Trash2, Save, Pencil } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -73,9 +73,7 @@ export default function EditShopItemPage() {
     handleSubmit,
     formState: { errors, isDirty },
     reset,
-    setValue,
     watch,
-    control,
   } = useForm<EditShopItemForm>({
     resolver: zodResolver(editShopItemFormSchema),
   });
@@ -84,7 +82,7 @@ export default function EditShopItemPage() {
     if (shopItemId) {
       void loadShopItem();
     }
-  }, [shopItemId]);
+  }, [shopItemId, loadShopItem]);
   useEffect(() => {
     if (shopItem?.shop && "ownerId" in shopItem.shop && session?.user?.id) {
       const isOwner = session.user.id === shopItem.shop.ownerId;
@@ -114,7 +112,7 @@ export default function EditShopItemPage() {
         setError(result.error);
         toast.error(result.error);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to load shop item details");
       toast.error("Failed to load shop item details");
     } finally {
@@ -150,7 +148,7 @@ export default function EditShopItemPage() {
           toast.error(result.error);
         }
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to update shop item");
     } finally {
       setIsSubmitting(false);
@@ -174,7 +172,7 @@ export default function EditShopItemPage() {
       } else {
         toast.error(result.error);
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to remove item from shop");
     } finally {
       setIsDeleting(false);
@@ -335,11 +333,7 @@ export default function EditShopItemPage() {
                 <SelectContent>
                   {Object.entries(CURRENCY_TYPES).map(([key, value]) => (
                     <SelectItem key={value} value={value}>
-                      {
-                        currencyDisplayNames[
-                          value as keyof typeof currencyDisplayNames
-                        ]
-                      }
+                      {currencyDisplayNames[value]}
                     </SelectItem>
                   ))}
                 </SelectContent>

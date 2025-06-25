@@ -11,11 +11,7 @@ import {
   type UpdateShopItemData,
   type RemoveShopItemData,
 } from "~/lib/validations/shop";
-import type {
-  ShopActionResult,
-  ShopItemWithItem,
-  ShopItemResponse,
-} from "~/lib/types/shop";
+import type { ShopActionResult, ShopItemWithItem } from "~/lib/types/shop";
 import {
   validateShopOwnership,
   validateShopItemOwnership,

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import Image from "next/image";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Card } from "~/components/ui/card";
@@ -49,7 +50,7 @@ export default function ItemsPage() {
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleSearch();
+      void handleSearch();
     }
   };
 
@@ -68,7 +69,7 @@ export default function ItemsPage() {
               onKeyPress={handleKeyPress}
               className="flex-1"
             />
-            <Button onClick={handleSearch} disabled={isLoading}>
+            <Button onClick={() => void handleSearch()} disabled={isLoading}>
               {isLoading ? "Searching..." : "Search"}
             </Button>
           </div>
@@ -98,9 +99,11 @@ export default function ItemsPage() {
           {items.map((item) => (
             <Card key={item.id} className="overflow-hidden">
               <div className="aspect-square bg-gray-100 p-4">
-                <img
+                <Image
                   src={getItemImageUrl(item.filename, "default")}
                   alt={language === "en" ? item.nameEn : item.nameDe}
+                  width={64}
+                  height={64}
                   className="h-full w-full object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -122,7 +125,9 @@ export default function ItemsPage() {
       {/* No Results */}
       {searchQuery && !isLoading && items.length === 0 && (
         <Card className="p-6 text-center">
-          <p className="text-gray-600">No items found for "{searchQuery}"</p>
+          <p className="text-gray-600">
+            No items found for &ldquo;{searchQuery}&rdquo;
+          </p>
         </Card>
       )}
 
@@ -133,8 +138,8 @@ export default function ItemsPage() {
           <div className="space-y-2 text-sm text-gray-600">
             <p>• Enter a search term to find Minecraft items</p>
             <p>
-              • Search by item name or ID (e.g., "diamond sword" or
-              "minecraft:diamond_sword")
+              • Search by item name or ID (e.g. &ldquo;diamond sword&rdquo; or
+              &ldquo;minecraft:diamond_sword&rdquo;)
             </p>
             <p>• Switch between English and German names</p>
             <p>• Results will show up to 20 items</p>

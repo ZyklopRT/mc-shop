@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
@@ -11,7 +11,7 @@ import type { ShopWithItems } from "~/lib/types/shop";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Package, Plus, Edit } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { ItemPreviewCompact } from "~/components/items/item-preview";
+import { ItemPreview } from "~/components/items/item-preview";
 
 export default function ShopDetailsPage() {
   const params = useParams();
@@ -23,12 +23,6 @@ export default function ShopDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (shopId) {
-      void loadShop();
-    }
-  }, [shopId]);
-
   const loadShop = async () => {
     try {
       const result = await getShopDetails({ shopId, includeItems: true });
@@ -37,8 +31,8 @@ export default function ShopDetailsPage() {
       } else {
         setError(result.error);
       }
-    } catch (err) {
-      setError("Failed to load shop details");
+    } catch {
+      setError("Failed to load shop");
     } finally {
       setIsLoading(false);
     }
@@ -195,7 +189,7 @@ export default function ShopDetailsPage() {
               <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
                 {shop.shopItems.map((shopItem) => (
                   <div key={shopItem.id} className="relative">
-                    <ItemPreviewCompact
+                    <ItemPreview
                       item={shopItem.item}
                       price={shopItem.price}
                       amount={shopItem.amount}

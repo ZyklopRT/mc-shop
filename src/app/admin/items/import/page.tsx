@@ -8,10 +8,24 @@ import {
   getItemsStats,
 } from "~/server/actions/item-actions";
 
+interface ImportResult {
+  success: boolean;
+  error?: string;
+  total?: number;
+  imported?: number;
+  updated?: number;
+}
+
+interface ItemStats {
+  total: number;
+  availableInShops: number;
+  withoutShops: number;
+}
+
 export default function ImportItemsPage() {
   const [isImporting, setIsImporting] = useState(false);
-  const [importResult, setImportResult] = useState<any>(null);
-  const [stats, setStats] = useState<any>(null);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [stats, setStats] = useState<ItemStats | null>(null);
 
   const handleImport = async () => {
     setIsImporting(true);
@@ -24,7 +38,7 @@ export default function ImportItemsPage() {
       // Refresh stats after import
       if (result.success) {
         const statsResult = await getItemsStats();
-        if (statsResult.success) {
+        if (statsResult.success && statsResult.stats) {
           setStats(statsResult.stats);
         }
       }
@@ -40,7 +54,7 @@ export default function ImportItemsPage() {
 
   const loadStats = async () => {
     const statsResult = await getItemsStats();
-    if (statsResult.success) {
+    if (statsResult.success && statsResult.stats) {
       setStats(statsResult.stats);
     }
   };
@@ -139,19 +153,19 @@ export default function ImportItemsPage() {
               file contains the item data in the correct format.
             </p>
             <p>
-              2. Ensure the corresponding image files are in the
+              2. Ensure the corresponding image files are in the{" "}
               <code className="rounded bg-gray-100 px-1 py-0.5">
                 public/items/default/
               </code>{" "}
-              and
+              and{" "}
               <code className="rounded bg-gray-100 px-1 py-0.5">
                 public/items/sphax/
               </code>{" "}
               directories.
             </p>
             <p>
-              3. Click "Start Import" to begin the import process. This may take
-              a few minutes for large datasets.
+              3. Click &ldquo;Start Import&rdquo; to begin the import process.
+              This may take a few minutes for large datasets.
             </p>
             <p>
               4. The import process will create new items or update existing

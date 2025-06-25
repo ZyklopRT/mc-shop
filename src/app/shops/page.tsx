@@ -7,7 +7,7 @@ import { Card } from "~/components/ui/card";
 import { getMyShopsWithItems } from "~/server/actions/shops";
 import Link from "next/link";
 import { Plus, Package } from "lucide-react";
-import { toast } from "~/lib/utils/toast";
+
 import { ShopCard } from "~/components/shops/shop-card";
 import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
 
@@ -38,9 +38,8 @@ export default function ShopsPage() {
       } else {
         setError(result.error);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to load shops");
-      toast.error("Loading Failed", "Failed to load your shops");
     } finally {
       setIsLoading(false);
     }
