@@ -234,7 +234,7 @@ export default function NewRequestPage() {
 
             {/* Item-specific fields */}
             {formData.requestType === "ITEM" && (
-              <div className="bg-muted/50 space-y-4 rounded-lg border p-4">
+              <div className="space-y-4 rounded-lg border p-4">
                 <h3 className="font-medium">Item Details</h3>
 
                 <div className="space-y-2">

@@ -17,6 +17,7 @@ import {
   CheckCircle,
   Coins,
 } from "lucide-react";
+import Link from "next/link";
 import { UserAvatar } from "~/components/ui/user-avatar";
 import { ItemPreview } from "~/components/items/item-preview";
 import { CURRENCY_TYPES, currencyDisplayNames } from "~/lib/validations/shop";
@@ -82,7 +83,7 @@ export function RequestCard({
   const StatusIcon = statusConfig[status].icon;
 
   return (
-    <Card className="cursor-pointer transition-shadow hover:shadow-md">
+    <Card className="transition-shadow hover:shadow-md">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <Badge variant={type === "ITEM" ? "default" : "secondary"}>
@@ -168,8 +169,8 @@ export function RequestCard({
                 </Badge>
               )}
             </div>
-            <Button variant="outline" size="sm">
-              View Details
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/requests/${id}`}>View Details</Link>
             </Button>
           </div>
         </div>
