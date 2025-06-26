@@ -5,6 +5,9 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  // Enable standalone output for Docker optimization
+  output: "standalone",
+};
 
 export default config;

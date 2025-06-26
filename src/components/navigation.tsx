@@ -1,11 +1,16 @@
 "use client";
 
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
+import { getMinecraftAvatarUrl } from "~/lib/utils/minecraft-api";
 
 export function Navigation() {
   const { data: session, status } = useSession();
+  const avatarUrl = getMinecraftAvatarUrl(session?.user?.mcUUID ?? "");
+  console.log("avatarUrl", avatarUrl);
+  console.log("session", session);
 
   return (
     <nav className="border-b bg-white shadow-sm">
@@ -39,6 +44,12 @@ export function Navigation() {
               <div className="h-8 w-16 animate-pulse rounded bg-gray-200"></div>
             ) : session?.user ? (
               <div className="flex items-center space-x-4">
+                <Avatar className="rounded-full">
+                  <AvatarImage src={avatarUrl} alt={session.user.name ?? ""} />
+                  <AvatarFallback>
+                    {session.user.name?.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
                 <span className="text-sm text-gray-700">
                   Welcome, {session.user.mcUsername || session.user.name}
                 </span>

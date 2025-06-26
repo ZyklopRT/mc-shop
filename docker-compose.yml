@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: mc-shop-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mc_shop_user
+      POSTGRES_PASSWORD: mc_shop_password
+      POSTGRES_DB: mc_shop_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - mc-shop-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mc-shop-app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://mc_shop_user:mc_shop_password@postgres:5432/mc_shop_db
+      # Add your other environment variables here
+      - AUTH_SECRET=${AUTH_SECRET:-your-auth-secret-here}
+      - MINECRAFT_RCON_HOST=${MINECRAFT_RCON_HOST:-}
+      - MINECRAFT_RCON_PORT=${MINECRAFT_RCON_PORT:-}
+      - MINECRAFT_RCON_PASSWORD=${MINECRAFT_RCON_PASSWORD:-}
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+    networks:
+      - mc-shop-network
+    # Wait for postgres to be ready
+    command: >
+      sh -c "
+        echo 'Waiting for postgres to be ready...' &&
+        until nc -z postgres 5432; do
+          echo 'Postgres is unavailable - sleeping'
+          sleep 1
+        done &&
+        echo 'Postgres is up - executing command' &&
+        npx prisma migrate deploy &&
+        node server.js
+      "
+
+volumes:
+  postgres_data:
+
+networks:
+  mc-shop-network:
+    driver: bridge

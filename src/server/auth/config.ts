@@ -16,15 +16,25 @@ declare module "next-auth" {
     user: DefaultSession["user"] & {
       id: string;
       mcUsername: string;
+      mcUUID: string | null;
     };
   }
 
   interface User {
     id?: string;
     mcUsername?: string;
+    mcUUID?: string | null;
     name?: string | null;
     email?: string | null;
     image?: string | null;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id?: string;
+    mcUsername?: string;
+    mcUUID?: string | null;
   }
 }
 
@@ -64,6 +74,7 @@ export const authConfig = {
             select: {
               id: true,
               mcUsername: true,
+              mcUUID: true,
               password: true,
               name: true,
               email: true,
@@ -85,6 +96,7 @@ export const authConfig = {
           return {
             id: user.id,
             mcUsername: user.mcUsername,
+            mcUUID: user.mcUUID,
             name: user.name,
             email: user.email,
             image: user.image,
@@ -104,6 +116,7 @@ export const authConfig = {
       if (user) {
         token.id = user.id;
         token.mcUsername = user.mcUsername;
+        token.mcUUID = user.mcUUID;
       }
       return token;
     },
@@ -113,6 +126,7 @@ export const authConfig = {
         ...session.user,
         id: token.id as string,
         mcUsername: token.mcUsername as string,
+        mcUUID: token.mcUUID as string | null,
       },
     }),
   },
