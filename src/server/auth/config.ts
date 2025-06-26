@@ -30,13 +30,8 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
-  interface JWT {
-    id?: string;
-    mcUsername?: string;
-    mcUUID?: string | null;
-  }
-}
+// JWT module augmentation is handled differently in NextAuth v5
+// The token properties are automatically typed through the callbacks
 
 const loginSchema = z.object({
   mcUsername: z.string().min(1, "Minecraft username is required"),
@@ -124,9 +119,9 @@ export const authConfig = {
       ...session,
       user: {
         ...session.user,
-        id: token.id as string,
-        mcUsername: token.mcUsername as string,
-        mcUUID: token.mcUUID as string | null,
+        id: (token.id as string) ?? "",
+        mcUsername: (token.mcUsername as string) ?? "",
+        mcUUID: (token.mcUUID as string | null) ?? null,
       },
     }),
   },

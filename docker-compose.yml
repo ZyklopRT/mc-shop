@@ -36,7 +36,7 @@ services:
       - postgres
     networks:
       - mc-shop-network
-    # Wait for postgres to be ready
+    # Wait for postgres to be ready and run migrations
     command: >
       sh -c "
         echo 'Waiting for postgres to be ready...' &&
@@ -44,8 +44,9 @@ services:
           echo 'Postgres is unavailable - sleeping'
           sleep 1
         done &&
-        echo 'Postgres is up - executing command' &&
+        echo 'Postgres is up - running migrations' &&
         npx prisma migrate deploy &&
+        echo 'Migrations completed - starting server' &&
         node server.js
       "
 

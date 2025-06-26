@@ -64,4 +64,7 @@ tmp/
 temp/
 
 # Documentation
-docs/ 
+docs/
+
+# Keep Prisma files - they are needed for Docker build
+!prisma/ 
