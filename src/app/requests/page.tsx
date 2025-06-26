@@ -186,7 +186,7 @@ async function MyRequestsList() {
       );
     }
 
-    return <RequestGrid requests={requests} showAllStatuses={true} />;
+    return <RequestGrid requests={requests} />;
   } catch (error) {
     console.error("Error fetching user requests:", error);
     return (
@@ -201,13 +201,9 @@ async function MyRequestsList() {
 
 interface RequestGridProps {
   requests: RequestWithDetails[];
-  showAllStatuses?: boolean;
 }
 
-async function RequestGrid({
-  requests,
-  showAllStatuses = false,
-}: RequestGridProps) {
+async function RequestGrid({ requests }: RequestGridProps) {
   const session = await auth();
 
   return (

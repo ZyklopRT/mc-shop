@@ -47,6 +47,7 @@ export type RequestWithFullDetails = Request & {
 export type RequestOfferWithDetails = RequestOffer & {
   offerer: Pick<User, "id" | "mcUsername">;
   request: Pick<Request, "id" | "title" | "requesterId" | "status">;
+  currency: string;
 };
 
 export type NegotiationWithDetails = RequestNegotiation & {

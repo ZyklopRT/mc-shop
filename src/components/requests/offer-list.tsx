@@ -229,10 +229,10 @@ export function OfferList({
 
                 {offer.offeredPrice && (
                   <div className="mt-3 flex items-center gap-2">
-                    {getCurrencyIcon((offer as any).currency ?? currency)}
+                    {getCurrencyIcon(offer.currency ?? currency)}
                     <span className="font-semibold">
                       {offer.offeredPrice}{" "}
-                      {getCurrencyDisplay((offer as any).currency ?? currency)}
+                      {getCurrencyDisplay(offer.currency ?? currency)}
                     </span>
                   </div>
                 )}
