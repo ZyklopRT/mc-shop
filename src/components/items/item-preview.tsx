@@ -9,6 +9,7 @@ import { getItemImageUrl } from "~/lib/utils/item-images";
 import { currencyDisplayNames, CURRENCY_TYPES } from "~/lib/validations/shop";
 import { useImageFallback } from "~/hooks/use-image-fallback";
 import type { MinecraftItem } from "@prisma/client";
+import { cn } from "~/lib/utils";
 
 interface ItemPreviewProps {
   item: MinecraftItem;
@@ -86,9 +87,21 @@ export function ItemPreview({
     }
   };
 
+  const CardClasses = () => {
+    switch (imageSize) {
+      case "sm":
+        return "py-4";
+      default:
+        return "py-6";
+    }
+  };
+
   return (
     <Card
-      className={`relative ${className} ${!isAvailable ? "opacity-60" : ""}`}
+      className={cn(
+        `relative ${className} ${!isAvailable ? "opacity-60" : ""}`,
+        CardClasses(),
+      )}
     >
       {onEdit && (
         <Button
@@ -111,7 +124,7 @@ export function ItemPreview({
         </div>
       )}
 
-      <CardContent className="p-4">
+      <CardContent>
         <div className={`flex items-center ${getContentSpacing()}`}>
           <div className={`relative ${getImageSize()} flex-shrink-0`}>
             <Image

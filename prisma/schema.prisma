@@ -24,6 +24,7 @@ model MinecraftItem {
   
   // Relations
   shopItems   ShopItem[]
+  requests    Request[]
   
   // Optimized indexes for search
   @@index([nameEn])
@@ -134,6 +135,11 @@ model User {
     
     // Shop relations
     shops         Shop[]    // A user can have multiple shops
+    
+    // Request system relations
+    requests               Request[]               @relation("UserRequests")
+    offers                 RequestOffer[]          @relation("UserOffers")
+    negotiationMessages    NegotiationMessage[]    @relation("NegotiationMessages")
 }
 
 // Model for storing temporary OTP codes during registration
@@ -155,4 +161,138 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+// Request System Models
+
+model Request {
+  id             String          @id @default(cuid())
+  title          String          // Brief title of the request
+  description    String          // Detailed description
+  requestType    RequestType     // ITEM or GENERAL
+  
+  // Item-specific fields
+  itemId         String?         // References MinecraftItem.id (nullable for GENERAL requests)
+  itemQuantity   Int?            // How many items requested
+  
+  // Pricing
+  suggestedPrice Float?          // Suggested reward/price
+  currency       String          @default("emeralds") // "emeralds" or "emerald_blocks"
+  
+  // Request status
+  status         RequestStatus   @default(OPEN)
+  
+  // Relations
+  requesterId    String          // Who made the request
+  requester      User            @relation("UserRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  
+  // Metadata
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  completedAt    DateTime?       // When the request was fulfilled
+  
+  // Relations
+  item           MinecraftItem?  @relation(fields: [itemId], references: [id])
+  offers         RequestOffer[]
+  negotiation    RequestNegotiation?
+  
+  @@index([requesterId])
+  @@index([status])
+  @@index([requestType])
+  @@index([itemId])
+  @@index([createdAt])
+}
+
+model RequestOffer {
+  id             String       @id @default(cuid())
+  requestId      String
+  offererId      String       // Who made the offer
+  
+  // Offer details
+  offeredPrice   Float?       // Counter-offer price (null means accepting original)
+  message        String?      // Optional message with the offer
+  status         OfferStatus  @default(PENDING)
+  
+  // Metadata
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  // Relations
+  request        Request      @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  offerer        User         @relation("UserOffers", fields: [offererId], references: [id], onDelete: Cascade)
+  
+  @@index([requestId])
+  @@index([offererId])
+  @@index([status])
+}
+
+model RequestNegotiation {
+  id               String              @id @default(cuid())
+  requestId        String              @unique
+  acceptedOfferId  String?             // Which offer was accepted
+  finalPrice       Float?              // Final agreed price
+  status           NegotiationStatus   @default(IN_PROGRESS)
+  
+  // Metadata
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  completedAt      DateTime?
+  
+  // Relations
+  request          Request             @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  messages         NegotiationMessage[]
+}
+
+model NegotiationMessage {
+  id             String             @id @default(cuid())
+  negotiationId  String
+  senderId       String             // Who sent the message
+  messageType    MessageType        // OFFER, COUNTER_OFFER, ACCEPT, REJECT, MESSAGE
+  content        String             // Message content
+  priceOffer     Float?             // Price if this is an offer/counter-offer
+  
+  createdAt      DateTime           @default(now())
+  
+  // Relations
+  negotiation    RequestNegotiation @relation(fields: [negotiationId], references: [id], onDelete: Cascade)
+  sender         User               @relation("NegotiationMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  @@index([negotiationId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+// Request System Enums
+enum RequestType {
+  ITEM     // Request for specific Minecraft items
+  GENERAL  // General text request
+}
+
+enum RequestStatus {
+  OPEN        // Available for offers
+  IN_NEGOTIATION  // Actively being negotiated
+  ACCEPTED    // Agreement reached, pending completion
+  COMPLETED   // Fulfilled and closed
+  CANCELLED   // Cancelled by requester
+}
+
+enum OfferStatus {
+  PENDING     // Waiting for response
+  ACCEPTED    // Accepted by requester
+  REJECTED    // Rejected by requester
+  WITHDRAWN   // Withdrawn by offerer
+}
+
+enum NegotiationStatus {
+  IN_PROGRESS // Still negotiating
+  AGREED      // Both parties agreed
+  FAILED      // Negotiation failed
+}
+
+enum MessageType {
+  OFFER         // Initial offer
+  COUNTER_OFFER // Counter-offer with different price
+  ACCEPT        // Accept the current offer
+  REJECT        // Reject the current offer
+  MESSAGE       // General message
 }

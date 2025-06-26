@@ -26,6 +26,12 @@ export function Navigation() {
               >
                 Browse Shops
               </Link>
+              <Link
+                href="/requests"
+                className="text-gray-600 transition-colors hover:text-gray-900"
+              >
+                Request Board
+              </Link>
               {session?.user && (
                 <Link
                   href="/shops"

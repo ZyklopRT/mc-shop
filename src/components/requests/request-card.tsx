@@ -1,0 +1,179 @@
+"use client";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
+import { Separator } from "~/components/ui/separator";
+import {
+  Package,
+  MessageCircle,
+  Clock,
+  CheckCircle,
+  Coins,
+} from "lucide-react";
+import { UserAvatar } from "~/components/ui/user-avatar";
+import { ItemPreview } from "~/components/items/item-preview";
+import { CURRENCY_TYPES, currencyDisplayNames } from "~/lib/validations/shop";
+
+interface RequestCardProps {
+  id: string;
+  title: string;
+  description: string;
+  type: "ITEM" | "GENERAL";
+  status: "OPEN" | "IN_NEGOTIATION" | "ACCEPTED" | "COMPLETED" | "CANCELLED";
+  price?: number;
+  currency: "emeralds" | "emerald_blocks";
+  requester: string;
+  offerCount: number;
+  createdAt: string;
+  item?: {
+    id: string;
+    nameEn: string;
+    nameDe: string;
+    filename: string;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null;
+  itemQuantity?: number | null;
+}
+
+export function RequestCard({
+  id,
+  title,
+  description,
+  type,
+  status,
+  price,
+  currency,
+  requester,
+  offerCount,
+  createdAt,
+  item,
+  itemQuantity,
+}: RequestCardProps) {
+  const statusConfig = {
+    OPEN: { label: "Open", color: "bg-green-500", icon: Clock },
+    IN_NEGOTIATION: {
+      label: "In Negotiation",
+      color: "bg-yellow-500",
+      icon: MessageCircle,
+    },
+    ACCEPTED: { label: "Accepted", color: "bg-purple-500", icon: CheckCircle },
+    COMPLETED: { label: "Completed", color: "bg-blue-500", icon: CheckCircle },
+    CANCELLED: { label: "Cancelled", color: "bg-gray-500", icon: Clock },
+  };
+
+  const getCurrencyIcon = (currencyType: string) => {
+    switch (currencyType) {
+      case CURRENCY_TYPES.EMERALD_BLOCKS:
+        return <div className="h-4 w-4 rounded bg-green-600" />;
+      case CURRENCY_TYPES.EMERALDS:
+      default:
+        return <Coins className="h-4 w-4 text-green-500" />;
+    }
+  };
+
+  const StatusIcon = statusConfig[status].icon;
+
+  return (
+    <Card className="cursor-pointer transition-shadow hover:shadow-md">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <Badge variant={type === "ITEM" ? "default" : "secondary"}>
+            {type === "ITEM" ? (
+              <>
+                <Package className="mr-1 h-3 w-3" />
+                Item Request
+              </>
+            ) : (
+              <>
+                <MessageCircle className="mr-1 h-3 w-3" />
+                Service Request
+              </>
+            )}
+          </Badge>
+          <div className="flex items-center">
+            <div
+              className={`h-2 w-2 rounded-full ${statusConfig[status].color} mr-2`}
+            />
+            <span className="text-muted-foreground text-sm">
+              {statusConfig[status].label}
+            </span>
+          </div>
+        </div>
+        <CardTitle className="text-lg">{title}</CardTitle>
+        <CardDescription className="line-clamp-2">
+          {description}
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent className="pt-0">
+        <div className="space-y-4">
+          {/* Item Preview for Item Requests */}
+          {type === "ITEM" && item && (
+            <div className="bg-muted/50 rounded-lg border p-3">
+              <div className="mb-2">
+                <span className="text-sm font-medium">Requesting:</span>
+              </div>
+              <ItemPreview
+                item={item}
+                amount={itemQuantity ?? 1}
+                imageSize="sm"
+                showRotatingImages={false}
+                className="bg-background"
+              />
+            </div>
+          )}
+
+          {/* Price Information */}
+          {price && (
+            <div className="rounded-lg border bg-green-50 p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Offered Reward:</span>
+                <div className="flex items-center gap-2">
+                  {getCurrencyIcon(currency)}
+                  <span className="text-lg font-bold text-green-600">
+                    {price.toFixed(2)}
+                  </span>
+                  <span className="text-muted-foreground text-sm">
+                    {currencyDisplayNames[currency] ?? currency}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Separator />
+
+          {/* User and Metadata */}
+          <div className="flex items-center justify-between">
+            <UserAvatar username={requester} showUsername={true} size="sm" />
+            <span className="text-muted-foreground text-sm">{createdAt}</span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground text-sm">
+                {offerCount} {offerCount === 1 ? "offer" : "offers"}
+              </span>
+              {offerCount > 0 && (
+                <Badge variant="secondary" className="text-xs">
+                  Active
+                </Badge>
+              )}
+            </div>
+            <Button variant="outline" size="sm">
+              View Details
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

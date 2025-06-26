@@ -23,22 +23,17 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
+
 import { Separator } from "~/components/ui/separator";
 import { SimpleItemSelector } from "~/components/shops/simple-item-selector";
-import { CURRENCY_TYPES, currencyDisplayNames } from "~/lib/validations/shop";
+import { CurrencySelector } from "~/components/shops/currency-selector";
+import { CURRENCY_TYPES } from "~/lib/validations/shop";
 import { z } from "zod";
 import { addItemToShop } from "~/server/actions/shop-items";
 
 import { toast } from "sonner";
 import Link from "next/link";
-import { ArrowLeft, Plus, DollarSign, Coins, Package } from "lucide-react";
+import { ArrowLeft, Plus, DollarSign, Package } from "lucide-react";
 import type { MinecraftItem } from "@prisma/client";
 import { ItemPreviewLarge } from "~/components/items/item-preview";
 
@@ -101,16 +96,6 @@ export default function AddItemToShopPage() {
       toast.error("Failed to add item to shop");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const getCurrencyIcon = (currency: string) => {
-    switch (currency) {
-      case CURRENCY_TYPES.EMERALD_BLOCKS:
-        return <div className="h-4 w-4 rounded bg-green-600" />;
-      case CURRENCY_TYPES.EMERALDS:
-      default:
-        return <Coins className="h-4 w-4 text-green-500" />;
     }
   };
 
@@ -221,24 +206,11 @@ export default function AddItemToShopPage() {
                     <FormItem>
                       <FormLabel>Currency</FormLabel>
                       <FormControl>
-                        <Select
+                        <CurrencySelector
+                          value={field.value}
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select currency" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.values(CURRENCY_TYPES).map((currency) => (
-                              <SelectItem key={currency} value={currency}>
-                                <div className="flex items-center gap-2">
-                                  {getCurrencyIcon(currency)}
-                                  <span>{currencyDisplayNames[currency]}</span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                          placeholder="Select currency"
+                        />
                       </FormControl>
                       <FormDescription>
                         Choose the currency for pricing
