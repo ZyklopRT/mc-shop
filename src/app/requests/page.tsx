@@ -51,6 +51,9 @@ export default async function RequestsPage() {
 
 async function RequestsList() {
   try {
+    // Get current user session
+    const session = await auth();
+
     // Fetch requests from database
     const result = await getRequests({
       limit: 20,
@@ -109,6 +112,7 @@ async function RequestsList() {
             createdAt={new Date(request.createdAt).toLocaleDateString()}
             item={request.item}
             itemQuantity={request.itemQuantity}
+            isOwner={session?.user?.id === request.requesterId}
           />
         ))}
       </div>

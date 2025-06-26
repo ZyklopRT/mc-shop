@@ -131,19 +131,17 @@ export default function NewRequestPage() {
 
   return (
     <div className="container mx-auto max-w-2xl py-6">
-      <div className="mb-8 flex items-center gap-4">
-        <Button variant="ghost" size="sm" asChild>
+      <div className="mb-8">
+        <Button variant="outline" asChild className="mb-4">
           <Link href="/requests">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Requests
           </Link>
         </Button>
-        <div>
-          <h1 className="text-3xl font-bold">Create New Request</h1>
-          <p className="text-muted-foreground mt-1">
-            Request items or services from other players
-          </p>
-        </div>
+        <h1 className="text-3xl font-bold">Create New Request</h1>
+        <p className="text-gray-600">
+          Request items or services from other players
+        </p>
       </div>
 
       <Card>

@@ -20,6 +20,7 @@ import {
   User,
   Coins,
   Plus,
+  Pencil,
 } from "lucide-react";
 import Link from "next/link";
 import { auth } from "~/server/auth";
@@ -162,6 +163,13 @@ async function RequestDetailsContent({ requestId }: { requestId: string }) {
                   {request.description}
                 </CardDescription>
               </div>
+              {isOwner && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/requests/${request.id}/edit`}>
+                    <Pencil className="h-4 w-4" />
+                  </Link>
+                </Button>
+              )}
             </div>
           </CardHeader>
 

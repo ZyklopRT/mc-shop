@@ -16,6 +16,7 @@ import {
   Clock,
   CheckCircle,
   Coins,
+  Pencil,
 } from "lucide-react";
 import Link from "next/link";
 import { UserAvatar } from "~/components/ui/user-avatar";
@@ -42,6 +43,7 @@ interface RequestCardProps {
     updatedAt: Date;
   } | null;
   itemQuantity?: number | null;
+  isOwner: boolean;
 }
 
 export function RequestCard({
@@ -57,6 +59,7 @@ export function RequestCard({
   createdAt,
   item,
   itemQuantity,
+  isOwner,
 }: RequestCardProps) {
   const statusConfig = {
     OPEN: { label: "Open", color: "bg-green-500", icon: Clock },
@@ -99,13 +102,22 @@ export function RequestCard({
               </>
             )}
           </Badge>
-          <div className="flex items-center">
-            <div
-              className={`h-2 w-2 rounded-full ${statusConfig[status].color} mr-2`}
-            />
-            <span className="text-muted-foreground text-sm">
-              {statusConfig[status].label}
-            </span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center">
+              <div
+                className={`h-2 w-2 rounded-full ${statusConfig[status].color} mr-2`}
+              />
+              <span className="text-muted-foreground text-sm">
+                {statusConfig[status].label}
+              </span>
+            </div>
+            {isOwner && (
+              <Button variant="ghost" size="sm" asChild>
+                <Link href={`/requests/${id}/edit`}>
+                  <Pencil className="h-3 w-3" />
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
         <CardTitle className="text-lg">{title}</CardTitle>
