@@ -2,11 +2,7 @@ import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import { unifiedSearch } from "~/server/actions/search-actions";
 import { SEARCH_CONFIG } from "~/lib/constants/search-config";
-import type {
-  UnifiedSearchResult,
-  SearchCriteria,
-  SearchCallbacks,
-} from "~/lib/types/search";
+import type { UnifiedSearchResult } from "~/lib/types/search";
 import type { SearchType } from "~/lib/constants/search-config";
 
 interface UseGlobalSearchProps {

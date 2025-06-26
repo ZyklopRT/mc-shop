@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
+
 import { Coins, Store, ChevronRight } from "lucide-react";
 import { getItemImageUrl } from "~/lib/utils/item-images";
 import { currencyDisplayNames, CURRENCY_TYPES } from "~/lib/validations/shop";
@@ -123,7 +123,7 @@ export function SearchItemResult({ item, onClick }: SearchItemResultProps) {
             {/* Shop Prices or No Shops Message */}
             {item.shops.length > 0 ? (
               <div className="mt-1 space-y-1">
-                {item.shops.slice(0, 2).map((shop, index) => (
+                {item.shops.slice(0, 2).map((shop, _index) => (
                   <div
                     key={shop.id}
                     className="flex items-center justify-between text-xs"

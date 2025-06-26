@@ -16,8 +16,9 @@ import type {
   UnifiedSearchResult,
   PlayerSearchResult,
   ItemSearchResult,
-  ShopWithItemPrice,
 } from "~/lib/types/search";
+import type { User, MinecraftItem, ShopItem, Shop } from "@prisma/client";
+import type { ShopWithDetails } from "~/lib/types/shop";
 
 /**
  * Search for players by Minecraft username
@@ -58,13 +59,15 @@ export async function searchPlayers(
       take: limit,
     });
 
-    const results: PlayerSearchResult[] = players.map((player) => ({
-      id: player.id,
-      mcUsername: player.mcUsername,
-      mcUUID: player.mcUUID,
-      shopCount: player._count.shops,
-      hasActiveShops: player.shops.length > 0,
-    }));
+    const results: PlayerSearchResult[] = (players as UserWithShopsCount[]).map(
+      (player) => ({
+        id: player.id,
+        mcUsername: player.mcUsername,
+        mcUUID: player.mcUUID,
+        shopCount: player._count.shops,
+        hasActiveShops: player.shops.length > 0,
+      }),
+    );
 
     return { success: true, data: results };
   } catch (error) {
@@ -148,7 +151,9 @@ export async function searchItems(
       take: limit,
     });
 
-    const results: ItemSearchResult[] = items.map((item) => ({
+    const results: ItemSearchResult[] = (
+      items as MinecraftItemWithShopItems[]
+    ).map((item) => ({
       ...item,
       shopCount: item._count.shopItems,
       shops: includeShops
@@ -218,7 +223,10 @@ export async function unifiedSearch(
       }
     }
 
-    const promises: Promise<any>[] = [];
+    const promises: [
+      Promise<UserWithShopsCount[]>,
+      Promise<MinecraftItemWithShopItems[]>,
+    ] = [Promise.resolve([]), Promise.resolve([])];
     let searchPlayers = false;
     let searchItems = false;
 
@@ -233,91 +241,81 @@ export async function unifiedSearch(
 
     // Execute searches in parallel
     if (searchPlayers) {
-      promises.push(
-        searchPlayers
-          ? db.user.findMany({
-              where: {
-                mcUsername: {
-                  contains: query,
-                  mode: "insensitive",
-                },
+      promises[0] = db.user.findMany({
+        where: {
+          mcUsername: {
+            contains: query,
+            mode: "insensitive",
+          },
+        },
+        select: {
+          id: true,
+          mcUsername: true,
+          mcUUID: true,
+          _count: {
+            select: {
+              shops: {
+                where: { isActive: true },
               },
-              select: {
-                id: true,
-                mcUsername: true,
-                mcUUID: true,
-                _count: {
-                  select: {
-                    shops: {
-                      where: { isActive: true },
-                    },
-                  },
-                },
-                shops: {
-                  where: { isActive: true },
-                  select: { id: true },
-                  take: 1,
-                },
-              },
-              orderBy: { mcUsername: "asc" },
-              take: Math.min(limit, 5), // Limit player results
-            })
-          : Promise.resolve([]),
-      );
-    } else {
-      promises.push(Promise.resolve([]));
+            },
+          },
+          shops: {
+            where: { isActive: true },
+            select: { id: true },
+            take: 1,
+          },
+        },
+        orderBy: { mcUsername: "asc" },
+        take: Math.min(limit, 5), // Limit player results
+      }) as Promise<UserWithShopsCount[]>;
     }
 
     if (searchItems) {
       const nameField = language === "en" ? "nameEn" : "nameDe";
-      promises.push(
-        db.minecraftItem.findMany({
-          where: {
-            OR: [
-              { [nameField]: { contains: query, mode: "insensitive" } },
-              { id: { contains: query, mode: "insensitive" } },
-            ],
-          },
-          include: {
-            _count: {
-              select: {
-                shopItems: {
-                  where: {
-                    isAvailable: true,
-                    shop: { isActive: true },
-                  },
+      promises[1] = db.minecraftItem.findMany({
+        where: {
+          OR: [
+            { [nameField]: { contains: query, mode: "insensitive" } },
+            { id: { contains: query, mode: "insensitive" } },
+          ],
+        },
+        include: {
+          _count: {
+            select: {
+              shopItems: {
+                where: {
+                  isAvailable: true,
+                  shop: { isActive: true },
                 },
               },
             },
-            shopItems: {
-              where: {
-                isAvailable: true,
-                shop: { isActive: true },
-              },
-              include: {
-                shop: {
-                  include: {
-                    owner: { select: { mcUsername: true, id: true } },
-                    _count: { select: { shopItems: true } },
-                  },
+          },
+          shopItems: {
+            where: {
+              isAvailable: true,
+              shop: { isActive: true },
+            },
+            include: {
+              shop: {
+                include: {
+                  owner: { select: { mcUsername: true, id: true } },
+                  _count: { select: { shopItems: true } },
                 },
               },
-              orderBy: { price: "asc" },
-              take: 2, // Limit shops per item
             },
+            orderBy: { price: "asc" },
+            take: 2, // Limit shops per item
           },
-          orderBy: [{ [nameField]: "asc" }, { id: "asc" }],
-          take: Math.min(limit, 8), // Limit item results
-        }),
-      );
-    } else {
-      promises.push(Promise.resolve([]));
+        },
+        orderBy: [{ [nameField]: "asc" }, { id: "asc" }],
+        take: Math.min(limit, 8), // Limit item results
+      }) as Promise<MinecraftItemWithShopItems[]>;
     }
 
     const [playersData, itemsData] = await Promise.all(promises);
 
     // Format results
-    const players: PlayerSearchResult[] = playersData.map((player: any) => ({
+    const players: PlayerSearchResult[] = playersData.map((player) => ({
       id: player.id,
       mcUsername: player.mcUsername,
       mcUUID: player.mcUUID,
@@ -325,11 +323,11 @@ export async function unifiedSearch(
       hasActiveShops: player.shops.length > 0,
     }));
 
-    const items: ItemSearchResult[] = itemsData.map((item: any) => ({
+    const items: ItemSearchResult[] = itemsData.map((item) => ({
       ...item,
       shopCount: item._count.shopItems,
       shops:
-        item.shopItems?.map((shopItem: any) => ({
+        item.shopItems?.map((shopItem) => ({
           ...shopItem.shop,
           shopItem: {
             price: shopItem.price,
@@ -384,9 +382,30 @@ export async function unifiedSearch(
 /**
  * Get shops by player username (for redirecting from player search)
  */
+// Database query result interfaces
+interface UserWithShopsCount
+  extends Pick<User, "id" | "mcUsername" | "mcUUID"> {
+  _count: {
+    shops: number;
+  };
+  shops: Pick<Shop, "id">[];
+}
+
+interface MinecraftItemWithShopItems extends MinecraftItem {
+  _count: {
+    shopItems: number;
+  };
+  shopItems: (ShopItem & {
+    shop: Shop & {
+      owner: Pick<User, "mcUsername" | "id">;
+      _count: { shopItems: number };
+    };
+  })[];
+}
+
 export async function getShopsByPlayerName(
   mcUsername: string,
-): Promise<SearchActionResult<{ playerId: string; shops: any[] }>> {
+): Promise<SearchActionResult<{ playerId: string; shops: ShopWithDetails[] }>> {
   try {
     const user = await db.user.findUnique({
       where: { mcUsername },

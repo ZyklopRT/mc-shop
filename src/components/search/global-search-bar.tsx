@@ -15,7 +15,12 @@ import {
   handleGeneralNavigation,
 } from "~/lib/utils/search-navigation";
 import { SEARCH_TYPE_CONFIG } from "~/lib/constants/search-config";
-import type { SearchCallbacks, SearchCriteria } from "~/lib/types/search";
+import type {
+  SearchCallbacks,
+  SearchCriteria,
+  PlayerSearchResult,
+  ItemSearchResult,
+} from "~/lib/types/search";
 import type { SearchType } from "~/lib/constants/search-config";
 
 type SearchMode = "dropdown" | "callback";
@@ -71,10 +76,9 @@ export function GlobalSearchBar({
     onClear: clearSearch,
   };
 
-  const handlePlayerClick = async (player: {
-    mcUsername: string;
-    id: string;
-  }) => {
+  const handlePlayerClick = (
+    player: PlayerSearchResult | { mcUsername: string; id: string },
+  ) => {
     if (mode === "callback" && searchCallbacks?.onPlayerSearch) {
       searchCallbacks.onPlayerSearch({
         type: "player",
@@ -85,16 +89,23 @@ export function GlobalSearchBar({
       closeDropdown();
       clearSearch();
     } else {
-      const playerResult = player as any;
+      const playerResult: PlayerSearchResult = {
+        id: player.id,
+        mcUsername: player.mcUsername,
+        mcUUID: "mcUUID" in player ? player.mcUUID : null,
+        shopCount: "shopCount" in player ? player.shopCount : 0,
+        hasActiveShops:
+          "hasActiveShops" in player ? player.hasActiveShops : false,
+      };
       void handlePlayerNavigation(playerResult, navigationHandlers);
     }
   };
 
-  const handleItemClick = (item: {
-    id: string;
-    shopCount?: number;
-    shops?: { id: string }[];
-  }) => {
+  const handleItemClick = (
+    item:
+      | ItemSearchResult
+      | { id: string; shopCount?: number; shops?: { id: string }[] },
+  ) => {
     if (mode === "callback" && searchCallbacks?.onItemSearch) {
       searchCallbacks.onItemSearch({
         type: "item",
@@ -105,7 +116,17 @@ export function GlobalSearchBar({
       closeDropdown();
       clearSearch();
     } else {
-      const itemResult = item as any;
+      const itemResult: ItemSearchResult = {
+        id: item.id,
+        nameEn: "nameEn" in item ? item.nameEn : item.id,
+        nameDe: "nameDe" in item ? item.nameDe : item.id,
+        filename: "filename" in item ? item.filename : "",
+        shopCount: item.shopCount ?? 0,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+        shops: ("shops" in item ? item.shops : []) as any,
+        createdAt: "createdAt" in item ? item.createdAt : new Date(),
+        updatedAt: "updatedAt" in item ? item.updatedAt : new Date(),
+      };
       handleItemNavigation(itemResult, navigationHandlers);
     }
   };
@@ -127,7 +148,9 @@ export function GlobalSearchBar({
     isOpen: mode === "dropdown" ? isOpen : false,
     results,
     query,
-    onPlayerSelect: handlePlayerClick,
+    onPlayerSelect: (player) => {
+      void handlePlayerClick(player);
+    },
     onItemSelect: handleItemClick,
     onGeneralSearch: handleGeneralSearch,
     onClose: closeDropdown,
@@ -143,6 +166,7 @@ export function GlobalSearchBar({
           value: query.trim(),
           originalQuery: query.trim(),
         };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call
         (callback as any)(criteria);
         onSearchExecuted?.();
       }

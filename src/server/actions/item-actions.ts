@@ -166,7 +166,7 @@ export async function getItemById(itemId: string) {
           include: {
             shop: {
               include: {
-                owner: { select: { mcUsername: true } },
+                owner: { select: { mcUsername: true, id: true } },
               },
             },
           },

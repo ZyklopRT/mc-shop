@@ -1,4 +1,4 @@
-import type { User, MinecraftItem } from "@prisma/client";
+import type { MinecraftItem } from "@prisma/client";
 import type { ShopWithDetails, ShopItemWithItem } from "./shop";
 
 // Search result types

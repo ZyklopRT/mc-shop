@@ -93,7 +93,7 @@ export async function updateShop(
       where: { id: shopId },
       data: updateData,
       include: {
-        owner: { select: { mcUsername: true } },
+        owner: { select: { mcUsername: true, id: true } },
         _count: { select: { shopItems: true } },
       },
     });
@@ -176,7 +176,7 @@ export async function getShops(
       db.shop.findMany({
         where,
         include: {
-          owner: { select: { mcUsername: true } },
+          owner: { select: { mcUsername: true, id: true } },
           _count: { select: { shopItems: true } },
         },
         orderBy,
@@ -287,13 +287,13 @@ export async function searchShops(
       ],
     };
 
-    const orderBy = buildShopOrderBy({ field: "updatedAt", direction: "desc" });
+    const orderBy = buildShopOrderBy();
 
     const [shops, total] = await Promise.all([
       db.shop.findMany({
         where,
         include: {
-          owner: { select: { mcUsername: true } },
+          owner: { select: { mcUsername: true, id: true } },
           _count: { select: { shopItems: true } },
         },
         orderBy,
@@ -406,7 +406,7 @@ export async function getShopsForBrowse(params?: {
       db.shop.findMany({
         where,
         include: {
-          owner: { select: { mcUsername: true } },
+          owner: { select: { mcUsername: true, id: true } },
           _count: { select: { shopItems: true } },
           shopItems: {
             include: { item: true },
@@ -506,7 +506,7 @@ export async function searchShopsForBrowse(
       db.shop.findMany({
         where,
         include: {
-          owner: { select: { mcUsername: true } },
+          owner: { select: { mcUsername: true, id: true } },
           _count: { select: { shopItems: true } },
           shopItems: {
             include: { item: true },
@@ -556,7 +556,7 @@ export async function getShopsByUser(
         isActive: true,
       },
       include: {
-        owner: { select: { mcUsername: true } },
+        owner: { select: { mcUsername: true, id: true } },
         _count: { select: { shopItems: true } },
       },
       orderBy: { updatedAt: "desc" },

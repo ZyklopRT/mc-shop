@@ -54,11 +54,12 @@ export default function BrowseShopsPage() {
 
       const result = await getShopsByPlayerName(playerName);
       if (result.success) {
-        // Convert the shop data to match our expected format
+        // The shops from getShopsByPlayerName already include owner and _count
+        // We just need to add empty shopItems array for consistency
         const shopsWithItems = result.data.shops.map((shop) => ({
           ...shop,
           shopItems: [] as ShopItemWithItem[], // We'll load items separately if needed
-        })) as (ShopWithDetails & { shopItems: ShopItemWithItem[] })[];
+        }));
         setShops(shopsWithItems);
       } else {
         setError(result.error);

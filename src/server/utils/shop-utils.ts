@@ -25,7 +25,7 @@ export async function validateShopOwnership(
   const shop = await db.shop.findFirst({
     where: { id: shopId, ownerId: targetUserId },
     include: {
-      owner: { select: { mcUsername: true } },
+      owner: { select: { mcUsername: true, id: true } },
       _count: { select: { shopItems: true } },
     },
   });
@@ -195,7 +195,7 @@ export async function validateShopItemOwnership(
     },
     include: {
       item: true,
-      shop: { select: { name: true } },
+      shop: { select: { name: true, ownerId: true } },
     },
   });
 
