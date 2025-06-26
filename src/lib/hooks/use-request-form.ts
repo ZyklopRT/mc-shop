@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { MinecraftItem } from "@prisma/client";
 import { CURRENCY_TYPES } from "~/lib/validations/shop";
-import { createRequest, updateRequest } from "~/server/actions/request-actions";
 import type {
   CreateRequestData,
   UpdateRequestData,
@@ -27,10 +26,24 @@ export interface UseRequestFormOptions {
   requestId?: string;
   initialData?: Partial<RequestFormData>;
   onSuccess?: (requestId: string) => void;
+  // Server action props
+  createRequestAction?: (
+    data: CreateRequestData,
+  ) => Promise<{ success: boolean; error?: string; data?: { id: string } }>;
+  updateRequestAction?: (
+    data: UpdateRequestData,
+  ) => Promise<{ success: boolean; error?: string; data?: { id: string } }>;
 }
 
 export function useRequestForm(options: UseRequestFormOptions) {
-  const { mode, requestId, initialData, onSuccess } = options;
+  const {
+    mode,
+    requestId,
+    initialData,
+    onSuccess,
+    createRequestAction,
+    updateRequestAction,
+  } = options;
   const router = useRouter();
 
   const [formData, setFormData] = useState<RequestFormData>({
@@ -100,6 +113,11 @@ export function useRequestForm(options: UseRequestFormOptions) {
       setIsSubmitting(true);
       try {
         if (mode === "create") {
+          if (!createRequestAction) {
+            toast.error("Create action not available");
+            return;
+          }
+
           const requestData: CreateRequestData = {
             title: formData.title,
             description: formData.description,
@@ -110,14 +128,14 @@ export function useRequestForm(options: UseRequestFormOptions) {
             currency: formData.currency,
           };
 
-          const result = await createRequest(requestData);
+          const result = await createRequestAction(requestData);
 
           if (result.success) {
             toast.success("Request created successfully!", {
               description: "Your request has been posted to the request board.",
             });
             if (onSuccess) {
-              onSuccess(result.data.id);
+              onSuccess(result.data?.id ?? "");
             } else {
               router.push("/requests");
             }
@@ -127,6 +145,11 @@ export function useRequestForm(options: UseRequestFormOptions) {
             });
           }
         } else if (mode === "edit" && requestId) {
+          if (!updateRequestAction) {
+            toast.error("Update action not available");
+            return;
+          }
+
           const updateData: UpdateRequestData = {
             requestId,
             title: formData.title,
@@ -134,7 +157,7 @@ export function useRequestForm(options: UseRequestFormOptions) {
             suggestedPrice: formData.suggestedPrice,
           };
 
-          const result = await updateRequest(updateData);
+          const result = await updateRequestAction(updateData);
 
           if (result.success) {
             toast.success("Request updated successfully!");
@@ -160,7 +183,16 @@ export function useRequestForm(options: UseRequestFormOptions) {
         setIsSubmitting(false);
       }
     },
-    [formData, mode, requestId, onSuccess, router, validateForm],
+    [
+      formData,
+      mode,
+      requestId,
+      onSuccess,
+      router,
+      validateForm,
+      createRequestAction,
+      updateRequestAction,
+    ],
   );
 
   const resetForm = useCallback(() => {

@@ -6,9 +6,10 @@ export { deleteRequest } from "./delete-request";
 // Request retrieval actions
 export { getRequests, getRequestDetails, searchRequests } from "./get-requests";
 
-// TODO: Add offer management actions
-// export { createOffer } from "./create-offer";
-// export { updateOffer } from "./update-offer";
+// Offer management actions
+export { createOffer } from "./create-offer";
+export { updateOffer } from "./update-offer";
+export { getOffers } from "./get-offers";
 
 // TODO: Add negotiation actions
 // export { createNegotiationMessage } from "./create-negotiation-message";

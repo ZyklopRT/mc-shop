@@ -4,7 +4,12 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { auth } from "~/server/auth";
-import { getRequestDetails } from "~/server/actions/requests";
+import {
+  getRequestDetails,
+  createOffer,
+  getOffers,
+  updateOffer,
+} from "~/server/actions/requests";
 import { RequestDetails } from "~/components/requests";
 import { notFound } from "next/navigation";
 
@@ -53,7 +58,15 @@ async function RequestDetailsContent({ requestId }: { requestId: string }) {
     const request = result.data.request;
     const isOwner = session?.user?.id === request.requesterId;
 
-    return <RequestDetails request={request} isOwner={isOwner} />;
+    return (
+      <RequestDetails
+        request={request}
+        isOwner={isOwner}
+        createOfferAction={createOffer}
+        getOffersAction={getOffers}
+        updateOfferAction={updateOffer}
+      />
+    );
   } catch (error) {
     console.error("Error loading request:", error);
     return (

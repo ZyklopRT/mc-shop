@@ -25,7 +25,6 @@ import {
   Package,
   MessageCircle,
   Coins,
-  Plus,
   Pencil,
   Trash2,
   Loader2,
@@ -34,13 +33,40 @@ import Link from "next/link";
 import { UserAvatar } from "~/components/ui/user-avatar";
 import { ItemPreview } from "~/components/items/item-preview";
 import { CURRENCY_TYPES, currencyDisplayNames } from "~/lib/validations/shop";
-import type { RequestWithFullDetails } from "~/lib/types/request";
+import { OfferForm } from "./offer-form";
+import { OfferList } from "./offer-list";
+import type {
+  RequestWithFullDetails,
+  RequestOfferWithDetails,
+} from "~/lib/types/request";
 
 interface RequestDetailsProps {
   request: RequestWithFullDetails;
   isOwner: boolean;
   onDelete?: () => Promise<void>;
   isDeleting?: boolean;
+  // Server action props
+  createOfferAction?: (
+    formData: FormData,
+  ) => Promise<{
+    success: boolean;
+    error?: string;
+    data?: { offerId: string };
+  }>;
+  getOffersAction?: (data: {
+    requestId: string;
+  }) => Promise<{
+    success: boolean;
+    error?: string;
+    data?: { offers: RequestOfferWithDetails[] };
+  }>;
+  updateOfferAction?: (
+    formData: FormData,
+  ) => Promise<{
+    success: boolean;
+    error?: string;
+    data?: { offerId: string; status: string };
+  }>;
 }
 
 export function RequestDetails({
@@ -48,6 +74,9 @@ export function RequestDetails({
   isOwner,
   onDelete,
   isDeleting = false,
+  createOfferAction,
+  getOffersAction,
+  updateOfferAction,
 }: RequestDetailsProps) {
   const statusConfig = {
     OPEN: {
@@ -241,73 +270,26 @@ export function RequestDetails({
       </Card>
 
       {/* Offers Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Offers ({request.offers?.length ?? 0})</CardTitle>
-              <CardDescription>
-                {isOwner
-                  ? "Manage offers from other players"
-                  : "View existing offers and make your own"}
-              </CardDescription>
-            </div>
-            {!isOwner && request.status === "OPEN" && (
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Make Offer
-              </Button>
-            )}
-          </div>
-        </CardHeader>
+      {getOffersAction && updateOfferAction && (
+        <OfferList
+          requestId={request.id}
+          currency={request.currency}
+          isRequestOwner={isOwner}
+          requestStatus={request.status}
+          getOffersAction={getOffersAction}
+          updateOfferAction={updateOfferAction}
+        />
+      )}
 
-        <CardContent>
-          {request.offers && request.offers.length > 0 ? (
-            <div className="space-y-4">
-              {request.offers.map((offer) => (
-                <div key={offer.id} className="rounded-lg border p-4">
-                  <div className="flex items-center justify-between">
-                    <UserAvatar
-                      username={offer.offerer.mcUsername}
-                      showUsername={true}
-                      size="sm"
-                    />
-                    <Badge
-                      variant={
-                        offer.status === "ACCEPTED" ? "default" : "secondary"
-                      }
-                    >
-                      {offer.status}
-                    </Badge>
-                  </div>
-                  {offer.offeredPrice && (
-                    <div className="mt-2 flex items-center gap-2">
-                      {getCurrencyIcon(request.currency)}
-                      <span className="font-semibold">
-                        {offer.offeredPrice.toFixed(2)}
-                      </span>
-                      <span className="text-muted-foreground text-sm">
-                        {currencyDisplayNames[
-                          request.currency as keyof typeof currencyDisplayNames
-                        ] ?? request.currency}
-                      </span>
-                    </div>
-                  )}
-                  {offer.message && (
-                    <p className="text-muted-foreground mt-2 text-sm">
-                      {offer.message}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground py-8 text-center">
-              No offers yet. Be the first to make an offer!
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      {/* Make Offer Section - Only show for non-owners when request is open */}
+      {!isOwner && request.status === "OPEN" && createOfferAction && (
+        <OfferForm
+          requestId={request.id}
+          suggestedPrice={request.suggestedPrice ?? undefined}
+          currency={request.currency}
+          createOfferAction={createOfferAction}
+        />
+      )}
     </div>
   );
 }
