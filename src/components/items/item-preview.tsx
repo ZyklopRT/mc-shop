@@ -127,7 +127,7 @@ export function ItemPreview({
               src={getItemImageUrl(item.filename, currentImagePack)}
               alt={item.nameEn}
               fill
-              className="pixel-art rounded-lg object-contain transition-opacity duration-500"
+              className="rounded-lg object-contain transition-opacity duration-500"
               sizes={getImageSizes()}
               onError={() => {
                 if (currentImagePack === "sphax") {

@@ -6,6 +6,7 @@ import {
   sendTellrawCommand,
   sendMessageToPlayer,
   checkPlayerOnline,
+  getPlayerUUID,
 } from "./rcon-actions";
 import {
   stepOneSchema,
@@ -204,9 +205,26 @@ export async function completeRegistration(
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Try to get player UUID via RCON
+    let mcUUID: string | undefined;
+    try {
+      const uuidResult = await getPlayerUUID({ playerName: mcUsername });
+      if (uuidResult.success && uuidResult.uuid) {
+        mcUUID = uuidResult.uuid;
+        console.log(`Retrieved UUID for ${mcUsername}: ${mcUUID}`);
+      } else {
+        console.warn(
+          `Failed to get UUID for ${mcUsername}: ${uuidResult.error}`,
+        );
+      }
+    } catch (error) {
+      console.warn(`Error getting UUID for ${mcUsername}:`, error);
+    }
+
     await db.user.create({
       data: {
         mcUsername,
+        mcUUID,
         password: hashedPassword,
         name: mcUsername,
       },
@@ -251,5 +269,102 @@ export async function cleanupExpiredOTPs(): Promise<void> {
     });
   } catch (error) {
     console.error("Failed to cleanup expired OTPs:", error);
+  }
+}
+
+/**
+ * Backfill UUIDs for existing users who don't have them
+ * This can be called as a migration or for individual users
+ */
+export async function backfillUserUUID(mcUsername: string): Promise<{
+  success: boolean;
+  error?: string;
+  uuid?: string;
+}> {
+  try {
+    // Find user without UUID
+    const user = await db.user.findUnique({
+      where: { mcUsername },
+      select: { id: true, mcUsername: true, mcUUID: true },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        error: "User not found",
+      };
+    }
+
+    if (user.mcUUID) {
+      return {
+        success: true,
+        uuid: user.mcUUID,
+      };
+    }
+
+    // Try to get UUID via RCON first (if player is online)
+    try {
+      const playerOnlineCheck = await checkPlayerOnline({
+        playerName: mcUsername,
+      });
+
+      if (playerOnlineCheck.success && playerOnlineCheck.isOnline) {
+        const uuidResult = await getPlayerUUID({ playerName: mcUsername });
+        if (uuidResult.success && uuidResult.uuid) {
+          await db.user.update({
+            where: { mcUsername },
+            data: { mcUUID: uuidResult.uuid },
+          });
+
+          console.log(
+            `Backfilled UUID for ${mcUsername} via RCON: ${uuidResult.uuid}`,
+          );
+          return {
+            success: true,
+            uuid: uuidResult.uuid,
+          };
+        }
+      }
+    } catch (rconError) {
+      console.warn(`RCON UUID fetch failed for ${mcUsername}:`, rconError);
+    }
+
+    // Fallback to Mojang API via our internal API route
+    try {
+      const response = await fetch(
+        `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/api/minecraft/uuid?username=${encodeURIComponent(mcUsername)}`,
+      );
+
+      if (response.ok) {
+        const data = (await response.json()) as { uuid: string };
+        if (data.uuid) {
+          await db.user.update({
+            where: { mcUsername },
+            data: { mcUUID: data.uuid },
+          });
+
+          console.log(
+            `Backfilled UUID for ${mcUsername} via Mojang API: ${data.uuid}`,
+          );
+          return {
+            success: true,
+            uuid: data.uuid,
+          };
+        }
+      }
+    } catch (apiError) {
+      console.warn(`API UUID fetch failed for ${mcUsername}:`, apiError);
+    }
+
+    return {
+      success: false,
+      error: "Could not retrieve UUID from any source",
+    };
+  } catch (error) {
+    console.error(`Error backfilling UUID for ${mcUsername}:`, error);
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+    };
   }
 }

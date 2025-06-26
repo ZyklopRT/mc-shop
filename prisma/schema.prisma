@@ -119,6 +119,7 @@ model Session {
 model User {
     id               String    @id @default(cuid())
     mcUsername       String    @unique // Minecraft username - primary identifier
+    mcUUID           String?   @unique // Minecraft player UUID - obtained via RCON during registration
     password         String    // Hashed password
     createdAt        DateTime  @default(now())
     updatedAt        DateTime  @updatedAt

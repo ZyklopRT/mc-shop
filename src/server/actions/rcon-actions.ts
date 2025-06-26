@@ -20,6 +20,11 @@ const checkPlayerOnlineSchema = z.object({
   playerName: z.string().min(1, "Player name is required"),
 });
 
+// Schema for getting player UUID
+const getPlayerUUIDSchema = z.object({
+  playerName: z.string().min(1, "Player name is required"),
+});
+
 /**
  * Check if a player is currently online on the server
  */
@@ -130,6 +135,71 @@ export async function sendTellrawCommand(
     const rconService = MinecraftRconService.fromEnvironment();
 
     return await rconService.executeCommand(validatedData.command);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Get player UUID via RCON
+ * Uses the 'data get entity' command to retrieve player UUID
+ */
+export async function getPlayerUUID(
+  data: z.infer<typeof getPlayerUUIDSchema>,
+): Promise<RconCommandResult & { uuid?: string }> {
+  try {
+    const validatedData = getPlayerUUIDSchema.parse(data);
+    const rconService = MinecraftRconService.fromEnvironment();
+
+    // Use 'data get entity' to get player UUID
+    const command = `data get entity ${validatedData.playerName} UUID`;
+    const result = await rconService.executeCommand(command);
+
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error ?? "Failed to get player UUID",
+      };
+    }
+
+    // Parse the UUID from the response
+    // Expected format: "[I; 123456789, 987654321, 456789123, 789123456]"
+    const response = result.response ?? "";
+
+    // Extract the UUID array from the response
+    const uuidRegex = /\[I;\s*(-?\d+),\s*(-?\d+),\s*(-?\d+),\s*(-?\d+)\]/;
+    const uuidMatch = uuidRegex.exec(response);
+
+    if (!uuidMatch || uuidMatch.length < 5) {
+      return {
+        success: false,
+        error: "Could not parse UUID from server response",
+        response: result.response,
+      };
+    }
+
+    // Convert the 4 integers to a proper UUID format
+    const a = Number(uuidMatch[1]);
+    const b = Number(uuidMatch[2]);
+    const c = Number(uuidMatch[3]);
+    const d = Number(uuidMatch[4]);
+
+    // Convert signed 32-bit integers to unsigned and then to hex
+    const toHex = (num: number) => {
+      return (num >>> 0).toString(16).padStart(8, "0");
+    };
+
+    const uuid = `${toHex(a)}-${toHex(b).slice(0, 4)}-${toHex(b).slice(4)}-${toHex(c).slice(0, 4)}-${toHex(c).slice(4)}${toHex(d)}`;
+
+    return {
+      success: true,
+      response: result.response,
+      uuid,
+      executionTime: result.executionTime,
+    };
   } catch (error) {
     return {
       success: false,

@@ -1,20 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
+import { Badge } from "~/components/ui/badge";
 import {
   searchShopsForBrowse,
   getShopsForBrowse,
 } from "~/server/actions/shops";
+import { getShopsByPlayerName } from "~/server/actions/search-actions";
 import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
 import Link from "next/link";
-import { Search, Store } from "lucide-react";
+import { Search, Store, User, X } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
 import { ShopCard } from "~/components/shops/shop-card";
 
 export default function BrowseShopsPage() {
+  const searchParams = useSearchParams();
   const [shops, setShops] = useState<
     (ShopWithDetails & { shopItems: ShopItemWithItem[] })[]
   >([]);
@@ -23,10 +27,79 @@ export default function BrowseShopsPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const [playerFilter, setPlayerFilter] = useState<string | null>(null);
 
+  // Initialize from URL parameters
   useEffect(() => {
-    void loadAllShops();
-  }, []);
+    const initialSearch = searchParams.get("search");
+    const initialPlayer = searchParams.get("player");
+
+    if (initialSearch) {
+      setSearchQuery(initialSearch);
+      setHasSearched(true);
+    }
+
+    if (initialPlayer) {
+      setPlayerFilter(initialPlayer);
+      void loadPlayerShops(initialPlayer);
+    } else if (initialSearch) {
+      void performSearch(initialSearch);
+    } else {
+      void loadAllShops();
+    }
+  }, [searchParams]);
+
+  const loadPlayerShops = async (playerName: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      setHasSearched(true);
+
+      const result = await getShopsByPlayerName(playerName);
+      if (result.success) {
+        // Convert the shop data to match our expected format
+        const shopsWithItems = result.data.shops.map((shop) => ({
+          ...shop,
+          shopItems: [] as ShopItemWithItem[], // We'll load items separately if needed
+        }));
+        setShops(shopsWithItems);
+      } else {
+        setError(result.error);
+        toast.error("Loading Failed", result.error);
+      }
+    } catch {
+      setError("Failed to load player shops");
+      toast.error("Loading Failed", "Failed to load player shops");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const performSearch = async (query: string) => {
+    try {
+      setIsSearching(true);
+      setError(null);
+      setHasSearched(true);
+
+      const result = await searchShopsForBrowse({
+        query: query.trim(),
+        limit: 50,
+        offset: 0,
+      });
+
+      if (result.success) {
+        setShops(result.data.shops);
+      } else {
+        setError(result.error);
+        toast.error("Search Failed", result.error);
+      }
+    } catch {
+      setError("Search failed");
+      toast.error("Search Failed", "Failed to search shops");
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   const loadAllShops = async () => {
     try {
@@ -57,35 +130,24 @@ export default function BrowseShopsPage() {
       return;
     }
 
-    try {
-      setIsSearching(true);
-      setError(null);
-      setHasSearched(true);
-
-      const result = await searchShopsForBrowse({
-        query: searchQuery.trim(),
-        limit: 50,
-        offset: 0,
-      });
-
-      if (result.success) {
-        setShops(result.data.shops);
-      } else {
-        setError(result.error);
-        toast.error("Search Failed", result.error);
-      }
-    } catch {
-      setError("Search failed");
-      toast.error("Search Failed", "Failed to search shops");
-    } finally {
-      setIsSearching(false);
-    }
+    setPlayerFilter(null); // Clear player filter when doing text search
+    void performSearch(searchQuery.trim());
   };
 
   const clearSearch = () => {
     setSearchQuery("");
     setHasSearched(false);
+    setPlayerFilter(null);
     void loadAllShops();
+  };
+
+  const clearPlayerFilter = () => {
+    setPlayerFilter(null);
+    if (searchQuery.trim()) {
+      void performSearch(searchQuery.trim());
+    } else {
+      void loadAllShops();
+    }
   };
 
   if (isLoading) {
@@ -134,6 +196,59 @@ export default function BrowseShopsPage() {
             )}
           </form>
         </Card>
+
+        {/* Active Filters */}
+        {(playerFilter || hasSearched) && (
+          <Card className="p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-muted-foreground text-sm">
+                Active filters:
+              </span>
+
+              {playerFilter && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  Player: {playerFilter}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-1 h-4 w-4 p-0"
+                    onClick={clearPlayerFilter}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </Badge>
+              )}
+
+              {hasSearched && searchQuery && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Search className="h-3 w-3" />
+                  Search: {searchQuery}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-1 h-4 w-4 p-0"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setHasSearched(false);
+                      if (playerFilter) {
+                        void loadPlayerShops(playerFilter);
+                      } else {
+                        void loadAllShops();
+                      }
+                    }}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </Badge>
+              )}
+
+              <Button variant="outline" size="sm" onClick={clearSearch}>
+                Clear all
+              </Button>
+            </div>
+          </Card>
+        )}
       </div>
 
       {error && (
