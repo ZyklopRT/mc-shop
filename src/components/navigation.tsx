@@ -18,12 +18,6 @@ export function Navigation() {
 
             <div className="hidden items-center space-x-6 md:flex">
               <Link
-                href="/items"
-                className="text-gray-600 transition-colors hover:text-gray-900"
-              >
-                Browse Items
-              </Link>
-              <Link
                 href="/shops/browse"
                 className="text-gray-600 transition-colors hover:text-gray-900"
               >
