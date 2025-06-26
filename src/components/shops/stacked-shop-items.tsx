@@ -29,6 +29,7 @@ export function StackedShopItems({
   const [currentImagePack, setCurrentImagePack] = useState<"default" | "sphax">(
     "default",
   );
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -37,6 +38,21 @@ export function StackedShopItems({
 
     return () => clearInterval(interval);
   }, []);
+
+  // Reset failed images when pack changes
+  useEffect(() => {
+    setFailedImages(new Set());
+  }, [currentImagePack]);
+
+  const handleImageError = (itemId: string) => {
+    if (currentImagePack === "sphax" && !failedImages.has(itemId)) {
+      // Try default pack first
+      setCurrentImagePack("default");
+    } else {
+      // Mark this specific item as failed
+      setFailedImages((prev) => new Set(prev).add(itemId));
+    }
+  };
 
   // Get first 5 available items
   const displayItems = shopItems.filter((item) => item.isAvailable).slice(0, 5);
@@ -79,14 +95,14 @@ export function StackedShopItems({
             className="border-background h-8 w-8 border transition-transform hover:scale-110"
           >
             <AvatarImage
-              src={getItemImageUrl(shopItem.item.filename, currentImagePack)}
+              src={
+                failedImages.has(shopItem.item.id)
+                  ? "/items/image-not-found-icon.png"
+                  : getItemImageUrl(shopItem.item.filename, currentImagePack)
+              }
               alt={shopItem.item.nameEn}
               className="object-contain p-1"
-              onError={() => {
-                if (currentImagePack === "sphax") {
-                  setCurrentImagePack("default");
-                }
-              }}
+              onError={() => handleImageError(shopItem.item.id)}
             />
             <AvatarFallback className="bg-gray-100 text-xs text-gray-400">
               {shopItem.item.nameEn.slice(0, 2).toUpperCase()}

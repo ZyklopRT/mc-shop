@@ -102,19 +102,19 @@ export async function searchItems(params: z.infer<typeof searchItemsSchema>) {
   try {
     const { query, language, limit } = searchItemsSchema.parse(params);
 
-    // PostgreSQL case-insensitive search
-    const nameField = language === "en" ? "nameEn" : "nameDe";
-
+    // Search both English and German names for better user experience
     const items = await db.minecraftItem.findMany({
       where: {
         OR: [
-          { [nameField]: { contains: query, mode: "insensitive" } },
+          { nameEn: { contains: query, mode: "insensitive" } },
+          { nameDe: { contains: query, mode: "insensitive" } },
           { id: { contains: query, mode: "insensitive" } },
         ],
       },
       orderBy: [
-        // Prioritize exact matches
-        { [nameField]: "asc" },
+        // Prioritize exact matches - preferred language first
+        { [language === "en" ? "nameEn" : "nameDe"]: "asc" },
+        { [language === "en" ? "nameDe" : "nameEn"]: "asc" },
         { id: "asc" },
       ],
       take: limit,

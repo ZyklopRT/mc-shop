@@ -92,13 +92,12 @@ export async function searchItems(
     const { query, language, limit, includeShops } =
       itemSearchSchema.parse(data);
 
-    // Search items by name or ID
-    const nameField = language === "en" ? "nameEn" : "nameDe";
-
+    // Search items by name or ID - search both English and German names
     const items = await db.minecraftItem.findMany({
       where: {
         OR: [
-          { [nameField]: { contains: query, mode: "insensitive" } },
+          { nameEn: { contains: query, mode: "insensitive" } },
+          { nameDe: { contains: query, mode: "insensitive" } },
           { id: { contains: query, mode: "insensitive" } },
         ],
       },
@@ -144,8 +143,9 @@ export async function searchItems(
             },
           },
       orderBy: [
-        // Prioritize exact matches
-        { [nameField]: "asc" },
+        // Prioritize exact matches - sort by preferred language first, then other language
+        { [language === "en" ? "nameEn" : "nameDe"]: "asc" },
+        { [language === "en" ? "nameDe" : "nameEn"]: "asc" },
         { id: "asc" },
       ],
       take: limit,
@@ -271,11 +271,11 @@ export async function unifiedSearch(
     }
 
     if (searchItems) {
-      const nameField = language === "en" ? "nameEn" : "nameDe";
       promises[1] = db.minecraftItem.findMany({
         where: {
           OR: [
-            { [nameField]: { contains: query, mode: "insensitive" } },
+            { nameEn: { contains: query, mode: "insensitive" } },
+            { nameDe: { contains: query, mode: "insensitive" } },
             { id: { contains: query, mode: "insensitive" } },
           ],
         },
@@ -307,7 +307,11 @@ export async function unifiedSearch(
             take: 2, // Limit shops per item
           },
         },
-        orderBy: [{ [nameField]: "asc" }, { id: "asc" }],
+        orderBy: [
+          { [language === "en" ? "nameEn" : "nameDe"]: "asc" },
+          { [language === "en" ? "nameDe" : "nameEn"]: "asc" },
+          { id: "asc" },
+        ],
         take: Math.min(limit, 8), // Limit item results
       }) as Promise<MinecraftItemWithShopItems[]>;
     }

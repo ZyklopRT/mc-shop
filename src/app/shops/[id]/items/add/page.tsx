@@ -64,7 +64,7 @@ export default function AddItemToShopPage() {
     resolver: zodResolver(addItemFormSchema),
     defaultValues: {
       price: 1,
-      amount: 1,
+      amount: 64,
       currency: CURRENCY_TYPES.EMERALDS,
     },
   });

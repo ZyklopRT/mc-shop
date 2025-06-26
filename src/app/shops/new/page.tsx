@@ -39,6 +39,9 @@ export default function NewShopPage() {
     resolver: zodResolver(createShopFormSchema),
     defaultValues: {
       isActive: true,
+      locationX: 0,
+      locationY: 0,
+      locationZ: 0,
     },
   });
 

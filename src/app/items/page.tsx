@@ -107,7 +107,7 @@ export default function ItemsPage() {
                   className="h-full w-full object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = "/items/default/minecraft__barrier.png";
+                    target.src = "/items/image-not-found-icon.png";
                   }}
                 />
               </div>

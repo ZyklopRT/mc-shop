@@ -92,6 +92,10 @@ export function SimpleItemSelector({
                 fill
                 className="object-contain"
                 unoptimized
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  target.src = "/items/image-not-found-icon.png";
+                }}
               />
             </div>
             <div className="min-w-0 flex-1">
@@ -151,6 +155,11 @@ export function SimpleItemSelector({
                             fill
                             className="object-contain"
                             unoptimized
+                            onError={(e) => {
+                              const target =
+                                e.currentTarget as HTMLImageElement;
+                              target.src = "/items/image-not-found-icon.png";
+                            }}
                           />
                         </div>
                         <div className="min-w-0 flex-1">

@@ -48,7 +48,7 @@ export const addShopItemSchema = z.object({
     .number()
     .int()
     .positive("Amount must be a positive integer")
-    .default(1),
+    .default(64),
   currency: z
     .enum([CURRENCY_TYPES.EMERALDS, CURRENCY_TYPES.EMERALD_BLOCKS], {
       errorMap: () => ({

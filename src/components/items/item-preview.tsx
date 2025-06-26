@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { Coins, Pencil } from "lucide-react";
+import { Coins, Pencil, ImageOff } from "lucide-react";
 import { getItemImageUrl } from "~/lib/utils/item-images";
 import { currencyDisplayNames, CURRENCY_TYPES } from "~/lib/validations/shop";
+import { useImageFallback } from "~/hooks/use-image-fallback";
 import type { MinecraftItem } from "@prisma/client";
 
 interface ItemPreviewProps {
@@ -33,19 +33,10 @@ export function ItemPreview({
   className,
   onEdit,
 }: ItemPreviewProps) {
-  const [currentImagePack, setCurrentImagePack] = useState<"default" | "sphax">(
-    "default",
-  );
-
-  useEffect(() => {
-    if (!showRotatingImages) return;
-
-    const interval = setInterval(() => {
-      setCurrentImagePack((prev) => (prev === "default" ? "sphax" : "default"));
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [showRotatingImages]);
+  const { currentImagePack, hasError, handleImageError, getImageSrc } =
+    useImageFallback({
+      enableRotation: showRotatingImages,
+    });
 
   const getCurrencyIcon = (currencyType?: string) => {
     if (!currencyType) return null;
@@ -124,17 +115,22 @@ export function ItemPreview({
         <div className={`flex items-center ${getContentSpacing()}`}>
           <div className={`relative ${getImageSize()} flex-shrink-0`}>
             <Image
-              src={getItemImageUrl(item.filename, currentImagePack)}
+              src={getImageSrc(
+                getItemImageUrl(item.filename, currentImagePack),
+              )}
               alt={item.nameEn}
               fill
               className="rounded-lg object-contain transition-opacity duration-500"
               sizes={getImageSizes()}
-              onError={() => {
-                if (currentImagePack === "sphax") {
-                  setCurrentImagePack("default");
-                }
-              }}
+              onError={handleImageError}
             />
+            {hasError && (
+              <div className="absolute top-0 right-0 z-10">
+                <Badge variant="secondary" className="text-xs">
+                  <ImageOff className="h-3 w-3" />
+                </Badge>
+              </div>
+            )}
             {amount && amount > 1 && (
               <div className="absolute -right-1 -bottom-1 z-10">
                 <Badge
