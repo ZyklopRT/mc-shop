@@ -17,6 +17,7 @@ import type {
   ShopActionResult,
   ShopWithDetails,
   ShopWithItems,
+  ShopItemWithItem,
   ShopListResponse,
   ShopDetailsResponse,
 } from "~/lib/types/shop";
@@ -456,8 +457,44 @@ export async function searchShopsForBrowse(
         { isActive: true },
         {
           OR: [
+            // Search by shop name
             { name: { contains: query, mode: "insensitive" as const } },
+            // Search by shop description
             { description: { contains: query, mode: "insensitive" as const } },
+            // Search by items sold in the shop
+            {
+              shopItems: {
+                some: {
+                  isAvailable: true,
+                  OR: [
+                    // Search by item English name
+                    {
+                      item: {
+                        nameEn: {
+                          contains: query,
+                          mode: "insensitive" as const,
+                        },
+                      },
+                    },
+                    // Search by item German name
+                    {
+                      item: {
+                        nameDe: {
+                          contains: query,
+                          mode: "insensitive" as const,
+                        },
+                      },
+                    },
+                    // Search by item ID
+                    {
+                      item: {
+                        id: { contains: query, mode: "insensitive" as const },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
           ],
         },
       ],

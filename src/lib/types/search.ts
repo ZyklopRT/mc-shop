@@ -50,3 +50,15 @@ export interface SearchSuggestion {
   subtitle?: string;
   data: PlayerSearchResult | ItemSearchResult;
 }
+
+export interface SearchCriteria {
+  type: "player" | "item" | "general";
+  value: string;
+  originalQuery: string;
+}
+
+export interface SearchCallbacks {
+  onPlayerSearch?: (criteria: SearchCriteria & { type: "player" }) => void;
+  onItemSearch?: (criteria: SearchCriteria & { type: "item" }) => void;
+  onGeneralSearch?: (criteria: SearchCriteria & { type: "general" }) => void;
+}

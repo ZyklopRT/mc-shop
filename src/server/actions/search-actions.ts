@@ -164,6 +164,19 @@ export async function searchItems(
         : [],
     }));
 
+    // Sort results to prioritize items with shops first
+    results.sort((a, b) => {
+      // First, sort by shop availability (items with shops first)
+      if (a.shopCount > 0 && b.shopCount === 0) return -1;
+      if (a.shopCount === 0 && b.shopCount > 0) return 1;
+
+      // Within each group, sort by shop count (descending)
+      if (a.shopCount !== b.shopCount) return b.shopCount - a.shopCount;
+
+      // Finally, sort alphabetically by name
+      return a.nameEn.localeCompare(b.nameEn);
+    });
+
     return { success: true, data: results };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -326,6 +339,19 @@ export async function unifiedSearch(
           },
         })) || [],
     }));
+
+    // Sort items to prioritize those with shops first
+    items.sort((a, b) => {
+      // First, sort by shop availability (items with shops first)
+      if (a.shopCount > 0 && b.shopCount === 0) return -1;
+      if (a.shopCount === 0 && b.shopCount > 0) return 1;
+
+      // Within each group, sort by shop count (descending)
+      if (a.shopCount !== b.shopCount) return b.shopCount - a.shopCount;
+
+      // Finally, sort alphabetically by name
+      return a.nameEn.localeCompare(b.nameEn);
+    });
 
     // Determine final search type based on results
     let finalSearchType: "player" | "item" | "mixed" = "mixed";

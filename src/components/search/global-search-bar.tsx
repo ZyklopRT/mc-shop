@@ -36,14 +36,28 @@ import type {
   UnifiedSearchResult,
   PlayerSearchResult,
   ItemSearchResult,
+  SearchCriteria,
+  SearchCallbacks,
 } from "~/lib/types/search";
 import { toast } from "~/lib/utils/toast";
 
+type SearchMode = "dropdown" | "callback";
+
 interface GlobalSearchBarProps {
   className?: string;
+  mode?: SearchMode;
+  placeholder?: string;
+  searchCallbacks?: SearchCallbacks;
+  onSearchExecuted?: () => void; // Called after search is executed in callback mode
 }
 
-export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
+export function GlobalSearchBar({
+  className = "",
+  mode = "dropdown",
+  placeholder,
+  searchCallbacks,
+  onSearchExecuted,
+}: GlobalSearchBarProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [searchType, setSearchType] = useState<"auto" | "player" | "item">(
@@ -70,9 +84,9 @@ export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
   };
 
   const searchTypePlaceholders = {
-    auto: "Search players or items...",
-    player: "Search for players...",
-    item: "Search for items...",
+    auto: placeholder ?? "Search players or items...",
+    player: placeholder ?? "Search for players...",
+    item: placeholder ?? "Search for items...",
   };
 
   // Debounce the search query (300ms delay, min 3 characters)
@@ -90,7 +104,7 @@ export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
 
       try {
         setIsLoading(true);
-        setIsOpen(true);
+        setIsOpen(true); // Always show dropdown for both modes
 
         const result = await unifiedSearch({
           query: debouncedQuery.trim(),
@@ -101,6 +115,8 @@ export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
 
         if (result.success) {
           setResults(result.data);
+
+          // Remove automatic callback execution - let user choose from dropdown
         } else {
           console.error("Search error:", result.error);
           setResults(null);
@@ -115,6 +131,38 @@ export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
 
     void performSearch();
   }, [debouncedQuery, searchType]);
+
+  // Handle form submission (for callback mode)
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (mode === "callback" && searchCallbacks && query.trim()) {
+      const trimmedQuery = query.trim();
+
+      // Determine search type and call appropriate callback
+      if (searchType === "player" && searchCallbacks.onPlayerSearch) {
+        searchCallbacks.onPlayerSearch({
+          type: "player",
+          value: trimmedQuery,
+          originalQuery: trimmedQuery,
+        });
+      } else if (searchType === "item" && searchCallbacks.onItemSearch) {
+        searchCallbacks.onItemSearch({
+          type: "item",
+          value: trimmedQuery,
+          originalQuery: trimmedQuery,
+        });
+      } else if (searchCallbacks.onGeneralSearch) {
+        searchCallbacks.onGeneralSearch({
+          type: "general",
+          value: trimmedQuery,
+          originalQuery: trimmedQuery,
+        });
+      }
+
+      onSearchExecuted?.();
+    }
+  };
 
   // Handle input change
   const handleInputChange = (value: string) => {
@@ -134,40 +182,98 @@ export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
   }) => {
     try {
       setIsLoading(true);
-      const result = await getShopsByPlayerName(player.mcUsername);
 
-      if (result.success && result.data.shops.length > 0) {
-        // Navigate to the player's first shop
-        router.push(`/shops/${result.data.shops[0]?.id ?? ""}`);
+      if (mode === "callback" && searchCallbacks?.onPlayerSearch) {
+        // In callback mode, use the callback instead of navigation
+        searchCallbacks.onPlayerSearch({
+          type: "player",
+          value: player.mcUsername,
+          originalQuery: query.trim(),
+        });
+        onSearchExecuted?.();
       } else {
-        // Navigate to browse page with player filter
-        router.push(`/shops/browse?player=${player.mcUsername}`);
+        // Original dropdown mode behavior
+        const result = await getShopsByPlayerName(player.mcUsername);
+
+        if (result.success && result.data.shops.length === 1) {
+          // Player has exactly 1 shop - navigate directly to it
+          const firstShop = result.data.shops[0] as { id: string } | undefined;
+          if (firstShop) {
+            router.push(`/shops/${firstShop.id}`);
+          } else {
+            // Unable to get the shop details, fall back to browse with filter
+            router.push(`/shops/browse?player=${player.mcUsername}`);
+          }
+        } else {
+          // Player has 0 shops or multiple shops - navigate to browse page with player filter
+          router.push(`/shops/browse?player=${player.mcUsername}`);
+        }
       }
 
       setIsOpen(false);
       setQuery("");
     } catch (error) {
       console.error("Navigation error:", error);
-      toast.error("Navigation Failed", "Could not navigate to player shops");
+      if (mode === "dropdown") {
+        toast.error("Navigation Failed", "Could not navigate to player shops");
+        // On error, fall back to browse page with player filter
+        router.push(`/shops/browse?player=${player.mcUsername}`);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   // Handle item click
-  const handleItemClick = (item: { id: string; shopCount?: number }) => {
-    // Only navigate if item has shops
-    if (item.shopCount && item.shopCount > 0) {
-      // Navigate to items page with item filter
-      router.push(`/items?search=${encodeURIComponent(item.id)}`);
+  const handleItemClick = (item: {
+    id: string;
+    shopCount?: number;
+    shops?: { id: string }[];
+  }) => {
+    if (mode === "callback" && searchCallbacks?.onItemSearch) {
+      // In callback mode, use the callback
+      searchCallbacks.onItemSearch({
+        type: "item",
+        value: item.id,
+        originalQuery: query.trim(),
+      });
+      onSearchExecuted?.();
       setIsOpen(false);
       setQuery("");
+    } else {
+      // Original dropdown mode behavior - smart navigation based on shop count
+      if (item.shopCount && item.shopCount > 0) {
+        if (item.shopCount === 1 && item.shops && item.shops.length > 0) {
+          // Only 1 shop sells this item - navigate directly to that shop
+          const shop = item.shops[0];
+          if (shop?.id) {
+            router.push(`/shops/${shop.id}`);
+          } else {
+            // Fallback to browse page with item filter if shop data is incomplete
+            router.push(`/shops/browse?search=${encodeURIComponent(item.id)}`);
+          }
+        } else {
+          // Multiple shops sell this item - navigate to browse page with item filter
+          router.push(`/shops/browse?search=${encodeURIComponent(item.id)}`);
+        }
+        setIsOpen(false);
+        setQuery("");
+      }
+      // If no shops, do nothing (item should be disabled)
     }
-    // If no shops, do nothing (item should be disabled)
   };
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (mode === "callback") {
+      // In callback mode, only handle Enter for form submission
+      if (e.key === "Enter") {
+        handleFormSubmit(e);
+      }
+      return;
+    }
+
+    // Original dropdown mode keyboard navigation
     if (!isOpen || !results) return;
 
     const totalResults = results.players.length + results.items.length;
@@ -246,7 +352,7 @@ export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
   return (
     <div ref={searchRef} className={`relative ${className}`}>
       {/* Search Input with Filter */}
-      <div className="flex gap-2">
+      <form onSubmit={handleFormSubmit} className="flex gap-2">
         {/* Search Input */}
         <div className="relative flex-1">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -264,6 +370,7 @@ export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
             <Button
               size="sm"
               variant="ghost"
+              type="button"
               className="absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 p-0"
               onClick={clearSearch}
             >
@@ -278,7 +385,7 @@ export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
         {/* Search Type Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="shrink-0">
+            <Button variant="outline" type="button" className="shrink-0">
               <div className="flex items-center gap-1">
                 {searchTypeIcons[searchType] &&
                   React.createElement(searchTypeIcons[searchType], {
@@ -315,9 +422,26 @@ export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
 
-      {/* Search Results Dropdown */}
+        {/* Submit Button for Callback Mode */}
+        {mode === "callback" && (
+          <Button type="submit" disabled={!query.trim() || isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Searching...
+              </>
+            ) : (
+              <>
+                <Search className="mr-2 h-4 w-4" />
+                Search
+              </>
+            )}
+          </Button>
+        )}
+      </form>
+
+      {/* Search Results Dropdown - Show for both modes */}
       {isOpen && (
         <Card className="absolute top-full z-50 mt-1 w-full border shadow-lg">
           {isLoading && !results && (
@@ -424,7 +548,6 @@ export function GlobalSearchBar({ className = "" }: GlobalSearchBarProps) {
               {query.length >= 3 && results.totalResults > 0 && (
                 <div className="bg-muted/30 border-t p-2">
                   <div className="text-muted-foreground flex items-center justify-between text-xs">
-                    <span>Use ↑↓ to navigate, Enter to select</span>
                     <Button
                       variant="ghost"
                       size="sm"

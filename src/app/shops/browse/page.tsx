@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
 import { Badge } from "~/components/ui/badge";
 import {
   searchShopsForBrowse,
@@ -12,10 +11,12 @@ import {
 } from "~/server/actions/shops";
 import { getShopsByPlayerName } from "~/server/actions/search-actions";
 import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
+import type { SearchCriteria, SearchCallbacks } from "~/lib/types/search";
 import Link from "next/link";
-import { Search, Store, User, X } from "lucide-react";
+import { Store, User, X } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
 import { ShopCard } from "~/components/shops/shop-card";
+import { GlobalSearchBar } from "~/components/search/global-search-bar";
 
 export default function BrowseShopsPage() {
   const searchParams = useSearchParams();
@@ -23,27 +24,24 @@ export default function BrowseShopsPage() {
     (ShopWithDetails & { shopItems: ShopItemWithItem[] })[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [hasSearched, setHasSearched] = useState(false);
-  const [playerFilter, setPlayerFilter] = useState<string | null>(null);
+  const [activeFilters, setActiveFilters] = useState<{
+    searchQuery?: string;
+    playerName?: string;
+    itemName?: string;
+  }>({});
 
   // Initialize from URL parameters
   useEffect(() => {
     const initialSearch = searchParams.get("search");
     const initialPlayer = searchParams.get("player");
 
-    if (initialSearch) {
-      setSearchQuery(initialSearch);
-      setHasSearched(true);
-    }
-
     if (initialPlayer) {
-      setPlayerFilter(initialPlayer);
+      setActiveFilters({ playerName: initialPlayer });
       void loadPlayerShops(initialPlayer);
     } else if (initialSearch) {
-      void performSearch(initialSearch);
+      setActiveFilters({ searchQuery: initialSearch });
+      void performTextSearch(initialSearch);
     } else {
       void loadAllShops();
     }
@@ -53,7 +51,6 @@ export default function BrowseShopsPage() {
     try {
       setIsLoading(true);
       setError(null);
-      setHasSearched(true);
 
       const result = await getShopsByPlayerName(playerName);
       if (result.success) {
@@ -61,7 +58,7 @@ export default function BrowseShopsPage() {
         const shopsWithItems = result.data.shops.map((shop) => ({
           ...shop,
           shopItems: [] as ShopItemWithItem[], // We'll load items separately if needed
-        }));
+        })) as (ShopWithDetails & { shopItems: ShopItemWithItem[] })[];
         setShops(shopsWithItems);
       } else {
         setError(result.error);
@@ -75,11 +72,10 @@ export default function BrowseShopsPage() {
     }
   };
 
-  const performSearch = async (query: string) => {
+  const performTextSearch = async (query: string) => {
     try {
-      setIsSearching(true);
+      setIsLoading(true);
       setError(null);
-      setHasSearched(true);
 
       const result = await searchShopsForBrowse({
         query: query.trim(),
@@ -97,7 +93,7 @@ export default function BrowseShopsPage() {
       setError("Search failed");
       toast.error("Search Failed", "Failed to search shops");
     } finally {
-      setIsSearching(false);
+      setIsLoading(false);
     }
   };
 
@@ -105,9 +101,7 @@ export default function BrowseShopsPage() {
     try {
       setIsLoading(true);
       setError(null);
-      setHasSearched(false);
 
-      // Get all active shops (without user filter)
       const result = await getShopsForBrowse({ limit: 50, offset: 0 });
       if (result.success) {
         setShops(result.data.shops);
@@ -123,32 +117,52 @@ export default function BrowseShopsPage() {
     }
   };
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) {
-      void loadAllShops();
-      return;
-    }
-
-    setPlayerFilter(null); // Clear player filter when doing text search
-    void performSearch(searchQuery.trim());
+  // Search callbacks for the GlobalSearchBar
+  const searchCallbacks: SearchCallbacks = {
+    onPlayerSearch: (criteria: SearchCriteria & { type: "player" }) => {
+      setActiveFilters({ playerName: criteria.value });
+      void loadPlayerShops(criteria.value);
+    },
+    onItemSearch: (criteria: SearchCriteria & { type: "item" }) => {
+      setActiveFilters({
+        itemName: criteria.value,
+        searchQuery: criteria.originalQuery,
+      });
+      void performTextSearch(criteria.value);
+    },
+    onGeneralSearch: (criteria: SearchCriteria & { type: "general" }) => {
+      setActiveFilters({ searchQuery: criteria.value });
+      void performTextSearch(criteria.value);
+    },
   };
 
-  const clearSearch = () => {
-    setSearchQuery("");
-    setHasSearched(false);
-    setPlayerFilter(null);
+  const clearAllFilters = () => {
+    setActiveFilters({});
     void loadAllShops();
   };
 
-  const clearPlayerFilter = () => {
-    setPlayerFilter(null);
-    if (searchQuery.trim()) {
-      void performSearch(searchQuery.trim());
-    } else {
+  const clearFilter = (
+    filterType: "searchQuery" | "playerName" | "itemName",
+  ) => {
+    const newFilters = { ...activeFilters };
+    delete newFilters[filterType];
+    setActiveFilters(newFilters);
+
+    // If no filters remain, load all shops
+    if (Object.keys(newFilters).length === 0) {
       void loadAllShops();
+    } else {
+      // Apply remaining filters
+      if (newFilters.playerName) {
+        void loadPlayerShops(newFilters.playerName);
+      } else if (newFilters.searchQuery) {
+        void performTextSearch(newFilters.searchQuery);
+      }
     }
   };
+
+  const hasActiveFilters = Object.keys(activeFilters).length > 0;
+  const hasResults = shops.length > 0;
 
   if (isLoading) {
     return (
@@ -173,77 +187,69 @@ export default function BrowseShopsPage() {
           </div>
         </div>
 
-        {/* Search */}
-        <Card className="p-4">
-          <form onSubmit={(e) => void handleSearch(e)} className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Search shops by name or description..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Button type="submit" disabled={isSearching}>
-              {isSearching ? "Searching..." : "Search"}
-            </Button>
-            {hasSearched && (
-              <Button type="button" variant="outline" onClick={clearSearch}>
-                Clear
-              </Button>
-            )}
-          </form>
-        </Card>
+        {/* Reusable Search Bar */}
+        <GlobalSearchBar
+          mode="callback"
+          placeholder="Search shops by player name, item, or keywords..."
+          searchCallbacks={searchCallbacks}
+          onSearchExecuted={() => setIsLoading(true)}
+          className="mb-4"
+        />
 
         {/* Active Filters */}
-        {(playerFilter || hasSearched) && (
+        {hasActiveFilters && (
           <Card className="p-3">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-muted-foreground text-sm">
                 Active filters:
               </span>
 
-              {playerFilter && (
+              {activeFilters.playerName && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <User className="h-3 w-3" />
-                  Player: {playerFilter}
+                  Player: {activeFilters.playerName}
                   <Button
                     size="sm"
                     variant="ghost"
                     className="ml-1 h-4 w-4 p-0"
-                    onClick={clearPlayerFilter}
+                    onClick={() => clearFilter("playerName")}
                   >
                     <X className="h-3 w-3" />
                   </Button>
                 </Badge>
               )}
 
-              {hasSearched && searchQuery && (
+              {activeFilters.itemName && (
                 <Badge variant="secondary" className="flex items-center gap-1">
-                  <Search className="h-3 w-3" />
-                  Search: {searchQuery}
+                  <Store className="h-3 w-3" />
+                  Item: {activeFilters.itemName}
                   <Button
                     size="sm"
                     variant="ghost"
                     className="ml-1 h-4 w-4 p-0"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setHasSearched(false);
-                      if (playerFilter) {
-                        void loadPlayerShops(playerFilter);
-                      } else {
-                        void loadAllShops();
-                      }
-                    }}
+                    onClick={() => clearFilter("itemName")}
                   >
                     <X className="h-3 w-3" />
                   </Button>
                 </Badge>
               )}
 
-              <Button variant="outline" size="sm" onClick={clearSearch}>
+              {activeFilters.searchQuery && !activeFilters.itemName && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Store className="h-3 w-3" />
+                  Search: {activeFilters.searchQuery}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-1 h-4 w-4 p-0"
+                    onClick={() => clearFilter("searchQuery")}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </Badge>
+              )}
+
+              <Button variant="outline" size="sm" onClick={clearAllFilters}>
                 Clear all
               </Button>
             </div>
@@ -257,17 +263,17 @@ export default function BrowseShopsPage() {
         </Card>
       )}
 
-      {hasSearched && (
+      {hasActiveFilters && (
         <div className="mb-4">
           <p className="text-sm text-gray-600">
-            {shops.length === 0
-              ? `No shops found for "${searchQuery}"`
-              : `Found ${shops.length} shop${shops.length === 1 ? "" : "s"} for "${searchQuery}"`}
+            {!hasResults
+              ? "No shops found matching your search criteria"
+              : `Found ${shops.length} shop${shops.length === 1 ? "" : "s"} matching your search`}
           </p>
         </div>
       )}
 
-      {shops.length === 0 && !hasSearched ? (
+      {!hasResults && !hasActiveFilters ? (
         <Card className="p-8 text-center">
           <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
           <h2 className="mb-2 text-xl font-semibold">No Active Shops</h2>
@@ -278,14 +284,15 @@ export default function BrowseShopsPage() {
             <Link href="/shops/new">Create the First Shop</Link>
           </Button>
         </Card>
-      ) : shops.length === 0 && hasSearched ? (
+      ) : !hasResults && hasActiveFilters ? (
         <Card className="p-8 text-center">
-          <Search className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+          <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
           <h2 className="mb-2 text-xl font-semibold">No Results</h2>
           <p className="mb-4 text-gray-600">
-            No shops match your search criteria. Try different keywords.
+            No shops match your search criteria. Try different keywords or
+            browse all shops.
           </p>
-          <Button onClick={clearSearch}>Browse All Shops</Button>
+          <Button onClick={clearAllFilters}>Browse All Shops</Button>
         </Card>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -295,7 +302,7 @@ export default function BrowseShopsPage() {
         </div>
       )}
 
-      {!hasSearched && shops.length > 0 && (
+      {!hasActiveFilters && hasResults && (
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-600">
             Showing {shops.length} active shop{shops.length === 1 ? "" : "s"}
