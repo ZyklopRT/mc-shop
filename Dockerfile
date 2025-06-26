@@ -71,7 +71,7 @@ USER nextjs
 EXPOSE 5000
 
 ENV PORT 5000
-# set hostname to localhost
+# Server listens on all interfaces but use proper external URL for redirects
 ENV HOSTNAME "0.0.0.0"
 
 # server.js is created by next build from the standalone output

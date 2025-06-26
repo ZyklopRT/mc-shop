@@ -45,6 +45,8 @@ const loginSchema = z.object({
  */
 export const authConfig = {
   trustHost: true,
+  // Set the base URL for proper redirects in Docker and production
+  basePath: "/api/auth",
   providers: [
     Credentials({
       name: "credentials",

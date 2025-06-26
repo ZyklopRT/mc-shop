@@ -27,6 +27,9 @@ This document provides instructions for running the MC Shop application with Doc
    # NextAuth - Generate with: openssl rand -base64 32
    AUTH_SECRET="your-auth-secret-here"
 
+   # NextAuth URL for proper redirects (adjust for your domain in production)
+   NEXTAUTH_URL="http://localhost:5000"
+
    # Minecraft RCON Configuration (optional)
    MINECRAFT_RCON_HOST="your-minecraft-server-host"
    MINECRAFT_RCON_PORT=25575
@@ -74,6 +77,10 @@ docker run -p 5000:5000 \
    ```bash
    cp .env.example .env
    # Edit .env with your production values
+
+   # IMPORTANT: Set NEXTAUTH_URL to your production domain
+   # Example: NEXTAUTH_URL="https://yourdomain.com"
+   # This ensures proper sign-out redirects in production
    ```
 
 3. **Build and start services:**

@@ -15,6 +15,7 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    NEXTAUTH_URL: z.string().url().optional(),
     MINECRAFT_RCON_HOST: z.string().optional(),
     MINECRAFT_RCON_PORT: z.coerce.number().optional(),
     MINECRAFT_RCON_PASSWORD: z.string().optional(),
@@ -35,6 +36,7 @@ export const env = createEnv({
     AUTH_SECRET: process.env.AUTH_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     MINECRAFT_RCON_HOST: process.env.MINECRAFT_RCON_HOST,
     MINECRAFT_RCON_PORT: process.env.MINECRAFT_RCON_PORT,
     MINECRAFT_RCON_PASSWORD: process.env.MINECRAFT_RCON_PASSWORD,

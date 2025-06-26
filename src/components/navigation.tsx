@@ -9,8 +9,6 @@ import { getMinecraftAvatarUrl } from "~/lib/utils/minecraft-api";
 export function Navigation() {
   const { data: session, status } = useSession();
   const avatarUrl = getMinecraftAvatarUrl(session?.user?.mcUUID ?? "");
-  console.log("avatarUrl", avatarUrl);
-  console.log("session", session);
 
   return (
     <nav className="border-b bg-white shadow-sm">

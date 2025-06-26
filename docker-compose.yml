@@ -25,6 +25,8 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://mc_shop_user:mc_shop_password@postgres:5432/mc_shop_db
+      # NextAuth URL for proper redirects (defaults to localhost for development)
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:5000}
       # Add your other environment variables here
       - AUTH_SECRET=${AUTH_SECRET:-your-auth-secret-here}
       - MINECRAFT_RCON_HOST=${MINECRAFT_RCON_HOST:-}
