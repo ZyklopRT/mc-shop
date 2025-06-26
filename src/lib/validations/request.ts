@@ -69,6 +69,7 @@ export const createOfferSchema = z.object({
     .min(0, "Price must be at least 0")
     .max(999999, "Price is too high")
     .optional(),
+  currency: z.enum(["emeralds", "emerald_blocks"]).default("emeralds"),
   message: z
     .string()
     .max(500, "Message must be at most 500 characters")

@@ -1,6 +1,6 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
 # MC Shop Application Architecture
@@ -8,208 +8,367 @@ alwaysApply: false
 ## Core Architecture Principles
 
 ### Backend: Server Actions First
-- **No API Routes**: All backend logic uses Next.js server actions located in [src/server/actions/](mdc:src/server/actions/)
+- **No API Routes**: All backend logic uses Next.js server actions located in [src/server/actions/](mdc:src/server/actions)
 - **Server Action Pattern**: Actions are async functions that handle form submissions and data mutations
+- **"use server" Directive**: All server actions must include `"use server";` at the top to enable client component integration
 - **Database Layer**: All database operations use Prisma ORM with schema at [prisma/schema.prisma](mdc:prisma/schema.prisma)
 - **Authentication**: NextAuth.js configured in [src/server/auth/config.ts](mdc:src/server/auth/config.ts)
+- **RCON Integration**: Minecraft server communication via [src/server/rcon.ts](mdc:src/server/rcon.ts)
 
 ### Frontend: Type-Safe React with ShadCN
-- **Component Library**: Exclusively use ShadCN UI components from [src/components/ui/](mdc:src/components/ui/)
+- **Component Library**: Exclusively use ShadCN UI components from [src/components/ui/](mdc:src/components/ui)
 - **Component Installation**: `npx shadcn@latest add [component-name]` for new components
 - **Layout Structure**: Root layout in [src/app/layout.tsx](mdc:src/app/layout.tsx) with nested layouts
 - **Navigation**: Centralized navigation component at [src/components/navigation.tsx](mdc:src/components/navigation.tsx)
+- **Toast Notifications**: Using Sonner for user feedback
+- **Form Handling**: React Hook Form with Zod validation throughout
+
+## Application Features
+
+### Core Systems
+1. **Shop Management**: Create, edit, browse shops with item inventory
+2. **Request System**: Users can create requests for items they need
+3. **Offer System**: Users can make offers on requests with negotiation flow
+4. **Search System**: Global search across shops, items, and players
+5. **Item Management**: Comprehensive item database with image support
+6. **User Authentication**: Multi-step registration with Minecraft integration
+7. **Admin Tools**: Item import, testing utilities
+
+### Request & Offer Workflow
+1. **Request Creation**: Users create requests for items they need
+2. **Offer Submission**: Other users can make offers with price and message
+3. **Offer Management**: Accept/reject/withdraw offers with status tracking
+4. **Negotiation**: Accepted offers move to negotiation phase
+5. **Transaction**: Final completion through Minecraft server integration
 
 ## File Structure Patterns
 
 ### Server Actions (`src/server/actions/`)
 ```
 actions/
-├── item-actions.ts          # Item management actions
-├── rcon-actions.ts          # Minecraft server communication
-├── registration-actions.ts  # User registration flow
-└── shops/                   # Shop-related actions grouped by feature
+├── item-actions.ts              # Item search and management
+├── rcon-actions.ts              # Minecraft server communication
+├── registration-actions.ts      # Multi-step user registration
+├── search-actions.ts            # Global search functionality
+├── shop-items.ts               # Shop inventory management
+├── shops.ts                    # Shop CRUD operations
+└── requests/                   # Request system actions
+    ├── create-request.ts       # Request creation
+    ├── update-request.ts       # Request updates
+    ├── delete-request.ts       # Request deletion
+    ├── get-requests.ts         # Request fetching
+    ├── create-offer.ts         # Offer creation
+    ├── update-offer.ts         # Offer status management
+    ├── get-offers.ts           # Offer fetching
+    └── index.ts               # Action exports
+```
+
+### Component Structure (`src/components/`)
+```
+components/
+├── ui/                         # ShadCN UI components
+├── auth/                       # Authentication components
+├── navigation.tsx              # Main navigation
+├── items/                      # Item-related components
+├── shops/                      # Shop management components
+├── requests/                   # Request system components
+│   ├── request-details.tsx     # Request detail view
+│   ├── offer-form.tsx          # Offer creation form
+│   ├── offer-list.tsx          # Offer display and management
+│   └── index.ts               # Component exports
+└── search/                     # Search functionality
+    ├── global-search-bar.tsx   # Main search interface
+    ├── search-item-result.tsx  # Search result display
+    └── index.ts               # Search exports
 ```
 
 ### Validation Schemas (`src/lib/validations/`)
 ```
 validations/
-├── auth.ts    # Authentication and user validation schemas
-└── shop.ts    # Shop management validation schemas
+├── auth.ts      # Authentication and registration schemas
+├── request.ts   # Request and offer validation schemas
+├── search.ts    # Search parameter validation
+└── shop.ts      # Shop and shop item validation schemas
 ```
 
 ### Types (`src/lib/types/`)
 ```
 types/
-├── auth.ts    # Authentication-related types
-└── shop.ts    # Shop management types
+├── auth.ts      # Authentication-related types
+├── request.ts   # Request and offer types with database relations
+├── search.ts    # Search result and parameter types
+└── shop.ts      # Shop management types
+```
+
+### Hooks (`src/hooks/` & `src/lib/hooks/`)
+```
+hooks/
+├── use-registration.ts         # Multi-step registration flow
+├── use-global-search.ts        # Global search functionality
+├── use-image-fallback.ts       # Image loading with fallbacks
+├── use-search-keyboard.ts      # Keyboard navigation for search
+└── lib/hooks/
+    ├── use-request-data.ts     # Request data management
+    ├── use-request-form.ts     # Request form handling
+    └── use-shop-management.ts  # Shop CRUD operations
 ```
 
 ### Pages (`src/app/`)
 ```
 app/
-├── page.tsx                 # Home page
-├── layout.tsx              # Root layout
-├── auth/                   # Authentication pages
-├── shops/                  # Shop management pages
-├── items/                  # Item management pages
-└── admin/                  # Administrative functions
-```
-
-## Validation Pattern with Zod
-
-### Server-Side Validation
-```typescript
-// In server actions
-import { z } from 'zod'
-
-const schema = z.object({
-  name: z.string().min(1),
-  price: z.number().positive()
-})
-
-export async function createShop(formData: FormData) {
-  const validatedFields = schema.safeParse({
-    name: formData.get('name'),
-    price: Number(formData.get('price'))
-  })
-  
-  if (!validatedFields.success) {
-    return { error: 'Invalid fields' }
-  }
-  
-  // Process validated data
-}
-```
-
-### Client-Side Validation
-```typescript
-// In components
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { shopSchema } from '@/lib/validations/shop'
-
-const form = useForm({
-  resolver: zodResolver(shopSchema),
-  defaultValues: { name: '', price: 0 }
-})
+├── page.tsx                    # Home page
+├── layout.tsx                  # Root layout
+├── auth/                       # Authentication pages
+│   ├── login/page.tsx         # Login page
+│   ├── register/page.tsx      # Registration page
+│   └── error/page.tsx         # Auth error handling
+├── shops/                      # Shop management
+│   ├── page.tsx              # Shop listing
+│   ├── browse/page.tsx       # Public shop browsing
+│   ├── new/page.tsx          # Shop creation
+│   └── [id]/                 # Individual shop pages
+├── items/page.tsx             # Item management
+├── requests/                  # Request system
+│   ├── page.tsx              # Request listing
+│   ├── new/page.tsx          # Request creation
+│   └── [id]/                 # Individual request pages
+│       ├── page.tsx          # Request details with offers
+│       └── edit/page.tsx     # Request editing
+└── admin/                     # Administrative functions
+    └── items/                # Item management tools
 ```
 
 ## Server Action Patterns
 
-### Standard Action Structure
-1. **Input Validation**: Always validate with Zod schemas first
-2. **Authentication Check**: Verify user permissions when needed
-3. **Database Operations**: Use Prisma for data persistence
-4. **Error Handling**: Return structured error responses
-5. **Success Response**: Return success data or redirect
-
-### Example Action Pattern
+### Standard Action Structure with "use server"
 ```typescript
-// src/server/actions/example-actions.ts
-export async function createExample(formData: FormData) {
+"use server";
+
+import { auth } from "~/server/auth";
+import { db } from "~/server/db";
+import { actionSchema } from "~/lib/validations/example";
+
+export async function exampleAction(formData: FormData) {
   // 1. Validate input
-  const validatedFields = exampleSchema.safeParse(/* ... */)
-  if (!validatedFields.success) return { error: 'Invalid input' }
+  const validatedFields = actionSchema.safeParse({
+    field: formData.get('field')
+  });
+  
+  if (!validatedFields.success) {
+    return { success: false, error: 'Invalid input' };
+  }
   
   // 2. Check authentication
-  const session = await auth()
-  if (!session?.user) return { error: 'Unauthorized' }
+  const session = await auth();
+  if (!session?.user) {
+    return { success: false, error: 'Unauthorized' };
+  }
   
   // 3. Database operation
   try {
-    const result = await db.example.create({ data: validatedFields.data })
-    return { success: true, data: result }
+    const result = await db.example.create({
+      data: validatedFields.data
+    });
+    return { success: true, data: result };
   } catch (error) {
-    return { error: 'Database error' }
+    return { success: false, error: 'Database error' };
   }
 }
 ```
 
-## Frontend Component Patterns
+### Client-Server Component Integration
+```typescript
+// Server Component (Page)
+import { exampleAction } from "~/server/actions/example";
 
-### Page Components
-- Use async server components for initial data loading
-- Handle loading states with Suspense boundaries
-- Implement error boundaries for error handling
+export default function ExamplePage() {
+  return (
+    <ClientComponent exampleAction={exampleAction} />
+  );
+}
 
-### Form Components
-- Use `react-hook-form` with Zod validation
-- Implement optimistic updates where appropriate
-- Show loading states during form submission
+// Client Component
+interface Props {
+  exampleAction: (formData: FormData) => Promise<ActionResult>;
+}
 
-### UI Components
-- Extend ShadCN components rather than creating from scratch
-- Use compound component patterns for complex UI
-- Implement proper accessibility attributes
+export function ClientComponent({ exampleAction }: Props) {
+  // Use server action as prop
+}
+```
 
-## Custom Hooks (`src/hooks/`)
+## Database Schema Patterns
 
-### Registration Hook Example
-- [use-registration.ts](mdc:src/hooks/use-registration.ts) - Multi-step registration flow
-- Manages state transitions between registration steps
-- Handles form validation and submission
+### Core Models
+- **User**: Authentication with Minecraft UUID integration
+- **Shop**: User-owned shops with location and description
+- **ShopItem**: Items available in shops with pricing
+- **Item**: Master item database with image paths
+- **Request**: User requests for items with status tracking
+- **RequestOffer**: Offers made on requests with negotiation flow
+- **RequestNegotiation**: Accepted offers in negotiation phase
 
-### Shop Management Hook
-- [use-shop-management.ts](mdc:src/lib/hooks/use-shop-management.ts) - Shop CRUD operations
-- Encapsulates shop creation, editing, and deletion logic
-- Provides loading states and error handling
+### Relationship Patterns
+```prisma
+// User owns multiple shops and requests
+User {
+  shops     Shop[]
+  requests  Request[]
+  offers    RequestOffer[]
+}
 
-## Database Patterns
+// Shop contains multiple items
+Shop {
+  items     ShopItem[]
+  owner     User
+}
 
-### Prisma Configuration
-- Main database connection in [src/server/db.ts](mdc:src/server/db.ts)
-- Schema definitions in [prisma/schema.prisma](mdc:prisma/schema.prisma)
-- Seed data management in [prisma/seed.ts](mdc:prisma/seed.ts)
+// Request can have multiple offers
+Request {
+  offers       RequestOffer[]
+  negotiations RequestNegotiation[]
+  requester    User
+}
+```
 
-### Migration Strategy
-- Use Prisma migrations for schema changes
-- Keep migration files in [prisma/migrations/](mdc:prisma/migrations/)
-- Test migrations in development before production
+## Search System Architecture
 
-## Authentication Flow
+### Global Search Features
+- **Unified Search**: Single interface for shops, items, and players
+- **Keyboard Navigation**: Arrow keys and enter for navigation
+- **Real-time Results**: Debounced search with instant feedback
+- **Result Categorization**: Grouped results by type
+- **Navigation Integration**: Search results link to relevant pages
 
-### NextAuth Configuration
-- Provider setup in [src/server/auth/config.ts](mdc:src/server/auth/config.ts)
-- Session management through [src/server/auth/index.ts](mdc:src/server/auth/index.ts)
-- Route protection using middleware in [middleware.ts](mdc:middleware.ts)
+### Search Implementation
+```typescript
+// Search hook with debouncing
+const { results, isLoading } = useGlobalSearch(query, {
+  debounceMs: 300,
+  minQueryLength: 2
+});
 
-### Registration Process
-- Multi-step registration with validation at each step
-- User data collection spread across multiple forms
-- Final account creation through server actions
+// Search action with multiple result types
+export async function unifiedSearch(query: string) {
+  const [shops, items, players] = await Promise.all([
+    searchShops(query),
+    searchItems(query),
+    searchPlayers(query)
+  ]);
+  
+  return { shops, items, players };
+}
+```
 
-## Utility Patterns
+## Request & Offer System Patterns
 
-### Constants
-- Registration steps in [src/lib/constants/registration-steps.ts](mdc:src/lib/constants/registration-steps.ts)
-- Centralized configuration values
+### Request Lifecycle
+1. **OPEN**: Accepting offers
+2. **IN_NEGOTIATION**: Offer accepted, negotiating details
+3. **COMPLETED**: Transaction finished
+4. **CANCELLED**: Request cancelled by owner
 
-### Utils
-- Shared utilities in [src/lib/utils.ts](mdc:src/lib/utils.ts)
-- Specialized utils like [src/lib/utils/item-images.ts](mdc:src/lib/utils/item-images.ts)
-- Toast notifications in [src/lib/utils/toast.ts](mdc:src/lib/utils/toast.ts)
+### Offer Management
+```typescript
+// Offer creation with validation
+export async function createOffer(formData: FormData) {
+  // Prevent self-offers and duplicate offers
+  // Validate request is still open
+  // Create offer with PENDING status
+}
 
-## RCON Integration
+// Offer status updates with transactions
+export async function updateOffer(formData: FormData) {
+  await db.$transaction(async (tx) => {
+    // Update offer status
+    // If accepted: reject other offers, create negotiation
+    // Update request status accordingly
+  });
+}
+```
 
-### Minecraft Server Communication
-- RCON client setup in [src/server/rcon.ts](mdc:src/server/rcon.ts)
-- Action handlers in [src/server/actions/rcon-actions.ts](mdc:src/server/actions/rcon-actions.ts)
-- Command execution with proper error handling
+## Image Management System
+
+### Item Images
+- **Multiple Resource Packs**: Default and Sphax texture support
+- **Fallback System**: Graceful degradation to default images
+- **Dynamic Loading**: Images loaded based on user preference
+- **Path Structure**: `public/items/{pack}/{namespace}__{item}.png`
+
+### Image Utilities
+```typescript
+// Image path resolution with fallbacks
+export function getItemImagePath(
+  itemId: string,
+  resourcePack: 'default' | 'sphax' = 'default'
+): string {
+  // Handle namespace and item ID parsing
+  // Return appropriate image path with fallbacks
+}
+```
+
+## Form Patterns with React Hook Form
+
+### Standard Form Setup
+```typescript
+const form = useForm<SchemaType>({
+  resolver: zodResolver(validationSchema),
+  defaultValues: { /* defaults */ }
+});
+
+const onSubmit = async (data: SchemaType) => {
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    formData.append(key, value.toString());
+  });
+  
+  const result = await serverAction(formData);
+  
+  if (result.success) {
+    toast.success("Success message");
+  } else {
+    toast.error(result.error);
+  }
+};
+```
 
 ## Development Best Practices
 
-1. **Type Safety**: Use TypeScript extensively with proper type definitions
-2. **Validation**: Validate all inputs with Zod on both client and server
-3. **Error Handling**: Implement comprehensive error handling in all actions
-4. **Loading States**: Provide proper loading feedback in UI components
-5. **Accessibility**: Use semantic HTML and proper ARIA attributes
-6. **Performance**: Implement proper caching and optimization strategies
+### Code Organization
+1. **Server Actions**: Always include `"use server"` directive
+2. **Component Props**: Pass server actions as props to client components
+3. **Type Safety**: Full TypeScript coverage with proper type definitions
+4. **Validation**: Zod schemas for both client and server validation
+5. **Error Handling**: Consistent error response patterns
+6. **Loading States**: Proper loading feedback in all interactions
+
+### Database Best Practices
+1. **Transactions**: Use Prisma transactions for complex operations
+2. **Relations**: Leverage Prisma's relation system for data fetching
+3. **Migrations**: Always test migrations in development first
+4. **Indexing**: Proper database indexes for search performance
+
+### UI/UX Patterns
+1. **Toast Notifications**: Consistent feedback using Sonner
+2. **Loading States**: Skeleton loaders and disabled states
+3. **Form Validation**: Real-time validation with helpful error messages
+4. **Responsive Design**: Mobile-first approach with Tailwind CSS
+5. **Accessibility**: Proper ARIA labels and keyboard navigation
 
 ## Adding New Features
 
-1. **Create Types**: Define TypeScript interfaces in [src/lib/types/](mdc:src/lib/types/)
-2. **Add Validation**: Create Zod schemas in [src/lib/validations/](mdc:src/lib/validations/)
-3. **Server Actions**: Implement backend logic in [src/server/actions/](mdc:src/server/actions/)
-4. **UI Components**: Build frontend using ShadCN components
-5. **Pages**: Create route pages in [src/app/](mdc:src/app/)
-6. **Database**: Update Prisma schema if needed and run migrations
+### Feature Development Checklist
+1. **Database Schema**: Update [prisma/schema.prisma](mdc:prisma/schema.prisma) if needed
+2. **Types**: Create TypeScript interfaces in [src/lib/types/](mdc:src/lib/types)
+3. **Validation**: Add Zod schemas in [src/lib/validations/](mdc:src/lib/validations)
+4. **Server Actions**: Implement with `"use server"` in [src/server/actions/](mdc:src/server/actions)
+5. **Components**: Build UI using ShadCN components
+6. **Pages**: Create routes in [src/app/](mdc:src/app)
+7. **Hooks**: Custom hooks for complex state management
+8. **Testing**: Ensure proper error handling and edge cases
+
+### Integration Patterns
+- **Authentication**: Always check user sessions in server actions
+- **Permissions**: Validate user permissions for data access
+- **Error Boundaries**: Implement proper error handling at component level
+- **SEO**: Use proper metadata and structured data where applicable

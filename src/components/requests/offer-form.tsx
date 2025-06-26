@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+import { CurrencySelector } from "~/components/shops/currency-selector";
 
 import {
   Form,
@@ -44,11 +45,12 @@ export function OfferForm({
 }: OfferFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<CreateOfferData>({
+  const form = useForm({
     resolver: zodResolver(createOfferSchema),
     defaultValues: {
       requestId,
       offeredPrice: suggestedPrice,
+      currency: (currency as "emeralds" | "emerald_blocks") || "emeralds",
       message: "",
     },
   });
@@ -63,6 +65,8 @@ export function OfferForm({
       if (data.offeredPrice !== undefined) {
         formData.append("offeredPrice", data.offeredPrice.toString());
       }
+
+      formData.append("currency", data.currency);
 
       if (data.message) {
         formData.append("message", data.message);
@@ -108,11 +112,31 @@ export function OfferForm({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <CurrencySelector
+                      value={field.value ?? "emeralds"}
+                      onValueChange={field.onChange}
+                      disabled={disabled || isSubmitting}
+                      placeholder="Select currency"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="offeredPrice"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Offered Price ({getCurrencyDisplay(currency)})
+                    Offered Price (
+                    {getCurrencyDisplay(form.watch("currency") ?? "emeralds")})
                   </FormLabel>
                   <FormControl>
                     <Input

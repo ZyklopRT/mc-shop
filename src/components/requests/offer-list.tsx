@@ -35,16 +35,12 @@ interface OfferListProps {
   isRequestOwner: boolean;
   requestStatus: string;
   onOffersUpdated?: () => void;
-  getOffersAction: (data: {
-    requestId: string;
-  }) => Promise<{
+  getOffersAction: (data: { requestId: string }) => Promise<{
     success: boolean;
     error?: string;
     data?: { offers: RequestOfferWithDetails[] };
   }>;
-  updateOfferAction: (
-    formData: FormData,
-  ) => Promise<{
+  updateOfferAction: (formData: FormData) => Promise<{
     success: boolean;
     error?: string;
     data?: { offerId: string; status: string };
@@ -233,9 +229,10 @@ export function OfferList({
 
                 {offer.offeredPrice && (
                   <div className="mt-3 flex items-center gap-2">
-                    {getCurrencyIcon(currency)}
+                    {getCurrencyIcon((offer as any).currency ?? currency)}
                     <span className="font-semibold">
-                      {offer.offeredPrice} {getCurrencyDisplay(currency)}
+                      {offer.offeredPrice}{" "}
+                      {getCurrencyDisplay((offer as any).currency ?? currency)}
                     </span>
                   </div>
                 )}

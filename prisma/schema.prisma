@@ -210,6 +210,7 @@ model RequestOffer {
   
   // Offer details
   offeredPrice   Float?       // Counter-offer price (null means accepting original)
+  currency       String       @default("emeralds") // "emeralds" or "emerald_blocks"
   message        String?      // Optional message with the offer
   status         OfferStatus  @default(PENDING)
   

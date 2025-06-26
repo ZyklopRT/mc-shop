@@ -24,6 +24,7 @@ export async function createOffer(
       offeredPrice: formData.get("offeredPrice")
         ? Number(formData.get("offeredPrice"))
         : undefined,
+      currency: formData.get("currency") ?? "emeralds",
       message: formData.get("message") ?? undefined,
     });
 
@@ -31,7 +32,7 @@ export async function createOffer(
       return { success: false, error: "Invalid form data" };
     }
 
-    const { requestId, offeredPrice, message } = validatedFields.data;
+    const { requestId, offeredPrice, currency, message } = validatedFields.data;
 
     // Check if request exists and is available for offers
     const request = await db.request.findUnique({
@@ -86,6 +87,7 @@ export async function createOffer(
         requestId,
         offererId: session.user.id,
         offeredPrice,
+        currency,
         message,
         status: "PENDING",
       },
