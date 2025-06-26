@@ -5,10 +5,13 @@ import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { getRequests } from "~/server/actions/request-actions";
+import { getRequests } from "~/server/actions/requests/get-requests";
 import { auth } from "~/server/auth";
 import type { RequestWithDetails } from "~/lib/types/request";
 import { RequestCard } from "~/components/requests/request-card";
+
+// Force dynamic rendering since we use auth() which internally uses headers()
+export const dynamic = "force-dynamic";
 
 export default async function RequestsPage() {
   return (
