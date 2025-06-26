@@ -44,6 +44,8 @@ jobs:
 
       - name: Build application
         run: pnpm build
+        env:
+          SKIP_ENV_VALIDATION: true
 
       - name: Run type checking and linting
         run: pnpm check
