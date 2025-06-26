@@ -120,7 +120,7 @@ export default function NewRequestPage() {
           description: result.error,
         });
       }
-    } catch (error) {
+    } catch {
       toast.error("Error creating request", {
         description: "An unexpected error occurred. Please try again.",
       });

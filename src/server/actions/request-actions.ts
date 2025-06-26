@@ -23,6 +23,11 @@ import {
   type GetRequestDetailsData,
   type CompleteRequestData,
 } from "~/lib/validations/request";
+import type {
+  RequestWithDetails,
+  RequestListResponse,
+  RequestDetailsResponse,
+} from "~/lib/types/request";
 
 // Action result type (following your pattern)
 type RequestActionResult<T> =
@@ -40,7 +45,7 @@ type RequestActionResult<T> =
  */
 export async function createRequest(
   data: CreateRequestData,
-): Promise<RequestActionResult<any>> {
+): Promise<RequestActionResult<RequestWithDetails>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -90,7 +95,7 @@ export async function createRequest(
  */
 export async function updateRequest(
   data: UpdateRequestData,
-): Promise<RequestActionResult<any>> {
+): Promise<RequestActionResult<RequestWithDetails>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -148,7 +153,7 @@ export async function updateRequest(
  */
 export async function createOffer(
   data: CreateOfferData,
-): Promise<RequestActionResult<any>> {
+): Promise<RequestActionResult<unknown>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -219,7 +224,7 @@ export async function createOffer(
  */
 export async function updateOfferStatus(
   data: UpdateOfferData,
-): Promise<RequestActionResult<any>> {
+): Promise<RequestActionResult<unknown>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -330,14 +335,14 @@ export async function updateOfferStatus(
  */
 export async function getRequests(
   data: GetRequestsData,
-): Promise<RequestActionResult<any>> {
+): Promise<RequestActionResult<RequestListResponse>> {
   try {
     const validatedData = getRequestsSchema.parse(data);
     const { limit, offset, orderBy, orderDirection, ...filters } =
       validatedData;
 
     // Build where clause
-    const where: any = {
+    const where: Record<string, unknown> = {
       ...(filters.status && { status: filters.status }),
       ...(filters.requestType && { requestType: filters.requestType }),
       ...(filters.requesterId && { requesterId: filters.requesterId }),
@@ -388,7 +393,7 @@ export async function getRequests(
  */
 export async function getRequestDetails(
   data: GetRequestDetailsData,
-): Promise<RequestActionResult<any>> {
+): Promise<RequestActionResult<RequestDetailsResponse>> {
   try {
     const { requestId } = getRequestDetailsSchema.parse(data);
 
@@ -438,12 +443,12 @@ export async function getRequestDetails(
  */
 export async function searchRequests(
   data: SearchRequestsData,
-): Promise<RequestActionResult<any>> {
+): Promise<RequestActionResult<unknown>> {
   try {
     const { query, requestType, limit, offset } =
       searchRequestsSchema.parse(data);
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       AND: [
         { status: "OPEN" }, // Only search open requests
         {
@@ -498,7 +503,7 @@ export async function searchRequests(
  */
 export async function addNegotiationMessage(
   data: NegotiationMessageData,
-): Promise<RequestActionResult<any>> {
+): Promise<RequestActionResult<unknown>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -591,7 +596,7 @@ export async function addNegotiationMessage(
  */
 export async function completeRequest(
   data: CompleteRequestData,
-): Promise<RequestActionResult<any>> {
+): Promise<RequestActionResult<unknown>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {

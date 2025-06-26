@@ -83,8 +83,6 @@ export function RequestCard({
     }
   };
 
-  const StatusIcon = statusConfig[status].icon;
-
   return (
     <Card className="transition-shadow hover:shadow-md">
       <CardHeader className="pb-3">

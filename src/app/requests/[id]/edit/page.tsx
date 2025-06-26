@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import {
@@ -14,7 +14,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { Label } from "~/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,8 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { SimpleItemSelector } from "~/components/shops/simple-item-selector";
-import { CurrencySelector } from "~/components/shops/currency-selector";
+
 import { CURRENCY_TYPES } from "~/lib/validations/shop";
 import { toast } from "sonner";
 import {
@@ -78,11 +77,7 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    void loadRequestData();
-  }, [id]);
-
-  const loadRequestData = async () => {
+  const loadRequestData = useCallback(async () => {
     try {
       const result = await getRequestDetails({ requestId: id });
 
@@ -93,16 +88,26 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
         throw new Error(result.error);
       }
 
-      const { request } = result.data as any;
+      const requestData = result.data as {
+        request: {
+          title: string;
+          description: string;
+          requestType: RequestType;
+          item?: MinecraftItem | null;
+          itemQuantity?: number | null;
+          suggestedPrice?: number | null;
+          currency: string;
+        };
+      };
 
       setFormData({
-        title: request.title,
-        description: request.description,
-        requestType: request.requestType,
-        selectedItem: request.item,
-        itemQuantity: request.itemQuantity,
-        suggestedPrice: request.suggestedPrice,
-        currency: request.currency as Currency,
+        title: requestData.request.title,
+        description: requestData.request.description,
+        requestType: requestData.request.requestType,
+        selectedItem: requestData.request.item,
+        itemQuantity: requestData.request.itemQuantity ?? undefined,
+        suggestedPrice: requestData.request.suggestedPrice ?? undefined,
+        currency: requestData.request.currency as Currency,
       });
 
       setIsLoading(false);
@@ -111,7 +116,11 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
       toast.error("Failed to load request data");
       router.push("/requests");
     }
-  };
+  }, [id, router]);
+
+  useEffect(() => {
+    void loadRequestData();
+  }, [id, loadRequestData]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -179,7 +188,7 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
           description: result.error,
         });
       }
-    } catch (error) {
+    } catch {
       toast.error("Error updating request", {
         description: "An unexpected error occurred. Please try again.",
       });
@@ -201,7 +210,7 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
           description: result.error,
         });
       }
-    } catch (error) {
+    } catch {
       toast.error("Error deleting request", {
         description: "An unexpected error occurred. Please try again.",
       });

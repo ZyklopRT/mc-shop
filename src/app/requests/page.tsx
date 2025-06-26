@@ -1,23 +1,9 @@
 import { Suspense } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
-import {
-  Plus,
-  Package,
-  MessageCircle,
-  Clock,
-  CheckCircle,
-  Sparkles,
-} from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { getRequests } from "~/server/actions/request-actions";
 import { auth } from "~/server/auth";
