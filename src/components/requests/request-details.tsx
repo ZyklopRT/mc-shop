@@ -535,57 +535,147 @@ function AcceptedRequestDetails({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="max-h-96 space-y-4 overflow-y-auto">
-            {negotiation.messages.map((message) => {
-              const isOwnMessage = message.sender.id === currentUserId;
+          <div className="max-h-96 min-h-[300px] overflow-y-auto rounded-xl border bg-gradient-to-b from-gray-50/50 to-white p-4">
+            <div className="space-y-1">
+              {negotiation.messages.map((message) => {
+                const isOwnMessage = message.sender.id === currentUserId;
+                const isSpecialMessage = [
+                  "ACCEPT",
+                  "REJECT",
+                  "COUNTER_OFFER",
+                ].includes(message.messageType);
 
-              return (
-                <div
-                  key={message.id}
-                  className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
-                >
+                return (
                   <div
-                    className={`max-w-xs rounded-lg px-4 py-2 lg:max-w-md ${
-                      isOwnMessage
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-100 text-gray-900"
-                    }`}
+                    key={message.id}
+                    className={`group mb-3 flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
                   >
-                    <div className="mb-1 flex items-center gap-2">
-                      {getMessageTypeIcon(message.messageType)}
-                      <span className="text-xs font-medium">
-                        {message.messageType.replace("_", " ")}
-                      </span>
+                    <div
+                      className={`flex max-w-[75%] flex-col ${isOwnMessage ? "items-end" : "items-start"}`}
+                    >
+                      {/* Sender name for received messages */}
                       {!isOwnMessage && (
-                        <span className="text-xs opacity-75">
+                        <div className="mb-1 ml-3 text-xs font-medium text-gray-600">
                           {message.sender.mcUsername}
-                        </span>
+                        </div>
                       )}
-                    </div>
 
-                    {message.priceOffer && (
-                      <div className="mb-2 rounded bg-black/10 p-2">
-                        <div className="flex items-center gap-1 text-sm font-medium">
-                          {getCurrencyIcon(request.currency)}
+                      {/* Message bubble */}
+                      <div
+                        className={`relative rounded-2xl px-4 py-2.5 shadow-sm transition-all duration-200 ${
+                          isOwnMessage
+                            ? isSpecialMessage
+                              ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white"
+                              : "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+                            : isSpecialMessage
+                              ? "border border-emerald-200 bg-emerald-50 text-emerald-900"
+                              : "border border-gray-200 bg-white text-gray-900"
+                        } ${isOwnMessage ? "rounded-br-md" : "rounded-bl-md"}`}
+                      >
+                        {/* Message type indicator for special messages */}
+                        {isSpecialMessage && (
+                          <div
+                            className={`mb-2 flex items-center gap-1.5 ${
+                              isOwnMessage
+                                ? "text-white/90"
+                                : "text-emerald-700"
+                            }`}
+                          >
+                            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20">
+                              {getMessageTypeIcon(message.messageType)}
+                            </div>
+                            <span className="text-xs font-semibold tracking-wide uppercase">
+                              {message.messageType.replace("_", " ")}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Price offer section */}
+                        {message.priceOffer && (
+                          <div
+                            className={`mb-3 rounded-xl p-3 ${
+                              isOwnMessage
+                                ? "bg-black/10 backdrop-blur-sm"
+                                : "border border-emerald-200 bg-emerald-100"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div
+                                className={`flex h-6 w-6 items-center justify-center rounded-full ${
+                                  isOwnMessage
+                                    ? "bg-white/20"
+                                    : "bg-emerald-500"
+                                }`}
+                              >
+                                {getCurrencyIcon(request.currency)}
+                              </div>
+                              <div className="flex-1">
+                                <div
+                                  className={`text-sm font-bold ${
+                                    isOwnMessage
+                                      ? "text-white"
+                                      : "text-emerald-900"
+                                  }`}
+                                >
+                                  {message.priceOffer.toLocaleString()}{" "}
+                                  {currencyDisplayNames[
+                                    request.currency as keyof typeof currencyDisplayNames
+                                  ] ?? request.currency}
+                                </div>
+                                <div
+                                  className={`text-xs ${
+                                    isOwnMessage
+                                      ? "text-white/75"
+                                      : "text-emerald-700"
+                                  }`}
+                                >
+                                  Offered Price
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Message content */}
+                        {message.content && (
+                          <div
+                            className={`leading-relaxed ${
+                              isOwnMessage ? "text-white" : "text-gray-800"
+                            }`}
+                          >
+                            <p className="text-sm break-words whitespace-pre-wrap">
+                              {message.content}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Timestamp */}
+                        <div
+                          className={`mt-1.5 flex items-center justify-end gap-1 text-xs ${
+                            isOwnMessage ? "text-white/70" : "text-gray-500"
+                          }`}
+                        >
                           <span>
-                            {message.priceOffer}{" "}
-                            {currencyDisplayNames[
-                              request.currency as keyof typeof currencyDisplayNames
-                            ] ?? request.currency}
+                            {new Date(message.createdAt).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
                           </span>
+                          {isOwnMessage && (
+                            <div className="ml-1 flex">
+                              <CheckCircle className="h-3 w-3" />
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
-
-                    <p className="text-sm">{message.content}</p>
-
-                    <div className="mt-1 text-xs opacity-75">
-                      {new Date(message.createdAt).toLocaleString()}
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </CardContent>
       </Card>
