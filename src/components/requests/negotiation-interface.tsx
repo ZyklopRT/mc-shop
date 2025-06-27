@@ -9,8 +9,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { Badge } from "~/components/ui/badge";
-import { Separator } from "~/components/ui/separator";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+
 import {
   Form,
   FormControl,
@@ -44,7 +43,6 @@ import {
   CheckCircle,
   XCircle,
   Send,
-  Clock,
   HandHeart,
   Loader2,
 } from "lucide-react";
@@ -104,9 +102,6 @@ export function NegotiationInterface({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [negotiation.messages]);
 
-  // Determine if current user is requester or offerer
-  const isRequester = currentUserId === negotiation.request.requester.id;
-
   // Check if both parties have accepted
   const requesterAccepted = negotiation.messages.some(
     (msg) =>
@@ -161,7 +156,7 @@ export function NegotiationInterface({
       } else {
         toast.error(result.error ?? "Failed to send message");
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred while sending the message");
     } finally {
       setIsLoading(false);

@@ -47,7 +47,6 @@ import { NegotiationInterface } from "./negotiation-interface";
 import type {
   RequestWithFullDetails,
   RequestOfferWithDetails,
-  NegotiationWithDetails,
 } from "~/lib/types/request";
 
 interface RequestDetailsProps {
@@ -445,7 +444,7 @@ function AcceptedRequestDetails({
       } else {
         toast.error(result.error ?? "Failed to complete request");
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred while completing the request");
     } finally {
       setIsCompleting(false);
