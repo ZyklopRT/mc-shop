@@ -101,7 +101,11 @@ export const negotiationMessageSchema = z.object({
     .min(0, "Price must be at least 0")
     .max(999999, "Price is too high")
     .optional(),
+  currency: z.enum(["emeralds", "emerald_blocks"]).optional(),
 });
+
+// For backwards compatibility, also create the sendNegotiationMessageSchema
+export const sendNegotiationMessageSchema = negotiationMessageSchema;
 
 // Search and listing validation
 export const getRequestsSchema = z.object({

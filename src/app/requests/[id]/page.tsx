@@ -9,6 +9,8 @@ import {
   createOffer,
   getOffers,
   updateOffer,
+  sendNegotiationMessage,
+  completeRequest,
 } from "~/server/actions/requests";
 import { RequestDetails } from "~/components/requests";
 import { notFound } from "next/navigation";
@@ -58,13 +60,33 @@ async function RequestDetailsContent({ requestId }: { requestId: string }) {
     const request = result.data.request;
     const isOwner = session?.user?.id === request.requesterId;
 
+    // For ACCEPTED requests, only allow access to requester and accepted offerer
+    if (request.status === "ACCEPTED" && session?.user?.id) {
+      const isRequester = session.user.id === request.requesterId;
+
+      // Find the accepted offerer from negotiation messages
+      const acceptedOffererMessage = request.negotiation?.messages.find(
+        (msg) =>
+          msg.messageType === "ACCEPT" && msg.sender.id !== request.requesterId,
+      );
+      const isAcceptedOfferer =
+        acceptedOffererMessage?.sender.id === session.user.id;
+
+      if (!isRequester && !isAcceptedOfferer) {
+        notFound();
+      }
+    }
+
     return (
       <RequestDetails
         request={request}
         isOwner={isOwner}
+        currentUserId={session?.user?.id}
         createOfferAction={createOffer}
         getOffersAction={getOffers}
         updateOfferAction={updateOffer}
+        sendNegotiationMessageAction={sendNegotiationMessage}
+        completeRequestAction={completeRequest}
       />
     );
   } catch (error) {

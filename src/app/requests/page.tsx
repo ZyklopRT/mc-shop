@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { getRequests } from "~/server/actions/requests/get-requests";
+import { getUserAcceptedOffers } from "~/server/actions/requests";
 import { auth } from "~/server/auth";
 import type { RequestWithDetails } from "~/lib/types/request";
 import { RequestCard } from "~/components/requests/request-card";
@@ -33,11 +34,12 @@ export default async function RequestsPage() {
       </div>
 
       <Tabs defaultValue="open" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="open">Open</TabsTrigger>
           <TabsTrigger value="negotiation">In Negotiation</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="my-requests">My Requests</TabsTrigger>
+          <TabsTrigger value="accepted-offers">Accepted Offers</TabsTrigger>
         </TabsList>
 
         <TabsContent value="open">
@@ -61,6 +63,12 @@ export default async function RequestsPage() {
         <TabsContent value="my-requests">
           <Suspense fallback={<RequestsLoading />}>
             <MyRequestsList />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="accepted-offers">
+          <Suspense fallback={<RequestsLoading />}>
+            <AcceptedOffersList />
           </Suspense>
         </TabsContent>
       </Tabs>
@@ -199,6 +207,64 @@ async function MyRequestsList() {
   }
 }
 
+async function AcceptedOffersList() {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return (
+        <div className="py-12 text-center">
+          <p className="text-muted-foreground">
+            Please log in to view your accepted offers.
+          </p>
+        </div>
+      );
+    }
+
+    // Fetch requests where user has accepted offers
+    const result = await getUserAcceptedOffers();
+
+    if (!result.success) {
+      return (
+        <div className="py-12 text-center">
+          <p className="text-muted-foreground">
+            Failed to load your accepted offers: {result.error}
+          </p>
+        </div>
+      );
+    }
+
+    const { requests } = result.data;
+
+    if (!requests.length) {
+      return (
+        <div className="py-12 text-center">
+          <div className="bg-muted mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full">
+            <Sparkles className="text-muted-foreground h-12 w-12" />
+          </div>
+          <h3 className="mb-2 text-lg font-semibold">No accepted offers yet</h3>
+          <p className="text-muted-foreground mb-4">
+            When your offers are accepted by request owners, they will appear
+            here.
+          </p>
+        </div>
+      );
+    }
+
+    return <RequestGrid requests={requests} />;
+  } catch (error) {
+    console.error("Error fetching accepted offers:", error);
+    return (
+      <div className="py-12 text-center">
+        <p className="text-muted-foreground">
+          An error occurred while loading your accepted offers. Please try again
+          later.
+        </p>
+      </div>
+    );
+  }
+}
+
 interface RequestGridProps {
   requests: RequestWithDetails[];
 }
@@ -242,6 +308,12 @@ function getEmptyMessage(status?: string) {
       return {
         title: "No completed requests",
         description: "Completed requests and transactions will appear here.",
+      };
+    case "ACCEPTED_OFFERS":
+      return {
+        title: "No accepted offers",
+        description:
+          "When your offers are accepted by request owners, they will appear here.",
       };
     case "OPEN":
     default:
