@@ -10,14 +10,8 @@ import {
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
-import {
-  Package,
-  MessageCircle,
-  Clock,
-  CheckCircle,
-  Coins,
-  Pencil,
-} from "lucide-react";
+import { Coins, Pencil } from "lucide-react";
+import { RequestStatusBadge, RequestTypeBadge } from "./ui";
 import Link from "next/link";
 import { UserAvatar } from "~/components/ui/user-avatar";
 import { ItemPreview } from "~/components/items/item-preview";
@@ -61,18 +55,6 @@ export function RequestCard({
   itemQuantity,
   isOwner,
 }: RequestCardProps) {
-  const statusConfig = {
-    OPEN: { label: "Open", color: "bg-green-500", icon: Clock },
-    IN_NEGOTIATION: {
-      label: "In Negotiation",
-      color: "bg-yellow-500",
-      icon: MessageCircle,
-    },
-    ACCEPTED: { label: "Accepted", color: "bg-purple-500", icon: CheckCircle },
-    COMPLETED: { label: "Completed", color: "bg-blue-500", icon: CheckCircle },
-    CANCELLED: { label: "Cancelled", color: "bg-gray-500", icon: Clock },
-  };
-
   const getCurrencyIcon = (currencyType: string) => {
     switch (currencyType) {
       case CURRENCY_TYPES.EMERALD_BLOCKS:
@@ -87,28 +69,9 @@ export function RequestCard({
     <Card className="transition-shadow hover:shadow-md">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <Badge variant={type === "ITEM" ? "default" : "secondary"}>
-            {type === "ITEM" ? (
-              <>
-                <Package className="mr-1 h-3 w-3" />
-                Item Request
-              </>
-            ) : (
-              <>
-                <MessageCircle className="mr-1 h-3 w-3" />
-                Service Request
-              </>
-            )}
-          </Badge>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center">
-              <div
-                className={`h-2 w-2 rounded-full ${statusConfig[status].color} mr-2`}
-              />
-              <span className="text-muted-foreground text-sm">
-                {statusConfig[status].label}
-              </span>
-            </div>
+          <RequestTypeBadge type={type} />
+          <div className="flex items-center gap-3">
+            <RequestStatusBadge status={status} />
             {isOwner && (
               <Button variant="ghost" size="sm" asChild>
                 <Link href={`/requests/${id}/edit`}>

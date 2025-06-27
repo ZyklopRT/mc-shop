@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { updateOfferSchema } from "~/lib/validations/request";
@@ -132,6 +133,10 @@ export async function updateOffer(
 
       return updatedOffer;
     });
+
+    // Revalidate relevant paths to update the UI
+    revalidatePath(`/requests/${offer.request.id}`);
+    revalidatePath("/requests");
 
     return {
       success: true,

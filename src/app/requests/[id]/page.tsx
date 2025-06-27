@@ -7,10 +7,10 @@ import { auth } from "~/server/auth";
 import {
   getRequestDetails,
   createOffer,
-  getOffers,
   updateOffer,
   sendNegotiationMessage,
   completeRequest,
+  deleteRequest,
 } from "~/server/actions/requests";
 import { RequestDetails } from "~/components/requests";
 import { notFound } from "next/navigation";
@@ -58,7 +58,6 @@ async function RequestDetailsContent({ requestId }: { requestId: string }) {
     }
 
     const request = result.data.request;
-    const isOwner = session?.user?.id === request.requesterId;
 
     // For ACCEPTED requests, only allow access to requester and accepted offerer
     if (request.status === "ACCEPTED" && session?.user?.id) {
@@ -79,14 +78,15 @@ async function RequestDetailsContent({ requestId }: { requestId: string }) {
 
     return (
       <RequestDetails
-        request={request}
-        isOwner={isOwner}
+        initialRequest={request}
         currentUserId={session?.user?.id}
-        createOfferAction={createOffer}
-        getOffersAction={getOffers}
-        updateOfferAction={updateOffer}
-        sendNegotiationMessageAction={sendNegotiationMessage}
-        completeRequestAction={completeRequest}
+        actions={{
+          createOffer,
+          updateOffer,
+          sendNegotiationMessage,
+          completeRequest,
+          deleteRequest,
+        }}
       />
     );
   } catch (error) {

@@ -8,6 +8,7 @@ interface UserAvatarProps {
   size?: "sm" | "md" | "lg";
   showUsername?: boolean;
   className?: string;
+  children?: React.ReactNode;
 }
 
 export function UserAvatar({
@@ -15,6 +16,7 @@ export function UserAvatar({
   size = "md",
   showUsername = false,
   className = "",
+  children,
 }: UserAvatarProps) {
   const getAvatarUrl = (mcUsername: string) => {
     // Use Minecraft avatar service
@@ -75,9 +77,12 @@ export function UserAvatar({
             )}
           </AvatarFallback>
         </Avatar>
-        <span className={`font-medium ${getTextSize()}`}>
-          {username ?? "Unknown User"}
-        </span>
+        <div className="flex flex-col">
+          <span className={`font-medium ${getTextSize()}`}>
+            {username ?? "Unknown User"}
+          </span>
+          {children}
+        </div>
       </div>
     );
   }
@@ -97,6 +102,7 @@ export function UserAvatar({
           <User className="h-3 w-3" />
         )}
       </AvatarFallback>
+      <div className="flex flex-col">{children}</div>
     </Avatar>
   );
 }

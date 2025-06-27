@@ -58,6 +58,11 @@ export type NegotiationWithDetails = RequestNegotiation & {
   messages: (NegotiationMessage & {
     sender: Pick<User, "id" | "mcUsername">;
   })[];
+  acceptedOffer?:
+    | (RequestOffer & {
+        offerer: Pick<User, "id" | "mcUsername">;
+      })
+    | null;
 };
 
 export type NegotiationMessageWithSender = NegotiationMessage & {

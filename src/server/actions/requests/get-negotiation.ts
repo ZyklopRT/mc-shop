@@ -54,7 +54,7 @@ export async function getNegotiation(data: {
     const acceptedOffer = await db.requestOffer.findUnique({
       where: { id: negotiation.acceptedOfferId! },
       include: {
-        offerer: { select: { id: true } },
+        offerer: { select: { id: true, mcUsername: true } },
       },
     });
 
@@ -73,7 +73,12 @@ export async function getNegotiation(data: {
       };
     }
 
-    return { success: true, data: { negotiation } };
+    const negotiationWithOffer = {
+      ...negotiation,
+      acceptedOffer,
+    };
+
+    return { success: true, data: { negotiation: negotiationWithOffer } };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
@@ -130,7 +135,7 @@ export async function getNegotiationByRequestId(data: {
     const acceptedOffer = await db.requestOffer.findUnique({
       where: { id: negotiation.acceptedOfferId! },
       include: {
-        offerer: { select: { id: true } },
+        offerer: { select: { id: true, mcUsername: true } },
       },
     });
 
@@ -149,7 +154,12 @@ export async function getNegotiationByRequestId(data: {
       };
     }
 
-    return { success: true, data: { negotiation } };
+    const negotiationWithOffer = {
+      ...negotiation,
+      acceptedOffer,
+    };
+
+    return { success: true, data: { negotiation: negotiationWithOffer } };
   } catch (error) {
     console.error("Get negotiation by request ID error:", error);
     return { success: false, error: "Failed to get negotiation" };

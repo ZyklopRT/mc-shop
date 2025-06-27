@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { negotiationMessageSchema } from "~/lib/validations/request";
@@ -26,7 +27,7 @@ export async function sendNegotiationMessage(
       priceOffer: formData.get("priceOffer")
         ? Number(formData.get("priceOffer"))
         : undefined,
-      currency: formData.get("currency"),
+      currency: formData.get("currency") ?? undefined,
     });
 
     if (!validatedFields.success) {
@@ -63,7 +64,7 @@ export async function sendNegotiationMessage(
       };
     }
 
-    // Get the accepted offer to determine the offerer
+    // Get the accepted offer to determine the offerer and get original offer details
     const acceptedOffer = await db.requestOffer.findUnique({
       where: { id: negotiation.acceptedOfferId! },
       include: {
@@ -86,7 +87,10 @@ export async function sendNegotiationMessage(
       };
     }
 
-    // Validate message type permissions
+    // Validate message type permissions and prepare acceptance data
+    let finalPriceOffer = priceOffer;
+    let finalCurrency = currency;
+
     if (messageType === "ACCEPT") {
       // Both parties can accept, but we need to check if both have accepted
       const existingAcceptMessage = await db.negotiationMessage.findFirst({
@@ -103,6 +107,47 @@ export async function sendNegotiationMessage(
           error: "You have already accepted this negotiation",
         };
       }
+
+      // If no counter-offers have been made, use the original accepted offer details
+      const hasCounterOffers = await db.negotiationMessage.findFirst({
+        where: {
+          negotiationId,
+          messageType: "COUNTER_OFFER",
+        },
+      });
+
+      if (!hasCounterOffers) {
+        // Use the original accepted offer's price and currency
+        finalPriceOffer = acceptedOffer.offeredPrice ?? undefined;
+        // Ensure currency is valid, fallback to emeralds if invalid
+        const offerCurrency = acceptedOffer.currency;
+        if (
+          offerCurrency === "emeralds" ||
+          offerCurrency === "emerald_blocks"
+        ) {
+          finalCurrency = offerCurrency;
+        } else {
+          finalCurrency = "emeralds"; // Safe fallback
+        }
+      } else {
+        // If there are counter-offers, use the most recent one
+        const lastCounterOffer = await db.negotiationMessage.findFirst({
+          where: {
+            negotiationId,
+            messageType: "COUNTER_OFFER",
+          },
+          orderBy: { createdAt: "desc" },
+        });
+
+        if (lastCounterOffer) {
+          finalPriceOffer = lastCounterOffer.priceOffer ?? undefined;
+          // Get the currency from the request (updated by the last counter-offer)
+          finalCurrency = negotiation.request.currency as
+            | "emeralds"
+            | "emerald_blocks"
+            | undefined;
+        }
+      }
     }
 
     // Create the message
@@ -112,15 +157,27 @@ export async function sendNegotiationMessage(
         senderId: session.user.id,
         messageType,
         content,
-        priceOffer,
+        priceOffer: finalPriceOffer,
       },
     });
 
     // If currency is provided for counter offers, update the request's currency
-    if (messageType === "COUNTER_OFFER" && currency) {
+    if (messageType === "COUNTER_OFFER" && finalCurrency) {
       await db.request.update({
         where: { id: negotiation.request.id },
-        data: { currency },
+        data: { currency: finalCurrency },
+      });
+    }
+
+    // If accepting and using original offer currency, update request currency to match
+    if (
+      messageType === "ACCEPT" &&
+      finalCurrency &&
+      finalCurrency !== negotiation.request.currency
+    ) {
+      await db.request.update({
+        where: { id: negotiation.request.id },
+        data: { currency: finalCurrency },
       });
     }
 
@@ -171,6 +228,10 @@ export async function sendNegotiationMessage(
         data: { status: "OPEN" },
       });
     }
+
+    // Revalidate relevant paths to update the UI
+    revalidatePath(`/requests/${negotiation.request.id}`);
+    revalidatePath("/requests");
 
     return { success: true, data: { messageId: message.id } };
   } catch (error) {

@@ -1,0 +1,169 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Request System Workflow & Process
+
+This rule documents the complete workflow of the MC Shop request system, from initial request creation to final completion.
+
+## System Overview
+
+The request system allows users to request items or services from other players, with a structured negotiation and completion process.
+
+## Parties Involved
+
+### 1. **Requester**
+- Creates the initial request
+- Can accept/reject offers
+- Participates in negotiations
+- Can complete the final transaction
+
+### 2. **Offerer(s)**
+- Browse and respond to requests
+- Make offers with pricing
+- Participate in negotiations
+- Fulfill accepted requests
+
+## Core Components
+
+### Database Schema
+- **Requests**: [schema.prisma](mdc:prisma/schema.prisma) - Main request entity
+- **Offers**: Offers made by potential offerers
+- **Negotiations**: Active negotiation sessions
+- **Messages**: Negotiation communication
+
+### Key Files
+- **Request Actions**: [src/server/actions/requests/](mdc:src/server/actions/requests)
+- **Request Validation**: [src/lib/validations/request.ts](mdc:src/lib/validations/request.ts)
+- **Request Types**: [src/lib/types/request.ts](mdc:src/lib/types/request.ts)
+- **Negotiation Interface**: [src/components/requests/negotiation-interface.tsx](mdc:src/components/requests/negotiation-interface.tsx)
+
+## Complete Workflow Process
+
+### Phase 1: Request Creation
+1. **Requester creates request** via [src/app/requests/new/page.tsx](mdc:src/app/requests/new/page.tsx)
+   - Specify request type: `ITEM` or `GENERAL`
+   - Provide title, description
+   - Set suggested price and currency
+   - For items: specify item ID and quantity
+   - Status: `OPEN`
+
+### Phase 2: Offer Making
+1. **Offerers browse requests** via [src/app/requests/page.tsx](mdc:src/app/requests/page.tsx)
+2. **Offerers make offers** using offer form component
+   - Specify offered price and currency
+   - Optional message to requester
+   - Offer status: `PENDING`
+
+### Phase 3: Offer Review & Acceptance
+1. **Requester reviews offers** via [src/app/requests/[id]/page.tsx](mdc:src/app/requests/[id]/page.tsx)
+2. **Requester accepts an offer**
+   - Only one offer can be accepted
+   - Request status: `OPEN` → `IN_NEGOTIATION`
+   - Offer status: `PENDING` → `ACCEPTED`
+   - Other offers automatically become invalid
+
+### Phase 4: Negotiation Process
+1. **Negotiation session created** automatically when offer accepted
+   - Status: `IN_PROGRESS`
+   - Links requester and offerer
+   - References the accepted offer as baseline
+
+2. **Negotiation Communication** via [src/components/requests/negotiation-interface.tsx](mdc:src/components/requests/negotiation-interface.tsx)
+   
+   **Message Types:**
+   - `MESSAGE`: Regular communication
+   - `COUNTER_OFFER`: Propose different price/terms
+   - `ACCEPT`: Accept current terms
+   - `REJECT`: Reject and end negotiation
+
+3. **Counter-Offer Logic**
+   - Either party can make counter-offers
+   - Counter-offers reset previous acceptances
+   - Only acceptances after the latest counter-offer count
+   - Updates request currency if different
+
+4. **Acceptance Logic**
+   - **No Counter-Offers**: Both parties accept original offer terms
+   - **With Counter-Offers**: Both parties must accept latest counter-offer
+   - Both acceptances required for completion
+
+### Phase 5: Negotiation Resolution
+
+#### Success Path:
+1. **Both parties accept** current terms
+   - Negotiation status: `IN_PROGRESS` → `AGREED`
+   - Request status: `IN_NEGOTIATION` → `ACCEPTED`
+   - Ready for completion
+
+#### Failure Path:
+1. **Either party rejects**
+   - Negotiation status: `IN_PROGRESS` → `FAILED`
+   - Request status: `IN_NEGOTIATION` → `OPEN`
+   - Request returns to available for new offers
+
+### Phase 6: Request Completion
+1. **Final completion** via complete action
+   - Request status: `ACCEPTED` → `COMPLETED`
+   - Sets completion timestamp
+   - Transaction is considered finalized
+
+## Request Status Flow
+
+```
+OPEN → IN_NEGOTIATION → ACCEPTED → COMPLETED
+  ↓                        ↑
+CANCELLED              (if negotiation fails)
+```
+
+## Negotiation Status Flow
+
+```
+IN_PROGRESS → AGREED (both accept)
+     ↓
+   FAILED (either rejects)
+```
+
+## Key Business Rules
+
+### Counter-Offer Reset Logic
+- **Critical**: When any counter-offer is made, all previous acceptances are invalidated
+- Both parties must re-accept the latest terms
+- This ensures both parties agree to the same final terms
+
+### Currency Handling
+- Requests have a base currency (emeralds/emerald_blocks)
+- Counter-offers can change the currency
+- Final accepted currency becomes the transaction currency
+
+### Price Evolution
+- Original request suggested price
+- Accepted offer price (baseline)
+- Latest counter-offer price (if any)
+- Final agreed price (from last acceptance)
+
+### Validation Requirements
+- All prices: 0-999,999 range
+- Messages: 1-500 characters
+- Currency: must be valid enum for counter-offers
+- Participants: only requester and accepted offerer can negotiate
+
+## Error Handling
+
+### Common Validation Errors
+- Currency validation: handled conditionally based on message type
+- Price requirements: enforced for counter-offers only
+- Participant authorization: verified server-side
+
+### State Consistency
+- Server actions ensure proper state transitions
+- Database transactions maintain consistency
+- Client-side optimistic updates for better UX
+
+## Security Considerations
+- Authentication required for all actions
+- Participants verified for each negotiation action
+- Form data validation on both client and server
+- RCON integration for actual Minecraft transactions
+

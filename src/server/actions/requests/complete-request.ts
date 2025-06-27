@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { completeRequestSchema } from "~/lib/validations/request";
@@ -119,6 +120,10 @@ export async function completeRequest(
         },
       });
     });
+
+    // Revalidate relevant paths to update the UI
+    revalidatePath(`/requests/${requestId}`);
+    revalidatePath("/requests");
 
     return { success: true, data: { requestId } };
   } catch (error) {

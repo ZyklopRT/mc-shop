@@ -83,26 +83,55 @@ export const updateOfferSchema = z.object({
 });
 
 // Negotiation message validation
-export const negotiationMessageSchema = z.object({
-  negotiationId: z.string().min(1, "Negotiation ID is required"),
-  messageType: z.enum([
-    "OFFER",
-    "COUNTER_OFFER",
-    "ACCEPT",
-    "REJECT",
-    "MESSAGE",
-  ]),
-  content: z
-    .string()
-    .min(1, "Message content is required")
-    .max(500, "Message must be at most 500 characters"),
-  priceOffer: z
-    .number()
-    .min(0, "Price must be at least 0")
-    .max(999999, "Price is too high")
-    .optional(),
-  currency: z.enum(["emeralds", "emerald_blocks"]).optional(),
-});
+export const negotiationMessageSchema = z
+  .object({
+    negotiationId: z.string().min(1, "Negotiation ID is required"),
+    messageType: z.enum([
+      "OFFER",
+      "COUNTER_OFFER",
+      "ACCEPT",
+      "REJECT",
+      "MESSAGE",
+    ]),
+    content: z
+      .string()
+      .min(1, "Message content is required")
+      .max(500, "Message must be at most 500 characters"),
+    priceOffer: z
+      .number()
+      .min(0, "Price must be at least 0")
+      .max(999999, "Price is too high")
+      .optional(),
+    currency: z.string().optional().nullable(),
+  })
+  .refine(
+    (data) => {
+      // Only validate currency enum for counter-offers
+      if (data.messageType === "COUNTER_OFFER") {
+        return (
+          data.currency === "emeralds" || data.currency === "emerald_blocks"
+        );
+      }
+      return true;
+    },
+    {
+      message: "Currency must be emeralds or emerald_blocks for counter-offers",
+      path: ["currency"],
+    },
+  )
+  .refine(
+    (data) => {
+      // Price offer is required for counter-offers
+      if (data.messageType === "COUNTER_OFFER") {
+        return data.priceOffer !== undefined && data.priceOffer > 0;
+      }
+      return true;
+    },
+    {
+      message: "Price offer is required for counter-offers",
+      path: ["priceOffer"],
+    },
+  );
 
 // For backwards compatibility, also create the sendNegotiationMessageSchema
 export const sendNegotiationMessageSchema = negotiationMessageSchema;

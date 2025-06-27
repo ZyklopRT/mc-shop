@@ -11,6 +11,7 @@ import { Button } from "~/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { createRequest } from "~/server/actions/requests";
 import { RequestForm } from "~/components/requests";
 
 export default function NewRequestPage() {
@@ -43,6 +44,7 @@ export default function NewRequestPage() {
         <CardContent>
           <RequestForm
             mode="create"
+            createRequestAction={createRequest}
             onSuccess={(requestId) => {
               router.push(`/requests/${requestId}`);
             }}
