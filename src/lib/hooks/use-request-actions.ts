@@ -53,7 +53,7 @@ export function useRequestActions(
           onError?.("createOffer", errorMessage);
           return result;
         }
-      } catch (_error) {
+      } catch {
         const errorMessage =
           "An unexpected error occurred while submitting the offer";
         toast.error("Error submitting offer", { description: errorMessage });
@@ -86,7 +86,7 @@ export function useRequestActions(
           onError?.("updateOffer", errorMessage);
           return result;
         }
-      } catch (_error) {
+      } catch {
         const errorMessage =
           "An unexpected error occurred while updating the offer";
         toast.error("Error updating offer", { description: errorMessage });
@@ -126,7 +126,7 @@ export function useRequestActions(
           onError?.("sendMessage", errorMessage);
           return result;
         }
-      } catch (_error) {
+      } catch {
         const errorMessage =
           "An unexpected error occurred while sending the message";
         toast.error("Error sending message", { description: errorMessage });
@@ -157,7 +157,7 @@ export function useRequestActions(
           onError?.("completeRequest", errorMessage);
           return result;
         }
-      } catch (_error) {
+      } catch {
         const errorMessage =
           "An unexpected error occurred while completing the request";
         toast.error("Error completing request", { description: errorMessage });
@@ -183,7 +183,7 @@ export function useRequestActions(
         onError?.("deleteRequest", errorMessage);
         return result;
       }
-    } catch (_error) {
+    } catch {
       const errorMessage =
         "An unexpected error occurred while deleting the request";
       toast.error("Error deleting request", { description: errorMessage });

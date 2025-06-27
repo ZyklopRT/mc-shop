@@ -3,14 +3,32 @@
 import { Badge } from "~/components/ui/badge";
 import { CheckCircle, Clock, XCircle } from "lucide-react";
 import { CurrencyDisplay } from "../ui/currency-display";
-import type { NegotiationWithDetails } from "~/lib/types/request";
+import type {
+  NegotiationMessage,
+  RequestNegotiation,
+  RequestOffer,
+  User,
+} from "@prisma/client";
+
+// Simplified types for the component props
+type NegotiationMessageWithSender = NegotiationMessage & {
+  sender: Pick<User, "id" | "mcUsername">;
+};
+
+type SimpleNegotiation = RequestNegotiation & {
+  messages: NegotiationMessageWithSender[];
+};
+
+type SimpleOffer = RequestOffer & {
+  offerer: Pick<User, "id" | "mcUsername">;
+};
 
 interface NegotiationStatusProps {
-  negotiation: any; // The negotiation data from the request
+  negotiation: SimpleNegotiation;
   currentUserId: string;
   requestCurrency: string;
   requestSuggestedPrice?: number | null;
-  acceptedOffer?: any; // The accepted offer data
+  acceptedOffer?: SimpleOffer;
   requesterId: string; // The ID of the person who made the request
   requesterUsername: string; // The username of the person who made the request
   className?: string;
@@ -31,26 +49,26 @@ export function NegotiationStatus({
     // Find the latest counter-offer
     const lastCounterOffer = [...negotiation.messages]
       .reverse()
-      .find((msg: any) => msg.messageType === "COUNTER_OFFER");
+      .find((msg) => msg.messageType === "COUNTER_OFFER");
 
     // If there's a counter-offer, only consider acceptances after it
     const relevantMessages = lastCounterOffer
       ? negotiation.messages.filter(
-          (msg: any) =>
+          (msg) =>
             msg.messageType === "ACCEPT" &&
             new Date(msg.createdAt) > new Date(lastCounterOffer.createdAt),
         )
-      : negotiation.messages.filter((msg: any) => msg.messageType === "ACCEPT");
+      : negotiation.messages.filter((msg) => msg.messageType === "ACCEPT");
 
     return {
       requesterAccepted: relevantMessages.some(
-        (msg: any) => msg.sender.id === requesterId,
+        (msg) => msg.sender.id === requesterId,
       ),
       offererAccepted: relevantMessages.some(
-        (msg: any) => msg.sender.id !== requesterId,
+        (msg) => msg.sender.id !== requesterId,
       ),
       currentUserAccepted: relevantMessages.some(
-        (msg: any) => msg.sender.id === currentUserId,
+        (msg) => msg.sender.id === currentUserId,
       ),
     };
   };
@@ -62,12 +80,12 @@ export function NegotiationStatus({
     // Check for latest counter-offer
     const lastCounterOffer = [...negotiation.messages]
       .reverse()
-      .find((msg: any) => msg.messageType === "COUNTER_OFFER");
+      .find((msg) => msg.messageType === "COUNTER_OFFER");
 
     if (lastCounterOffer && lastCounterOffer.priceOffer !== null) {
       return {
         price: lastCounterOffer.priceOffer,
-        currency: requestCurrency ?? "emeralds",
+        currency: requestCurrency,
         source: "counter-offer" as const,
       };
     }
@@ -76,7 +94,7 @@ export function NegotiationStatus({
     if (acceptedOffer) {
       return {
         price: acceptedOffer.offeredPrice,
-        currency: acceptedOffer.currency ?? requestCurrency ?? "emeralds",
+        currency: acceptedOffer.currency,
         source: "accepted-offer" as const,
       };
     }
@@ -84,7 +102,7 @@ export function NegotiationStatus({
     // Fallback to request suggested price
     return {
       price: requestSuggestedPrice,
-      currency: requestCurrency ?? "emeralds",
+      currency: requestCurrency,
       source: "suggested" as const,
     };
   };

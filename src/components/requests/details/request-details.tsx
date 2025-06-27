@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useRequestActions } from "~/lib/hooks/use-request-actions";
 import { useRequestData } from "~/lib/hooks/use-request-data";
 import { RequestHeader } from "./request-header";
 import { OfferForm, OfferList } from "../offers";
@@ -9,7 +7,10 @@ import { NegotiationInterface } from "../negotiation";
 import { canMakeOffer } from "~/lib/utils/request-status";
 import { Card, CardContent } from "~/components/ui/card";
 import { Loader2, AlertCircle } from "lucide-react";
-import type { RequestWithFullDetails } from "~/lib/types/request";
+import type {
+  RequestWithFullDetails,
+  RequestOfferWithDetails,
+} from "~/lib/types/request";
 import type { RequestActions } from "~/lib/hooks/use-request-actions";
 
 interface RequestDetailsProps {
@@ -32,29 +33,23 @@ export function RequestDetails({
 
   // Use initial request if we haven't loaded fresh data yet
   const currentRequest = request ?? initialRequest;
+
+  // Transform offers to match expected type structure
+  const transformOffers = (
+    request: RequestWithFullDetails,
+  ): RequestOfferWithDetails[] => {
+    return request.offers.map((offer) => ({
+      ...offer,
+      request: {
+        id: request.id,
+        title: request.title,
+        requesterId: request.requesterId,
+        status: request.status,
+      },
+    }));
+  };
   const isOwner = currentRequest.requesterId === currentUserId;
   const userCanMakeOffer = !isOwner && canMakeOffer(currentRequest.status);
-
-  const requestActions = useRequestActions(
-    {
-      createOffer: actions.createOffer,
-      updateOffer: actions.updateOffer,
-      sendNegotiationMessage: actions.sendNegotiationMessage,
-      completeRequest: actions.completeRequest,
-      deleteRequest: async () => ({ success: false, error: "Not available" }), // Placeholder
-    },
-    {
-      requestId: currentRequest.id,
-      onSuccess: (action) => {
-        if (action === "createOffer" || action === "updateOffer") {
-          void refreshRequest();
-        }
-      },
-      onError: (action, error) => {
-        console.error(`Request action ${action} failed:`, error);
-      },
-    },
-  );
 
   const handleOffersUpdated = () => {
     void refreshRequest();
@@ -148,7 +143,7 @@ export function RequestDetails({
                 // We already have offers from the request data
                 return {
                   success: true as const,
-                  data: { offers: currentRequest.offers as any },
+                  data: { offers: transformOffers(currentRequest) },
                 };
               }}
               updateOfferAction={actions.updateOffer}
@@ -167,7 +162,7 @@ export function RequestDetails({
           getOffersAction={async (_data) => {
             return {
               success: true as const,
-              data: { offers: currentRequest.offers as any },
+              data: { offers: transformOffers(currentRequest) },
             };
           }}
           updateOfferAction={actions.updateOffer}

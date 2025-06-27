@@ -9,16 +9,34 @@ import { useRequestActions } from "~/lib/hooks/use-request-actions";
 import { MessageList } from "./negotiation-message";
 import { NegotiationForm } from "./negotiation-form";
 import { NegotiationStatus } from "./negotiation-status";
-import type { NegotiationWithDetails } from "~/lib/types/request";
 import type { RequestActions } from "~/lib/hooks/use-request-actions";
+import type {
+  NegotiationMessage,
+  RequestNegotiation,
+  RequestOffer,
+  User,
+} from "@prisma/client";
+
+// Simplified types for the component props
+type NegotiationMessageWithSender = NegotiationMessage & {
+  sender: Pick<User, "id" | "mcUsername">;
+};
+
+type SimpleNegotiation = RequestNegotiation & {
+  messages: NegotiationMessageWithSender[];
+};
+
+type SimpleOffer = RequestOffer & {
+  offerer: Pick<User, "id" | "mcUsername">;
+};
 
 interface NegotiationInterfaceProps {
-  negotiation: any; // Simplified to accept the actual negotiation data from request
+  negotiation: SimpleNegotiation;
   currentUserId: string;
   requestId: string;
   requestCurrency: string;
   requestSuggestedPrice?: number | null;
-  acceptedOffer?: any;
+  acceptedOffer?: SimpleOffer;
   requesterId: string; // The ID of the person who made the request
   requesterUsername: string; // The username of the person who made the request
   actions: Pick<RequestActions, "sendNegotiationMessage" | "completeRequest">;
@@ -76,15 +94,15 @@ export function NegotiationInterface({
 
     const relevantMessages = lastCounterOffer
       ? negotiation.messages.filter(
-          (msg: any) =>
+          (msg) =>
             msg.messageType === "ACCEPT" &&
             new Date(msg.createdAt) > new Date(lastCounterOffer.createdAt),
         )
-      : negotiation.messages.filter((msg: any) => msg.messageType === "ACCEPT");
+      : negotiation.messages.filter((msg) => msg.messageType === "ACCEPT");
 
     return {
       currentUserAccepted: relevantMessages.some(
-        (msg: any) => msg.sender.id === currentUserId,
+        (msg) => msg.sender.id === currentUserId,
       ),
     };
   };
@@ -95,19 +113,19 @@ export function NegotiationInterface({
   const getOtherPartyAcceptanceStatus = (): boolean => {
     const lastCounterOffer = [...negotiation.messages]
       .reverse()
-      .find((msg: any) => msg.messageType === "COUNTER_OFFER");
+      .find((msg) => msg.messageType === "COUNTER_OFFER");
 
     const relevantMessages = lastCounterOffer
       ? negotiation.messages.filter(
-          (msg: any) =>
+          (msg) =>
             msg.messageType === "ACCEPT" &&
             new Date(msg.createdAt) > new Date(lastCounterOffer.createdAt),
         )
-      : negotiation.messages.filter((msg: any) => msg.messageType === "ACCEPT");
+      : negotiation.messages.filter((msg) => msg.messageType === "ACCEPT");
 
     // Check if anyone OTHER than the current user has accepted
     return Boolean(
-      relevantMessages.some((msg: any) => msg.sender.id !== currentUserId),
+      relevantMessages.some((msg) => msg.sender.id !== currentUserId),
     );
   };
 
@@ -120,7 +138,7 @@ export function NegotiationInterface({
     // Check for latest counter-offer
     const lastCounterOffer = [...negotiation.messages]
       .reverse()
-      .find((msg: any) => msg.messageType === "COUNTER_OFFER");
+      .find((msg) => msg.messageType === "COUNTER_OFFER");
 
     if (lastCounterOffer && lastCounterOffer.priceOffer !== null) {
       return {
@@ -133,7 +151,7 @@ export function NegotiationInterface({
     if (acceptedOffer) {
       return {
         price: acceptedOffer.offeredPrice,
-        currency: acceptedOffer.currency ?? requestCurrency,
+        currency: acceptedOffer.currency,
       };
     }
 

@@ -52,7 +52,7 @@ export function OfferList({
         setError(errorMessage);
         toast.error("Error loading offers", { description: errorMessage });
       }
-    } catch (_err) {
+    } catch {
       const errorMessage = "An unexpected error occurred while loading offers";
       setError(errorMessage);
       toast.error("Error loading offers", { description: errorMessage });
@@ -87,7 +87,7 @@ export function OfferList({
         const errorMessage = result.error ?? "Failed to update offer";
         toast.error("Error updating offer", { description: errorMessage });
       }
-    } catch (_err) {
+    } catch {
       const errorMessage =
         "An unexpected error occurred while updating the offer";
       toast.error("Error updating offer", { description: errorMessage });
