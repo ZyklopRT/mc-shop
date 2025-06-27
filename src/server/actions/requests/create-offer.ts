@@ -27,6 +27,10 @@ export async function createOffer(
         : undefined,
       currency: formData.get("currency") ?? "emeralds",
       message: formData.get("message") ?? undefined,
+      suggestedPrice: formData.get("suggestedPrice")
+        ? Number(formData.get("suggestedPrice"))
+        : undefined,
+      suggestedCurrency: formData.get("suggestedCurrency") ?? undefined,
     });
 
     if (!validatedFields.success) {

@@ -17,6 +17,10 @@ interface NegotiationInterfaceProps {
   currentUserId: string;
   requestId: string;
   requestCurrency: string;
+  requestSuggestedPrice?: number | null;
+  acceptedOffer?: any;
+  requesterId: string; // The ID of the person who made the request
+  requesterUsername: string; // The username of the person who made the request
   actions: Pick<RequestActions, "sendNegotiationMessage" | "completeRequest">;
   onNegotiationUpdated?: () => void;
   className?: string;
@@ -27,6 +31,10 @@ export function NegotiationInterface({
   currentUserId,
   requestId,
   requestCurrency,
+  requestSuggestedPrice,
+  acceptedOffer,
+  requesterId,
+  requesterUsername,
   actions,
   onNegotiationUpdated,
   className = "",
@@ -68,22 +76,75 @@ export function NegotiationInterface({
 
     const relevantMessages = lastCounterOffer
       ? negotiation.messages.filter(
-          (msg) =>
+          (msg: any) =>
             msg.messageType === "ACCEPT" &&
             new Date(msg.createdAt) > new Date(lastCounterOffer.createdAt),
         )
-      : negotiation.messages.filter((msg) => msg.messageType === "ACCEPT");
+      : negotiation.messages.filter((msg: any) => msg.messageType === "ACCEPT");
 
     return {
       currentUserAccepted: relevantMessages.some(
-        (msg) => msg.sender.id === currentUserId,
+        (msg: any) => msg.sender.id === currentUserId,
       ),
     };
   };
 
   const { currentUserAccepted } = getAcceptanceStatus();
+
+  // Also calculate if the other party has accepted
+  const getOtherPartyAcceptanceStatus = (): boolean => {
+    const lastCounterOffer = [...negotiation.messages]
+      .reverse()
+      .find((msg: any) => msg.messageType === "COUNTER_OFFER");
+
+    const relevantMessages = lastCounterOffer
+      ? negotiation.messages.filter(
+          (msg: any) =>
+            msg.messageType === "ACCEPT" &&
+            new Date(msg.createdAt) > new Date(lastCounterOffer.createdAt),
+        )
+      : negotiation.messages.filter((msg: any) => msg.messageType === "ACCEPT");
+
+    // Check if anyone OTHER than the current user has accepted
+    return Boolean(
+      relevantMessages.some((msg: any) => msg.sender.id !== currentUserId),
+    );
+  };
+
+  const otherPartyAccepted = getOtherPartyAcceptanceStatus();
   const isNegotiationComplete =
     negotiation.status === "AGREED" || negotiation.status === "FAILED";
+
+  // Get current offer details for counter-offer validation
+  const getCurrentOfferForCounterOffer = () => {
+    // Check for latest counter-offer
+    const lastCounterOffer = [...negotiation.messages]
+      .reverse()
+      .find((msg: any) => msg.messageType === "COUNTER_OFFER");
+
+    if (lastCounterOffer && lastCounterOffer.priceOffer !== null) {
+      return {
+        price: lastCounterOffer.priceOffer,
+        currency: requestCurrency, // Use request currency as it's updated with counter-offers
+      };
+    }
+
+    // Use accepted offer as baseline
+    if (acceptedOffer) {
+      return {
+        price: acceptedOffer.offeredPrice,
+        currency: acceptedOffer.currency ?? requestCurrency,
+      };
+    }
+
+    // Fallback to request suggested price
+    return {
+      price: requestSuggestedPrice,
+      currency: requestCurrency,
+    };
+  };
+
+  const currentOfferForValidation = getCurrentOfferForCounterOffer();
 
   const handleSendMessage = async (formData: FormData) => {
     setIsLoading(true);
@@ -116,6 +177,11 @@ export function NegotiationInterface({
       <NegotiationStatus
         negotiation={negotiation}
         currentUserId={currentUserId}
+        requestCurrency={requestCurrency}
+        requestSuggestedPrice={requestSuggestedPrice}
+        acceptedOffer={acceptedOffer}
+        requesterId={requesterId}
+        requesterUsername={requesterUsername}
       />
 
       {/* Messages */}
@@ -141,6 +207,9 @@ export function NegotiationInterface({
             negotiationId={negotiation.id}
             isNegotiationComplete={isNegotiationComplete}
             currentUserAccepted={currentUserAccepted}
+            otherPartyAccepted={otherPartyAccepted}
+            currentOfferPrice={currentOfferForValidation.price}
+            currentOfferCurrency={currentOfferForValidation.currency}
             onSubmit={handleSendMessage}
           />
         </CardContent>

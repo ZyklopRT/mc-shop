@@ -21,6 +21,10 @@ import { Loader2, Send } from "lucide-react";
 import { createOfferSchema } from "~/lib/validations/request";
 import { toast } from "sonner";
 import type { CreateOfferData } from "~/lib/validations/request";
+import {
+  getMinimumInCurrency,
+  formatCurrencyWithRate,
+} from "~/lib/utils/currency-conversion";
 
 interface OfferFormProps {
   requestId: string;
@@ -49,11 +53,24 @@ export function OfferForm({
     resolver: zodResolver(createOfferSchema),
     defaultValues: {
       requestId,
-      offeredPrice: suggestedPrice,
+      offeredPrice: undefined, // Don't prefill - let user enter their own value
       currency: (currency as "emeralds" | "emerald_blocks") || "emeralds",
       message: "",
+      suggestedPrice,
+      suggestedCurrency: currency,
     },
   });
+
+  // Display suggested price in current currency for reference
+  const currentCurrency = form.watch("currency");
+  const suggestedInCurrentCurrency =
+    suggestedPrice && currency
+      ? getMinimumInCurrency(
+          suggestedPrice,
+          currency,
+          currentCurrency ?? "emeralds",
+        )
+      : 0;
 
   const onSubmit = async (data: CreateOfferData) => {
     setIsSubmitting(true);
@@ -72,11 +89,26 @@ export function OfferForm({
         formData.append("message", data.message);
       }
 
+      // Include validation context
+      if (data.suggestedPrice !== undefined) {
+        formData.append("suggestedPrice", data.suggestedPrice.toString());
+      }
+      if (data.suggestedCurrency) {
+        formData.append("suggestedCurrency", data.suggestedCurrency);
+      }
+
       const result = await createOfferAction(formData);
 
       if (result.success) {
         toast.success("Your offer has been submitted successfully.");
-        form.reset();
+        form.reset({
+          requestId,
+          offeredPrice: undefined,
+          currency: (currency as "emeralds" | "emerald_blocks") || "emeralds",
+          message: "",
+          suggestedPrice,
+          suggestedCurrency: currency,
+        });
         onOfferCreated?.();
       } else {
         toast.error(result.error ?? "Failed to submit offer");
@@ -142,10 +174,7 @@ export function OfferForm({
                     <Input
                       type="number"
                       step="0.01"
-                      min="0"
-                      placeholder={
-                        suggestedPrice?.toString() ?? "Enter your offer"
-                      }
+                      placeholder="Enter your offer"
                       disabled={disabled || isSubmitting}
                       {...field}
                       onChange={(e) => {
@@ -157,6 +186,32 @@ export function OfferForm({
                       value={field.value ?? ""}
                     />
                   </FormControl>
+                  {suggestedPrice && suggestedPrice > 0 && (
+                    <div className="text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <span>💡</span>
+                        <span>
+                          {currency &&
+                          currentCurrency &&
+                          currentCurrency !== currency ? (
+                            <>
+                              Suggested:{" "}
+                              {formatCurrencyWithRate(suggestedPrice, currency)}{" "}
+                              ={suggestedInCurrentCurrency.toFixed(2)}{" "}
+                              {getCurrencyDisplay(currentCurrency)}
+                            </>
+                          ) : (
+                            <>
+                              Suggested: {suggestedPrice.toFixed(2)}{" "}
+                              {getCurrencyDisplay(
+                                currentCurrency ?? "emeralds",
+                              )}
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}

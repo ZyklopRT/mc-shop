@@ -74,6 +74,9 @@ export const createOfferSchema = z.object({
     .string()
     .max(500, "Message must be at most 500 characters")
     .optional(),
+  // Additional fields for validation context (kept for backwards compatibility)
+  suggestedPrice: z.number().optional(),
+  suggestedCurrency: z.string().optional(),
 });
 
 // Update offer validation
@@ -103,6 +106,9 @@ export const negotiationMessageSchema = z
       .max(999999, "Price is too high")
       .optional(),
     currency: z.string().optional().nullable(),
+    // Additional fields for validation context
+    originalPrice: z.number().optional(),
+    originalCurrency: z.string().optional(),
   })
   .refine(
     (data) => {

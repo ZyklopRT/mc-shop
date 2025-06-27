@@ -24,6 +24,10 @@ import {
 } from "~/components/ui/select";
 import { CurrencySelector } from "~/components/shops/currency-selector";
 import { Send, Loader2 } from "lucide-react";
+import {
+  getMinimumInCurrency,
+  formatCurrencyWithRate,
+} from "~/lib/utils/currency-conversion";
 
 const messageFormSchema = z
   .object({
@@ -65,6 +69,9 @@ interface NegotiationFormProps {
   negotiationId: string;
   isNegotiationComplete: boolean;
   currentUserAccepted: boolean;
+  otherPartyAccepted: boolean;
+  currentOfferPrice?: number | null;
+  currentOfferCurrency?: string;
   onSubmit: (
     formData: FormData,
   ) => Promise<{ success: boolean; error?: string }>;
@@ -75,6 +82,9 @@ export function NegotiationForm({
   negotiationId,
   isNegotiationComplete,
   currentUserAccepted,
+  otherPartyAccepted,
+  currentOfferPrice,
+  currentOfferCurrency,
   onSubmit,
   className = "",
 }: NegotiationFormProps) {
@@ -86,11 +96,23 @@ export function NegotiationForm({
       messageType: "MESSAGE",
       content: "",
       priceOffer: undefined,
-      currency: undefined,
+      currency: "emeralds", // Set default currency instead of undefined
     },
   });
 
   const messageType = form.watch("messageType");
+  const selectedCurrency = form.watch("currency");
+
+  // Calculate current offer in selected currency for reference
+  const effectiveSelectedCurrency = selectedCurrency ?? "emeralds";
+  const currentOfferInSelectedCurrency =
+    currentOfferPrice && currentOfferCurrency && effectiveSelectedCurrency
+      ? getMinimumInCurrency(
+          currentOfferPrice,
+          currentOfferCurrency,
+          effectiveSelectedCurrency,
+        )
+      : (currentOfferPrice ?? 0);
 
   const handleSubmit = async (data: MessageFormData) => {
     setIsSubmitting(true);
@@ -109,6 +131,16 @@ export function NegotiationForm({
         formData.append("currency", data.currency);
       }
 
+      // Include validation context for counter-offers
+      if (data.messageType === "COUNTER_OFFER") {
+        if (currentOfferPrice !== undefined && currentOfferPrice !== null) {
+          formData.append("originalPrice", currentOfferPrice.toString());
+        }
+        if (currentOfferCurrency) {
+          formData.append("originalCurrency", currentOfferCurrency);
+        }
+      }
+
       const result = await onSubmit(formData);
 
       if (result.success) {
@@ -116,7 +148,7 @@ export function NegotiationForm({
           messageType: "MESSAGE",
           content: "",
           priceOffer: undefined,
-          currency: undefined,
+          currency: "emeralds",
         });
       }
     } finally {
@@ -131,6 +163,24 @@ export function NegotiationForm({
 
   return (
     <div className={`border-t pt-4 ${className}`}>
+      {/* Show helpful message when other party has accepted */}
+      {otherPartyAccepted && !currentUserAccepted && (
+        <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
+          <div className="flex items-start gap-2">
+            <div className="mt-2 h-2 w-2 rounded-full bg-blue-500"></div>
+            <div className="text-sm">
+              <p className="font-medium text-blue-800">
+                The other party has accepted the current terms
+              </p>
+              <p className="text-blue-600">
+                You can only accept these terms or reject the negotiation.
+                Counter-offers are no longer available.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           {/* Message Type Selector */}
@@ -151,7 +201,11 @@ export function NegotiationForm({
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="MESSAGE">Regular Message</SelectItem>
-                    <SelectItem value="COUNTER_OFFER">Counter Offer</SelectItem>
+                    {!otherPartyAccepted && (
+                      <SelectItem value="COUNTER_OFFER">
+                        Counter Offer
+                      </SelectItem>
+                    )}
                     {!currentUserAccepted && (
                       <SelectItem value="ACCEPT">Accept Terms</SelectItem>
                     )}
@@ -177,18 +231,52 @@ export function NegotiationForm({
                     <FormControl>
                       <Input
                         type="number"
-                        min="0"
+                        step="0.01"
                         max="999999"
                         placeholder="Enter your counter offer..."
                         {...field}
                         value={field.value ?? ""}
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          const value = e.target.value;
                           field.onChange(
-                            parseFloat(e.target.value) || undefined,
-                          )
-                        }
+                            value === "" ? undefined : parseFloat(value),
+                          );
+                        }}
                       />
                     </FormControl>
+                    {currentOfferPrice && currentOfferPrice > 0 && (
+                      <div className="mt-1 text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <span>💡</span>
+                          <span>
+                            {currentOfferCurrency &&
+                            effectiveSelectedCurrency &&
+                            effectiveSelectedCurrency !==
+                              currentOfferCurrency ? (
+                              <>
+                                Current offer:{" "}
+                                {formatCurrencyWithRate(
+                                  currentOfferPrice,
+                                  currentOfferCurrency,
+                                )}{" "}
+                                = {currentOfferInSelectedCurrency.toFixed(2)}{" "}
+                                {effectiveSelectedCurrency === "emerald_blocks"
+                                  ? "Emerald Blocks"
+                                  : "Emeralds"}
+                              </>
+                            ) : (
+                              <>
+                                Current offer:{" "}
+                                {formatCurrencyWithRate(
+                                  currentOfferPrice,
+                                  currentOfferCurrency ?? "emeralds",
+                                )}
+                              </>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}

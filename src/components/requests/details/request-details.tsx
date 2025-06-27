@@ -109,6 +109,12 @@ export function RequestDetails({
             currentUserId={currentUserId!}
             requestId={currentRequest.id}
             requestCurrency={currentRequest.currency}
+            requestSuggestedPrice={currentRequest.suggestedPrice}
+            acceptedOffer={currentRequest.offers.find(
+              (offer) => offer.status === "ACCEPTED",
+            )}
+            requesterId={currentRequest.requesterId}
+            requesterUsername={currentRequest.requester.mcUsername}
             actions={{
               sendNegotiationMessage: actions.sendNegotiationMessage,
               completeRequest: actions.completeRequest,
@@ -119,20 +125,16 @@ export function RequestDetails({
 
       {/* Offer Management Section - Only show for open requests */}
       {currentRequest.status === "OPEN" && (
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div className="flex flex-col gap-4">
           {/* Make Offer Form */}
           {userCanMakeOffer && (
-            <Card>
-              <CardContent className="pt-6">
-                <OfferForm
-                  requestId={currentRequest.id}
-                  currency={currentRequest.currency}
-                  suggestedPrice={currentRequest.suggestedPrice ?? undefined}
-                  createOfferAction={actions.createOffer}
-                  onOfferCreated={handleOffersUpdated}
-                />
-              </CardContent>
-            </Card>
+            <OfferForm
+              requestId={currentRequest.id}
+              currency={currentRequest.currency}
+              suggestedPrice={currentRequest.suggestedPrice ?? undefined}
+              createOfferAction={actions.createOffer}
+              onOfferCreated={handleOffersUpdated}
+            />
           )}
 
           {/* Offers List */}

@@ -11,6 +11,8 @@ interface NegotiationStatusProps {
   requestCurrency: string;
   requestSuggestedPrice?: number | null;
   acceptedOffer?: any; // The accepted offer data
+  requesterId: string; // The ID of the person who made the request
+  requesterUsername: string; // The username of the person who made the request
   className?: string;
 }
 
@@ -20,6 +22,8 @@ export function NegotiationStatus({
   requestCurrency,
   requestSuggestedPrice,
   acceptedOffer,
+  requesterId,
+  requesterUsername,
   className = "",
 }: NegotiationStatusProps) {
   // Calculate acceptance status
@@ -40,10 +44,10 @@ export function NegotiationStatus({
 
     return {
       requesterAccepted: relevantMessages.some(
-        (msg: any) => msg.sender.id !== currentUserId, // Simplified logic since we don't have requester id
+        (msg: any) => msg.sender.id === requesterId,
       ),
       offererAccepted: relevantMessages.some(
-        (msg: any) => msg.sender.id === currentUserId,
+        (msg: any) => msg.sender.id !== requesterId,
       ),
       currentUserAccepted: relevantMessages.some(
         (msg: any) => msg.sender.id === currentUserId,
@@ -155,7 +159,7 @@ export function NegotiationStatus({
               <Clock className="h-4 w-4 text-gray-400" />
             )}
             <div className="flex-1">
-              <div className="text-sm font-medium">Requester</div>
+              <div className="text-sm font-medium">{requesterUsername}</div>
               <div className="text-xs text-gray-500">
                 {requesterAccepted ? "Accepted" : "Pending"}
               </div>
@@ -194,8 +198,8 @@ export function NegotiationStatus({
               {!requesterAccepted && !offererAccepted
                 ? "both parties"
                 : !requesterAccepted
-                  ? negotiation.request.requester.mcUsername
-                  : negotiation.acceptedOffer?.offerer.mcUsername}{" "}
+                  ? requesterUsername
+                  : (acceptedOffer?.offerer?.mcUsername ?? "offerer")}{" "}
               to accept
             </div>
           )}

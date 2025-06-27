@@ -28,6 +28,10 @@ export async function sendNegotiationMessage(
         ? Number(formData.get("priceOffer"))
         : undefined,
       currency: formData.get("currency") ?? undefined,
+      originalPrice: formData.get("originalPrice")
+        ? Number(formData.get("originalPrice"))
+        : undefined,
+      originalCurrency: formData.get("originalCurrency") ?? undefined,
     });
 
     if (!validatedFields.success) {
