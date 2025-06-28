@@ -22,6 +22,14 @@ export function Navigation() {
     if (path === "/shops") {
       return pathname === path;
     }
+    if (path === "/admin/modpacks") {
+      return pathname.startsWith(path);
+    }
+    if (path === "/modpacks") {
+      return (
+        pathname.startsWith(path) && !pathname.startsWith("/admin/modpacks")
+      );
+    }
     return false;
   };
 
@@ -45,13 +53,26 @@ export function Navigation() {
               <Link href="/shops/browse" className={linkClass("/shops/browse")}>
                 Browse Shops
               </Link>
+              <Link href="/modpacks" className={linkClass("/modpacks")}>
+                Modpacks
+              </Link>
               <Link href="/requests" className={linkClass("/requests")}>
                 Request Board
               </Link>
               {session?.user && (
-                <Link href="/shops" className={linkClass("/shops")}>
-                  My Shops
-                </Link>
+                <>
+                  <Link href="/shops" className={linkClass("/shops")}>
+                    My Shops
+                  </Link>
+                  {session.user.isAdmin && (
+                    <Link
+                      href="/admin/modpacks"
+                      className={linkClass("/admin/modpacks")}
+                    >
+                      Manage Modpacks
+                    </Link>
+                  )}
+                </>
               )}
             </div>
           </div>

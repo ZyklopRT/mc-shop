@@ -122,6 +122,7 @@ model User {
     mcUsername       String    @unique // Minecraft username - primary identifier
     mcUUID           String?   @unique // Minecraft player UUID - obtained via RCON during registration
     password         String    // Hashed password
+    isAdmin          Boolean   @default(false) // Admin privileges for modpack management
     createdAt        DateTime  @default(now())
     updatedAt        DateTime  @updatedAt
     
@@ -140,6 +141,10 @@ model User {
     requests               Request[]               @relation("UserRequests")
     offers                 RequestOffer[]          @relation("UserOffers")
     negotiationMessages    NegotiationMessage[]    @relation("NegotiationMessages")
+    
+    // Modpack system relations
+    modpacks               Modpack[]               @relation("UserModpacks")
+    modpackDownloads       ModpackDownload[]       @relation("UserModpackDownloads")
 }
 
 // Model for storing temporary OTP codes during registration
@@ -296,4 +301,131 @@ enum MessageType {
   ACCEPT        // Accept the current offer
   REJECT        // Reject the current offer
   MESSAGE       // General message
+}
+
+// Modpack System Models
+
+model Modpack {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  version       String
+  minecraftVersion String @default("1.21") // Currently targeting MC 1.21
+  modLoader     ModLoader @default(NEOFORGE) // Primary focus on NeoForge
+  modLoaderVersion String?  // Mod loader version requirement
+  releaseDate   DateTime @default(now())
+  isActive      Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
+  isPublic      Boolean  @default(true)
+  downloadCount Int      @default(0)
+  filePath      String   // Path to the modpack ZIP file
+  fileSize      Int      // File size in bytes
+  checksum      String   // SHA-256 checksum
+  releaseNotes  String?  // Custom release notes
+
+  mods          Mod[]
+  changelogs    ModpackChangelog[]
+  downloads     ModpackDownload[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     User     @relation("UserModpacks", fields: [createdById], references: [id])
+  createdById   String
+
+  @@unique([name, version])
+  @@index([isActive, isFeatured])
+  @@index([modLoader, minecraftVersion])
+  @@index([createdById])
+  @@index([releaseDate])
+}
+
+model Mod {
+  id            String   @id @default(cuid())
+  modId         String   // Mod's internal ID from metadata
+  name          String
+  displayName   String?
+  version       String
+  author        String?
+  description   String?
+  homepage      String?
+  logoPath      String?  // Path to extracted logo
+  fileName      String   // Original .jar filename
+  fileSize      Int
+  checksum      String   // SHA-256 checksum
+  modLoader     ModLoader @default(NEOFORGE) // Detected mod loader
+  modLoaderVersion String? // Required mod loader version
+  minecraftVersion String? // Compatible Minecraft version
+  side          ModSide  @default(BOTH) // CLIENT, SERVER, BOTH
+  dependencies  Json?    // Dependency information (loader-agnostic format)
+
+  modpack       Modpack  @relation(fields: [modpackId], references: [id], onDelete: Cascade)
+  modpackId     String
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([modpackId, modId])
+  @@index([modLoader, minecraftVersion])
+  @@index([modpackId])
+}
+
+model ModpackChangelog {
+  id            String      @id @default(cuid())
+  modpack       Modpack     @relation(fields: [modpackId], references: [id], onDelete: Cascade)
+  modpackId     String
+  changeType    ChangeType  // ADDED, UPDATED, REMOVED, UNCHANGED
+  modId         String
+  modName       String
+  oldVersion    String?
+  newVersion    String?
+  description   String?
+  impact        ChangeImpact @default(MINOR) // MAJOR, MINOR, PATCH
+
+  createdAt     DateTime @default(now())
+
+  @@index([modpackId, changeType])
+  @@index([modpackId])
+}
+
+model ModpackDownload {
+  id            String   @id @default(cuid())
+  modpack       Modpack  @relation(fields: [modpackId], references: [id], onDelete: Cascade)
+  modpackId     String
+  user          User?    @relation("UserModpackDownloads", fields: [userId], references: [id])
+  userId        String?
+  ipAddress     String
+  userAgent     String?
+  downloadedAt  DateTime @default(now())
+  completed     Boolean  @default(false)
+
+  @@index([modpackId, downloadedAt])
+  @@index([modpackId])
+}
+
+// Modpack System Enums
+enum ModLoader {
+  NEOFORGE     // Primary implementation
+  FORGE        // Future support
+  FABRIC       // Future support
+  QUILT        // Future support
+  VANILLA      // Future support
+}
+
+enum ModSide {
+  CLIENT
+  SERVER
+  BOTH
+}
+
+enum ChangeType {
+  ADDED
+  UPDATED
+  REMOVED
+  UNCHANGED
+}
+
+enum ChangeImpact {
+  MAJOR
+  MINOR
+  PATCH
 }
