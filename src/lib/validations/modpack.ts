@@ -55,6 +55,19 @@ export const ModpackUploadSchema = z.object({
   isPublic: z.boolean().default(true),
 });
 
+// Client-side schema for upload form (no file field)
+export const ModpackUploadClientSchema = z.object({
+  name: z.string().min(1, "Modpack name is required"),
+  version: z.string().min(1, "Version is required"),
+  description: z.string(),
+  releaseNotes: z.string(),
+  minecraftVersion: z.string(),
+  modLoader: ModLoaderSchema,
+  modLoaderVersion: z.string(),
+  isPublic: z.boolean(),
+});
+export type ModpackUploadClientData = z.infer<typeof ModpackUploadClientSchema>;
+
 export const ModMetadataSchema = z.object({
   modId: z.string(),
   name: z.string(),
@@ -111,6 +124,7 @@ export const ModpackInfoSchema = z.object({
   isPublic: z.boolean(),
   downloadCount: z.number(),
   fileSize: z.number(),
+  checksum: z.string(),
   releaseNotes: z.string().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -123,6 +137,32 @@ export const ModpackInfoSchema = z.object({
       mods: z.number(),
     })
     .optional(),
+});
+
+export const ModInfoSchema = z.object({
+  id: z.string(),
+  modId: z.string(),
+  name: z.string(),
+  displayName: z.string().nullable(),
+  version: z.string(),
+  author: z.string().nullable(),
+  description: z.string().nullable(),
+  homepage: z.string().nullable(),
+  logoPath: z.string().nullable(),
+  fileName: z.string(),
+  fileSize: z.number(),
+  checksum: z.string(),
+  modLoader: ModLoaderSchema,
+  modLoaderVersion: z.string().nullable(),
+  minecraftVersion: z.string().nullable(),
+  side: ModSideSchema,
+  dependencies: z.any().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const ModpackWithModsSchema = ModpackInfoSchema.extend({
+  mods: z.array(ModInfoSchema),
 });
 
 export const ModpackListResponseSchema = z.object({
@@ -167,6 +207,8 @@ export type VersionComparisonData = z.infer<typeof VersionComparisonSchema>;
 export type ModpackDownloadData = z.infer<typeof ModpackDownloadSchema>;
 
 export type ModpackInfo = z.infer<typeof ModpackInfoSchema>;
+export type ModInfo = z.infer<typeof ModInfoSchema>;
+export type ModpackWithMods = z.infer<typeof ModpackWithModsSchema>;
 export type ModpackListResponse = z.infer<typeof ModpackListResponseSchema>;
 export type ChangelogEntry = z.infer<typeof ChangelogEntrySchema>;
 export type ChangelogData = z.infer<typeof ChangelogDataSchema>;

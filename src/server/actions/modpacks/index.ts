@@ -4,7 +4,9 @@ export { createModpack, updateModpack, deleteModpack } from "./core";
 // Query and search operations
 export { getModpacks, getModpackById, getFeaturedModpacks } from "./queries";
 
+// File upload and processing
+export { uploadModpack } from "./upload";
+
 // Future exports ready for Phase 2:
-// export { uploadModpackFile, processModpackZip } from "./upload";
 // export { extractModMetadata, parseNeoForgeToml } from "./parsers";
 // export { generateChangelog, compareVersions } from "./changelog";

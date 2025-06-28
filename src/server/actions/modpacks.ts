@@ -11,4 +11,5 @@ export {
   getModpacks,
   getModpackById,
   getFeaturedModpacks,
+  uploadModpack,
 } from "./modpacks/index";

@@ -5,6 +5,7 @@ import {
   ModpackSearchSchema,
   type ModpackSearchData,
   type ModpackInfo,
+  type ModpackWithMods,
   type ModpackListResponse,
 } from "~/lib/validations/modpack";
 
@@ -101,7 +102,7 @@ export async function getModpacks(
  */
 export async function getModpackById(
   id: string,
-): Promise<ActionResult<ModpackInfo & { mods: unknown[] }>> {
+): Promise<ActionResult<ModpackWithMods>> {
   try {
     const modpack = await db.modpack.findUnique({
       where: { id },
@@ -135,7 +136,7 @@ export async function getModpackById(
 
     return {
       success: true,
-      data: modpack as ModpackInfo & { mods: unknown[] },
+      data: modpack as ModpackWithMods,
     };
   } catch (error) {
     console.error("Error fetching modpack:", error);
