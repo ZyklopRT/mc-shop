@@ -2,13 +2,35 @@
 
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
 import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { getMinecraftAvatarUrl } from "~/lib/utils/minecraft-api";
 
 export function Navigation() {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
   const avatarUrl = getMinecraftAvatarUrl(session?.user?.mcUUID ?? "");
+
+  const isActive = (path: string) => {
+    if (path === "/shops/browse") {
+      return pathname === path;
+    }
+    if (path === "/requests") {
+      return pathname.startsWith(path);
+    }
+    if (path === "/shops") {
+      return pathname === path;
+    }
+    return false;
+  };
+
+  const linkClass = (path: string) =>
+    `transition-all duration-200 ${
+      isActive(path)
+        ? "text-gray-900 font-medium shadow-[inset_0_-2px_0_0] shadow-blue-500"
+        : "text-gray-600 hover:text-gray-900"
+    }`;
 
   return (
     <nav className="border-b bg-white shadow-sm">
@@ -20,23 +42,14 @@ export function Navigation() {
             </Link>
 
             <div className="hidden items-center space-x-6 md:flex">
-              <Link
-                href="/shops/browse"
-                className="text-gray-600 transition-colors hover:text-gray-900"
-              >
+              <Link href="/shops/browse" className={linkClass("/shops/browse")}>
                 Browse Shops
               </Link>
-              <Link
-                href="/requests"
-                className="text-gray-600 transition-colors hover:text-gray-900"
-              >
+              <Link href="/requests" className={linkClass("/requests")}>
                 Request Board
               </Link>
               {session?.user && (
-                <Link
-                  href="/shops"
-                  className="text-gray-600 transition-colors hover:text-gray-900"
-                >
+                <Link href="/shops" className={linkClass("/shops")}>
                   My Shops
                 </Link>
               )}

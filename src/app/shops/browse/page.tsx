@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
+import { PageHeader } from "~/components/ui/page-header";
 import {
   searchShopsForBrowse,
   getShopsForBrowse,
@@ -178,15 +179,11 @@ export default function BrowseShopsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <div className="mb-4 flex items-center gap-3">
-          <Store className="h-8 w-8 text-blue-600" />
-          <div>
-            <h1 className="text-3xl font-bold">Browse Shops</h1>
-            <p className="text-gray-600">
-              Discover shops from players around the server
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          icon={<Store className="h-8 w-8" />}
+          title="Browse Shops"
+          description="Discover shops from players around the server"
+        />
 
         {/* Reusable Search Bar */}
         <GlobalSearchBar

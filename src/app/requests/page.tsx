@@ -4,7 +4,8 @@ import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { Plus, Sparkles } from "lucide-react";
+import { PageHeader } from "~/components/ui/page-header";
+import { Plus, Sparkles, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { getRequests } from "~/server/actions/requests/get-requests";
 import { auth } from "~/server/auth";
@@ -17,20 +18,19 @@ export const dynamic = "force-dynamic";
 export default async function RequestsPage() {
   return (
     <div className="container mx-auto py-6">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Request Board</h1>
-          <p className="text-muted-foreground mt-1">
-            Request items or services from other players
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/requests/new">
-            <Plus className="mr-2 h-4 w-4" />
-            New Request
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        icon={<MessageSquare className="h-8 w-8" />}
+        title="Request Board"
+        description="Request items or services from other players"
+        actions={
+          <Button asChild>
+            <Link href="/requests/new">
+              <Plus className="mr-2 h-4 w-4" />
+              New Request
+            </Link>
+          </Button>
+        }
+      />
 
       <Tabs defaultValue="open" className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">

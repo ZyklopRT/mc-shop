@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
+import { PageHeader } from "~/components/ui/page-header";
 import { getMyShopsWithItems } from "~/server/actions/shops";
 import Link from "next/link";
-import { Plus, Package } from "lucide-react";
+import { Plus, Package, User } from "lucide-react";
 
 import { ShopCard } from "~/components/shops/shop-card";
 import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
@@ -85,18 +86,19 @@ export default function ShopsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">My Shops</h1>
-          <p className="text-gray-600">Manage your Minecraft shops</p>
-        </div>
-        <Button asChild>
-          <Link href="/shops/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Shop
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        icon={<User className="h-8 w-8" />}
+        title="My Shops"
+        description="Manage your Minecraft shops"
+        actions={
+          <Button asChild>
+            <Link href="/shops/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Create Shop
+            </Link>
+          </Button>
+        }
+      />
 
       {shops.length === 0 ? (
         <Card className="p-8 text-center">
