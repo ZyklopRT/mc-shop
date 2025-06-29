@@ -372,3 +372,40 @@ const onSubmit = async (data: SchemaType) => {
 - **Permissions**: Validate user permissions for data access
 - **Error Boundaries**: Implement proper error handling at component level
 - **SEO**: Use proper metadata and structured data where applicable
+
+### Layout Containers & Headers
+
+- **PageContainer** ([page-container.tsx](mdc:src/components/ui/page-container.tsx))
+  - Reusable wrapper that enforces a consistent max-width and horizontal padding for all pages.
+  - Size variants (use the smallest that fits the page):
+    | Size   | Tailwind max-width |
+    |--------|--------------------|
+    | `small`  | `max-w-lg`  (auth forms) |
+    | `medium` | `max-w-2xl` (most create / edit forms) |
+    | `large`  | `max-w-5xl` (detail pages) |
+    | `full`   | `max-w-7xl` (listing / overview pages – default) |
+  - Always import and wrap page content:  
+    ```tsx
+    import { PageContainer } from "~/components/ui/page-container";
+    
+    export default function ExamplePage() {
+      return (
+        <PageContainer size="medium">
+          {/* content */}
+        </PageContainer>
+      );
+    }
+    ```
+
+- **NavigationContainer** ([navigation-container.tsx](mdc:src/components/ui/navigation-container.tsx))
+  - Identical padding/width rules as `PageContainer size="full"` but used **only** inside `navigation.tsx` so the navbar aligns perfectly with page content.
+
+- **PageHeader** ([page-header.tsx](mdc:src/components/ui/page-header.tsx))
+  - Standard headline/description bar with an *icon*, *title*, *description*, and optional *actions* slot.
+  - Use on listing / overview pages.
+
+- **FormPageHeader** ([form-page-header.tsx](mdc:src/components/ui/form-page-header.tsx))
+  - Variant of `PageHeader` for create / edit forms.
+  - Adds a **Back** button and optional status indicator while keeping the same alignment rules.
+
+> 💡 **Rule of thumb**: Every top-level page component should start with `PageContainer` and a suitable `PageHeader` / `FormPageHeader` so that navigation, headlines, and content all share the same vertical grid.

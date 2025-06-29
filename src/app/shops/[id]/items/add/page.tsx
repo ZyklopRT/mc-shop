@@ -32,8 +32,8 @@ import { z } from "zod";
 import { addItemToShop } from "~/server/actions/shop-items";
 
 import { toast } from "sonner";
-import Link from "next/link";
-import { ArrowLeft, Plus, DollarSign, Package } from "lucide-react";
+import { Plus, DollarSign, Package } from "lucide-react";
+import { FormPageHeader } from "~/components/ui/form-page-header";
 import type { MinecraftItem } from "@prisma/client";
 import { ItemPreviewLarge } from "~/components/items/item-preview";
 
@@ -101,22 +101,13 @@ export default function AddItemToShopPage() {
 
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
-      <div className="mb-8">
-        <Button variant="outline" asChild className="mb-4">
-          <Link href={`/shops/${shopId}`}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Shop
-          </Link>
-        </Button>
-
-        <div className="mb-2 flex items-center gap-3">
-          <Plus className="text-primary h-8 w-8" />
-          <h1 className="text-3xl font-bold">Add Item to Shop</h1>
-        </div>
-        <p className="text-gray-600">
-          Add a new item to your shop with pricing and currency options.
-        </p>
-      </div>
+      <FormPageHeader
+        backHref={`/shops/${shopId}`}
+        backText="Back to Shop"
+        icon={<Plus className="h-8 w-8" />}
+        title="Add Item to Shop"
+        description="Add a new item to your shop with pricing and currency options."
+      />
 
       <Card>
         <CardHeader>

@@ -37,6 +37,7 @@ export const CreateModpackSchema = z.object({
   releaseNotes: z.string().optional(),
   isPublic: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
+  isActive: z.boolean().default(true),
 });
 
 export const UpdateModpackSchema = CreateModpackSchema.partial().extend({

@@ -44,3 +44,11 @@ yarn-error.log*
 
 # idea files
 .idea
+
+# Modpack assets (large binaries) - keep folder structure but ignore files
+/public/modpacks/logos/*
+!/public/modpacks/logos/.gitkeep
+
+# Runtime modpack storage (uploads, versions, cache, etc.)
+/data/modpacks/**
+!/data/modpacks/.gitkeep

@@ -28,9 +28,13 @@ interface ModpackSidebarProps {
     downloadCount: number;
     mods?: { length: number };
   };
+  canEdit?: boolean;
 }
 
-export function ModpackSidebar({ modpack }: ModpackSidebarProps) {
+export function ModpackSidebar({
+  modpack,
+  canEdit = false,
+}: ModpackSidebarProps) {
   return (
     <div className="flex flex-col gap-4">
       <Card>
@@ -38,33 +42,25 @@ export function ModpackSidebar({ modpack }: ModpackSidebarProps) {
           <CardTitle>Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div>
-            <Link
-              href={`/admin/modpacks/${modpack.id}/edit`}
-              className="w-full"
-            >
-              <Button className="w-full">
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Modpack
-              </Button>
-            </Link>
-          </div>
+          {canEdit && (
+            <div>
+              <Link
+                href={`/admin/modpacks/${modpack.id}/edit`}
+                className="w-full"
+              >
+                <Button className="w-full">
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Modpack
+                </Button>
+              </Link>
+            </div>
+          )}
           <div>
             <Button variant="outline" className="w-full">
               <Download className="mr-2 h-4 w-4" />
               Download ({(modpack.fileSize / 1024 / 1024).toFixed(1)} MB)
             </Button>
           </div>
-
-          {modpack.isPublic && (
-            <div>
-              <Link href={`/modpacks/${modpack.id}`} className="w-full">
-                <Button variant="ghost" className="w-full">
-                  View Public Page
-                </Button>
-              </Link>
-            </div>
-          )}
         </CardContent>
       </Card>
       <Card>

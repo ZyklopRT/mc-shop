@@ -12,6 +12,8 @@ import {
 } from "~/components/ui/card";
 import Link from "next/link";
 import { PlusCircle, Download, Users, Package } from "lucide-react";
+import { PageContainer } from "~/components/ui/page-container";
+import { PageHeader } from "~/components/ui/page-header";
 
 export default async function ModpackManagementPage() {
   // Check authentication and admin permissions
@@ -32,22 +34,20 @@ export default async function ModpackManagementPage() {
     : [];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Modpack Management</h1>
-          <p className="text-muted-foreground mt-2">
-            Upload and manage Minecraft modpacks for your server
-          </p>
-        </div>
-        <Link href="/admin/modpacks/upload">
-          <Button>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Upload New Modpack
-          </Button>
-        </Link>
-      </div>
+    <PageContainer>
+      <PageHeader
+        icon={<Package className="h-8 w-8" />}
+        title="Modpack Management"
+        description="Upload and manage Minecraft modpacks for your server"
+        actions={
+          <Link href="/admin/modpacks/upload">
+            <Button>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Upload New Modpack
+            </Button>
+          </Link>
+        }
+      />
 
       {/* Stats Overview */}
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -184,7 +184,7 @@ export default async function ModpackManagementPage() {
                     </div>
 
                     <div className="flex gap-2">
-                      <Link href={`/admin/modpacks/${modpack.id}`}>
+                      <Link href={`/modpacks/${modpack.id}`}>
                         <Button variant="outline" size="sm">
                           View Details
                         </Button>
@@ -244,6 +244,6 @@ export default async function ModpackManagementPage() {
           </Card>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import { ArrowLeft, Trash2, Save, Pencil } from "lucide-react";
+import { FormPageHeader } from "~/components/ui/form-page-header";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -50,7 +51,6 @@ import {
 } from "~/server/actions/shop-items";
 import { toast } from "~/lib/utils/toast";
 import type { ShopItemWithItem } from "~/lib/types/shop";
-import Link from "next/link";
 
 const editShopItemFormSchema = updateShopItemSchema.omit({ shopItemId: true });
 type EditShopItemForm = z.infer<typeof editShopItemFormSchema>;
@@ -240,22 +240,13 @@ export default function EditShopItemPage() {
 
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
-      <div className="mb-8">
-        <Button variant="outline" asChild className="mb-4">
-          <Link href={`/shops/${shopId}`}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to {shopItem.shop?.name}
-          </Link>
-        </Button>
-
-        <div className="mb-2 flex items-center gap-3">
-          <Pencil className="text-primary h-8 w-8" />
-          <h1 className="text-3xl font-bold">Edit Shop Item</h1>
-        </div>
-        <p className="text-gray-600">
-          Update the pricing and availability for this item.
-        </p>
-      </div>
+      <FormPageHeader
+        backHref={`/shops/${shopId}`}
+        backText={`Back to ${shopItem.shop?.name}`}
+        icon={<Pencil className="h-8 w-8" />}
+        title="Edit Shop Item"
+        description="Update the pricing and availability for this item."
+      />
 
       <Card>
         <CardHeader>

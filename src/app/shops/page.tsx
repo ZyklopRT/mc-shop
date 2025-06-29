@@ -11,6 +11,7 @@ import { Plus, Package, User } from "lucide-react";
 
 import { ShopCard } from "~/components/shops/shop-card";
 import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
+import { PageContainer } from "~/components/ui/page-container";
 
 interface Shop extends ShopWithDetails {
   shopItems: ShopItemWithItem[];
@@ -48,17 +49,17 @@ export default function ShopsPage() {
 
   if (status === "loading" || isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageContainer>
         <div className="flex items-center justify-center">
           <p>Loading shops...</p>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   if (status === "unauthenticated") {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageContainer>
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold">Authentication Required</h1>
           <p className="mb-4 text-gray-600">
@@ -68,24 +69,24 @@ export default function ShopsPage() {
             <Link href="/auth/login">Login</Link>
           </Button>
         </Card>
-      </div>
+      </PageContainer>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageContainer>
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
           <p className="mb-4 text-gray-600">{error}</p>
           <Button onClick={loadShops}>Try Again</Button>
         </Card>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <PageContainer>
       <PageHeader
         icon={<User className="h-8 w-8" />}
         title="My Shops"
@@ -123,6 +124,6 @@ export default function ShopsPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

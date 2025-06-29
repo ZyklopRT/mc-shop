@@ -26,7 +26,9 @@ import { getShopDetails, updateShop, deleteShop } from "~/server/actions/shops";
 import { updateShopSchema, type UpdateShopData } from "~/lib/validations/shop";
 import type { ShopWithItems } from "~/lib/types/shop";
 import Link from "next/link";
-import { ArrowLeft, Trash2, Save } from "lucide-react";
+import { Trash2, Save, Edit } from "lucide-react";
+import { FormPageHeader } from "~/components/ui/form-page-header";
+import { PageContainer } from "~/components/ui/page-container";
 import { toast } from "~/lib/utils/toast";
 
 type EditShopForm = Omit<UpdateShopData, "shopId">;
@@ -237,234 +239,225 @@ export default function EditShopPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mx-auto max-w-2xl">
-        <div className="mb-8">
-          <Button variant="outline" asChild className="mb-4">
-            <Link href={`/shops/${shop.id}`}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Shop
-            </Link>
-          </Button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Edit Shop</h1>
-              <p className="text-gray-600">
-                Update your shop&apos;s information
+    <PageContainer size="medium">
+      <FormPageHeader
+        backHref={`/shops/${shop.id}`}
+        backText="Back to Shop"
+        icon={<Edit className="h-8 w-8" />}
+        title="Edit Shop"
+        description="Update your shop's information"
+        statusIndicator={
+          <div className="flex items-center gap-2">
+            <div
+              className={`h-3 w-3 rounded-full ${shop.isActive ? "bg-green-500" : "bg-gray-400"}`}
+            />
+            <span className="text-sm text-gray-600">
+              {shop.isActive ? "Active" : "Inactive"}
+            </span>
+          </div>
+        }
+      />
+
+      {error && (
+        <Card className="mb-6 border-red-200 bg-red-50 p-4">
+          <p className="text-red-600">{error}</p>
+        </Card>
+      )}
+
+      <Card className="p-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Shop Name */}
+          <div className="space-y-2">
+            <Label htmlFor="name">Shop Name *</Label>
+            <Input
+              id="name"
+              {...register("name")}
+              placeholder="Enter shop name"
+              className={errors.name ? "border-red-500" : ""}
+            />
+            {errors.name && (
+              <p className="text-sm text-red-600">{errors.name.message}</p>
+            )}
+          </div>
+
+          {/* Description */}
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              {...register("description")}
+              placeholder="Describe your shop (optional)"
+              className={errors.description ? "border-red-500" : ""}
+              rows={3}
+            />
+            {errors.description && (
+              <p className="text-sm text-red-600">
+                {errors.description.message}
               </p>
+            )}
+          </div>
+
+          {/* Location */}
+          <div className="space-y-4">
+            <Label>Location (Optional)</Label>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="locationX" className="text-sm text-gray-600">
+                  X Coordinate
+                </Label>
+                <Input
+                  id="locationX"
+                  type="number"
+                  {...register("locationX", { valueAsNumber: true })}
+                  placeholder="X"
+                  className={errors.locationX ? "border-red-500" : ""}
+                />
+                {errors.locationX && (
+                  <p className="text-sm text-red-600">
+                    {errors.locationX.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="locationY" className="text-sm text-gray-600">
+                  Y Coordinate
+                </Label>
+                <Input
+                  id="locationY"
+                  type="number"
+                  {...register("locationY", { valueAsNumber: true })}
+                  placeholder="Y"
+                  className={errors.locationY ? "border-red-500" : ""}
+                />
+                {errors.locationY && (
+                  <p className="text-sm text-red-600">
+                    {errors.locationY.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="locationZ" className="text-sm text-gray-600">
+                  Z Coordinate
+                </Label>
+                <Input
+                  id="locationZ"
+                  type="number"
+                  {...register("locationZ", { valueAsNumber: true })}
+                  placeholder="Z"
+                  className={errors.locationZ ? "border-red-500" : ""}
+                />
+                {errors.locationZ && (
+                  <p className="text-sm text-red-600">
+                    {errors.locationZ.message}
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div
-                className={`h-3 w-3 rounded-full ${shop.isActive ? "bg-green-500" : "bg-gray-400"}`}
-              />
-              <span className="text-sm text-gray-600">
-                {shop.isActive ? "Active" : "Inactive"}
-              </span>
+          </div>
+
+          {/* Active Status */}
+          <div className="flex items-center space-x-2">
+            <Controller
+              name="isActive"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="isActive"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+            <Label htmlFor="isActive" className="text-sm font-medium">
+              Shop is active and visible to other players
+            </Label>
+          </div>
+
+          {/* Form Actions */}
+          <div className="flex items-center justify-between pt-6">
+            <div className="flex gap-2">
+              <Button
+                type="submit"
+                disabled={isSubmitting || !isDirty}
+                className="flex items-center gap-2"
+              >
+                <Save className="h-4 w-4" />
+                {isSubmitting ? "Saving..." : "Save Changes"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => reset()}
+                disabled={isSubmitting || !isDirty}
+              >
+                Reset
+              </Button>
             </div>
+
+            {/* Delete Shop */}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  disabled={isSubmitting || isDeleting}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Shop
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Shop</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete &ldquo;{shop.name}&rdquo;?
+                    This action cannot be undone. All shop items and data will
+                    be permanently removed.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isDeleting}>
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    {isDeleting ? "Deleting..." : "Delete Shop"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </form>
+      </Card>
+
+      {/* Shop Stats */}
+      <Card className="mt-6 p-6">
+        <h2 className="mb-4 text-lg font-semibold">Shop Statistics</h2>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p className="text-gray-600">Total Items</p>
+            <p className="font-semibold">{shop.shopItems.length}</p>
+          </div>
+          <div>
+            <p className="text-gray-600">Created</p>
+            <p className="font-semibold">
+              {new Date(shop.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+          <div>
+            <p className="text-gray-600">Last Updated</p>
+            <p className="font-semibold">
+              {new Date(shop.updatedAt).toLocaleDateString()}
+            </p>
+          </div>
+          <div>
+            <p className="text-gray-600">Owner</p>
+            <p className="font-semibold">{shop.owner.mcUsername}</p>
           </div>
         </div>
-
-        {error && (
-          <Card className="mb-6 border-red-200 bg-red-50 p-4">
-            <p className="text-red-600">{error}</p>
-          </Card>
-        )}
-
-        <Card className="p-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Shop Name */}
-            <div className="space-y-2">
-              <Label htmlFor="name">Shop Name *</Label>
-              <Input
-                id="name"
-                {...register("name")}
-                placeholder="Enter shop name"
-                className={errors.name ? "border-red-500" : ""}
-              />
-              {errors.name && (
-                <p className="text-sm text-red-600">{errors.name.message}</p>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                {...register("description")}
-                placeholder="Describe your shop (optional)"
-                className={errors.description ? "border-red-500" : ""}
-                rows={3}
-              />
-              {errors.description && (
-                <p className="text-sm text-red-600">
-                  {errors.description.message}
-                </p>
-              )}
-            </div>
-
-            {/* Location */}
-            <div className="space-y-4">
-              <Label>Location (Optional)</Label>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="locationX" className="text-sm text-gray-600">
-                    X Coordinate
-                  </Label>
-                  <Input
-                    id="locationX"
-                    type="number"
-                    {...register("locationX", { valueAsNumber: true })}
-                    placeholder="X"
-                    className={errors.locationX ? "border-red-500" : ""}
-                  />
-                  {errors.locationX && (
-                    <p className="text-sm text-red-600">
-                      {errors.locationX.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="locationY" className="text-sm text-gray-600">
-                    Y Coordinate
-                  </Label>
-                  <Input
-                    id="locationY"
-                    type="number"
-                    {...register("locationY", { valueAsNumber: true })}
-                    placeholder="Y"
-                    className={errors.locationY ? "border-red-500" : ""}
-                  />
-                  {errors.locationY && (
-                    <p className="text-sm text-red-600">
-                      {errors.locationY.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="locationZ" className="text-sm text-gray-600">
-                    Z Coordinate
-                  </Label>
-                  <Input
-                    id="locationZ"
-                    type="number"
-                    {...register("locationZ", { valueAsNumber: true })}
-                    placeholder="Z"
-                    className={errors.locationZ ? "border-red-500" : ""}
-                  />
-                  {errors.locationZ && (
-                    <p className="text-sm text-red-600">
-                      {errors.locationZ.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Active Status */}
-            <div className="flex items-center space-x-2">
-              <Controller
-                name="isActive"
-                control={control}
-                render={({ field }) => (
-                  <Switch
-                    id="isActive"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-              <Label htmlFor="isActive" className="text-sm font-medium">
-                Shop is active and visible to other players
-              </Label>
-            </div>
-
-            {/* Form Actions */}
-            <div className="flex items-center justify-between pt-6">
-              <div className="flex gap-2">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || !isDirty}
-                  className="flex items-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  {isSubmitting ? "Saving..." : "Save Changes"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => reset()}
-                  disabled={isSubmitting || !isDirty}
-                >
-                  Reset
-                </Button>
-              </div>
-
-              {/* Delete Shop */}
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="destructive"
-                    disabled={isSubmitting || isDeleting}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Shop
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Shop</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to delete &ldquo;{shop.name}&rdquo;?
-                      This action cannot be undone. All shop items and data will
-                      be permanently removed.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isDeleting}>
-                      Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleDelete}
-                      disabled={isDeleting}
-                      className="bg-red-600 hover:bg-red-700"
-                    >
-                      {isDeleting ? "Deleting..." : "Delete Shop"}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          </form>
-        </Card>
-
-        {/* Shop Stats */}
-        <Card className="mt-6 p-6">
-          <h2 className="mb-4 text-lg font-semibold">Shop Statistics</h2>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-gray-600">Total Items</p>
-              <p className="font-semibold">{shop.shopItems.length}</p>
-            </div>
-            <div>
-              <p className="text-gray-600">Created</p>
-              <p className="font-semibold">
-                {new Date(shop.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-600">Last Updated</p>
-              <p className="font-semibold">
-                {new Date(shop.updatedAt).toLocaleDateString()}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-600">Owner</p>
-              <p className="font-semibold">{shop.owner.mcUsername}</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </div>
+      </Card>
+    </PageContainer>
   );
 }

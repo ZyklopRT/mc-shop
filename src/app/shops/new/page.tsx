@@ -14,7 +14,8 @@ import { Switch } from "~/components/ui/switch";
 import { createShop } from "~/server/actions/shops";
 import { createShopSchema } from "~/lib/validations/shop";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { Plus } from "lucide-react";
+import { FormPageHeader } from "~/components/ui/form-page-header";
 import { toast } from "~/lib/utils/toast";
 
 // Form schema with required isActive field
@@ -105,16 +106,13 @@ export default function NewShopPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mx-auto max-w-2xl">
-        <div className="mb-8">
-          <Button variant="outline" asChild className="mb-4">
-            <Link href="/shops">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Shops
-            </Link>
-          </Button>
-          <h1 className="text-3xl font-bold">Create New Shop</h1>
-          <p className="text-gray-600">Set up your new Minecraft shop</p>
-        </div>
+        <FormPageHeader
+          backHref="/shops"
+          backText="Back to Shops"
+          icon={<Plus className="h-8 w-8" />}
+          title="Create New Shop"
+          description="Set up your new Minecraft shop"
+        />
 
         <Card className="p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

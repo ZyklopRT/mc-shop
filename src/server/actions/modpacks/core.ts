@@ -112,7 +112,13 @@ export async function updateModpack(
       };
     }
 
-    if (existingModpack.createdById !== session.user.id) {
+    // Check if user is admin or the original creator
+    const userResult = await db.$queryRaw<[{ isAdmin: boolean }]>`
+      SELECT "isAdmin" FROM "User" WHERE id = ${session.user.id}
+    `;
+    const isAdmin = userResult[0]?.isAdmin ?? false;
+
+    if (!isAdmin && existingModpack.createdById !== session.user.id) {
       return {
         success: false,
         error: "You don't have permission to edit this modpack",
@@ -182,7 +188,13 @@ export async function deleteModpack(
       };
     }
 
-    if (modpack.createdById !== session.user.id) {
+    // Check if user is admin or the original creator
+    const userResult = await db.$queryRaw<[{ isAdmin: boolean }]>`
+      SELECT "isAdmin" FROM "User" WHERE id = ${session.user.id}
+    `;
+    const isAdmin = userResult[0]?.isAdmin ?? false;
+
+    if (!isAdmin && modpack.createdById !== session.user.id) {
       return {
         success: false,
         error: "You don't have permission to delete this modpack",

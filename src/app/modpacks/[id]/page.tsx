@@ -1,6 +1,7 @@
-import { notFound, redirect } from "next/navigation";
-import { requireAdmin } from "~/lib/utils/admin-utils";
+import { notFound } from "next/navigation";
 import { getModpackById } from "~/server/actions/modpacks";
+import { auth } from "~/server/auth";
+import { db } from "~/server/db";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import {
@@ -13,35 +14,43 @@ import {
 import { Button } from "~/components/ui/button";
 import { ModList } from "~/components/modpacks/ModList";
 import { ModpackSidebar } from "~/components/modpacks/ModpackSidebar";
+import { PageContainer } from "~/components/ui/page-container";
 
-interface ModpackDetailsPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function ModpackDetailsPage({
+export default async function PublicModpackPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await params;
-  try {
-    await requireAdmin();
-  } catch {
-    redirect("/modpacks?error=admin_required");
-  }
+  const { id } = params;
+
+  const session = await auth();
+
   const result = await getModpackById(id);
   if (!result.success || !result.data) {
     notFound();
   }
   const modpack = result.data;
 
+  // Determine edit permission
+  let canEdit = false;
+  if (session?.user?.id) {
+    if (modpack.createdBy.id === session.user.id) {
+      canEdit = true;
+    } else {
+      // Check admin flag
+      const user = await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { isAdmin: true },
+      });
+      if (user?.isAdmin) canEdit = true;
+    }
+  }
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <PageContainer size="large">
       <div className="mb-8 flex flex-col gap-4">
         <div className="mb-4 flex items-center gap-4">
-          <Link href="/admin/modpacks">
+          <Link href="/modpacks">
             <Button variant="outline" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Modpacks
@@ -109,8 +118,8 @@ export default async function ModpackDetailsPage({
             </CardContent>
           </Card>
         </div>
-        <ModpackSidebar modpack={modpack} />
+        <ModpackSidebar modpack={modpack} canEdit={canEdit} />
       </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -4,6 +4,7 @@ import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import Link from "next/link";
 import { Download, Package, Users, Calendar } from "lucide-react";
+import { PageHeader } from "~/components/ui/page-header";
 
 export default async function ModpacksPage() {
   // Fetch public modpacks
@@ -21,12 +22,11 @@ export default async function ModpacksPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold">Modpacks</h1>
-        <p className="text-muted-foreground mt-2 text-lg">
-          Download the latest modpacks for our Minecraft server
-        </p>
-      </div>
+      <PageHeader
+        icon={<Package className="h-8 w-8" />}
+        title="Modpacks"
+        description="Download the latest modpacks for our Minecraft server"
+      />
 
       {/* Available Modpacks */}
       {modpacks.length > 0 && (
