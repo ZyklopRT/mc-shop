@@ -16,6 +16,9 @@ export {
 // File upload and processing
 export { uploadModpack } from "./upload";
 
+// Download operations
+export { downloadModpack, downloadLatestModpack } from "./download";
+
 // Future exports ready for Phase 2:
 // export { extractModMetadata, parseNeoForgeToml } from "./parsers";
 // export { generateChangelog, compareVersions } from "./changelog";

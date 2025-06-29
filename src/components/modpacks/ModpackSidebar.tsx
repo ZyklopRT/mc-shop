@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
@@ -14,11 +16,13 @@ import {
   XCircle,
   Plus,
 } from "lucide-react";
+import { DownloadModal } from "./download-modal";
 
 interface ModpackSidebarProps {
   modpack: {
     id: string;
     name?: string;
+    version?: string;
     isPublic: boolean;
     isActive: boolean;
     modLoader: string;
@@ -37,6 +41,12 @@ export function ModpackSidebar({
   modpack,
   canEdit = false,
 }: ModpackSidebarProps) {
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+
+  const handleDownloadClick = () => {
+    setShowDownloadModal(true);
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <Card>
@@ -70,12 +80,26 @@ export function ModpackSidebar({
               </div>
             </>
           )}
-          <div>
-            <Button variant="outline" className="w-full">
-              <Download className="mr-2 h-4 w-4" />
-              Download ({(modpack.fileSize / 1024 / 1024).toFixed(1)} MB)
-            </Button>
-          </div>
+          {modpack.isActive && (
+            <div>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleDownloadClick}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Download ({(modpack.fileSize / 1024 / 1024).toFixed(1)} MB)
+              </Button>
+            </div>
+          )}
+          {!modpack.isActive && (
+            <div>
+              <Button variant="outline" className="w-full" disabled>
+                <Download className="mr-2 h-4 w-4" />
+                Download Unavailable (Inactive)
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
       <Card>
@@ -169,6 +193,14 @@ export function ModpackSidebar({
           </div>
         </CardContent>
       </Card>
+
+      <DownloadModal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+        downloadUrl={`/api/modpacks/${modpack.id}/download`}
+        fileName={`${modpack.name}-${modpack.version ?? "latest"}-mods.zip`}
+        fileSize={modpack.fileSize}
+      />
     </div>
   );
 }

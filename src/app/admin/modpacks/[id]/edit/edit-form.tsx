@@ -6,18 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Save, Loader2, Edit, Trash2 } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
+import { Save, Loader2, Edit } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -48,6 +37,7 @@ import {
 } from "~/components/ui/select";
 import { FormPageHeader } from "~/components/ui/form-page-header";
 import { PageContainer } from "~/components/ui/page-container";
+import { DangerZone } from "~/components/ui/danger-zone";
 
 import {
   UpdateModpackSchema,
@@ -411,45 +401,25 @@ export function EditModpackForm({ params, modpack }: EditModpackFormProps) {
                     </>
                   )}
                 </Button>
-
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      disabled={isSubmitting || isDeleting}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete Modpack
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Modpack</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to delete &ldquo;{modpack.name}
-                        &rdquo;? This action cannot be undone and will remove
-                        all data.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel disabled={isDeleting}>
-                        Cancel
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={handleDelete}
-                        disabled={isDeleting}
-                        className="bg-red-600 hover:bg-red-700"
-                      >
-                        {isDeleting ? "Deleting..." : "Delete"}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
               </div>
             </div>
           </form>
         </Form>
+
+        {/* Danger Zone */}
+        <div className="mt-8">
+          <DangerZone
+            title="Delete Modpack"
+            description="Permanently delete this modpack and all associated data. This action cannot be undone."
+            buttonText="Delete Modpack"
+            dialogTitle="Delete Modpack"
+            dialogDescription="This action will permanently delete all modpack data, including files, mod lists, and download statistics."
+            itemName={modpack.name}
+            onConfirm={handleDelete}
+            isLoading={isDeleting}
+            disabled={isSubmitting}
+          />
+        </div>
       </div>
     </PageContainer>
   );

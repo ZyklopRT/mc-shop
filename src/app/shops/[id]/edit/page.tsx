@@ -11,24 +11,15 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { Switch } from "~/components/ui/switch";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
+
 import { getShopDetails, updateShop, deleteShop } from "~/server/actions/shops";
 import { updateShopSchema, type UpdateShopData } from "~/lib/validations/shop";
 import type { ShopWithItems } from "~/lib/types/shop";
 import Link from "next/link";
-import { Trash2, Save, Edit } from "lucide-react";
+import { Save, Edit } from "lucide-react";
 import { FormPageHeader } from "~/components/ui/form-page-header";
 import { PageContainer } from "~/components/ui/page-container";
+import { DangerZone } from "~/components/ui/danger-zone";
 import { toast } from "~/lib/utils/toast";
 
 type EditShopForm = Omit<UpdateShopData, "shopId">;
@@ -393,41 +384,6 @@ export default function EditShopPage() {
                 Reset
               </Button>
             </div>
-
-            {/* Delete Shop */}
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  disabled={isSubmitting || isDeleting}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Shop
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Shop</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete &ldquo;{shop.name}&rdquo;?
-                    This action cannot be undone. All shop items and data will
-                    be permanently removed.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel disabled={isDeleting}>
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    {isDeleting ? "Deleting..." : "Delete Shop"}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
           </div>
         </form>
       </Card>
@@ -458,6 +414,21 @@ export default function EditShopPage() {
           </div>
         </div>
       </Card>
+
+      {/* Danger Zone */}
+      <div className="mt-8">
+        <DangerZone
+          title="Delete Shop"
+          description="Permanently delete this shop and all associated data. This action cannot be undone."
+          buttonText="Delete Shop"
+          dialogTitle="Delete Shop"
+          dialogDescription="This action will permanently delete your shop, all items, and associated data."
+          itemName={shop.name}
+          onConfirm={handleDelete}
+          isLoading={isDeleting}
+          disabled={isSubmitting}
+        />
+      </div>
     </PageContainer>
   );
 }

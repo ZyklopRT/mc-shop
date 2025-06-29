@@ -11,5 +11,18 @@ export {
   getModpacks,
   getModpackById,
   getFeaturedModpacks,
+
+  // File upload and processing
   uploadModpack,
+
+  // Download operations
+  downloadModpack,
+  downloadLatestModpack,
+
+  // Version management
+  getModpackGroups,
+  getModpackVersions,
+  getExistingModpackNames,
+  getLatestModpackVersion,
+  suggestNextVersion,
 } from "./modpacks/index";

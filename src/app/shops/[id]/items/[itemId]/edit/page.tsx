@@ -6,8 +6,9 @@ import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
-import { ArrowLeft, Trash2, Save, Pencil } from "lucide-react";
+import { ArrowLeft, Save, Pencil } from "lucide-react";
 import { FormPageHeader } from "~/components/ui/form-page-header";
+import { DangerZone } from "~/components/ui/danger-zone";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -27,17 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
+
 import { ItemPreview } from "~/components/items/item-preview";
 import {
   updateShopItemSchema,
@@ -354,39 +345,7 @@ export default function EditShopItemPage() {
               </Label>
             </div>
 
-            <div className="flex items-center justify-between pt-4">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    disabled={isDeleting}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Remove from Shop
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Remove Item from Shop</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to remove &quot;
-                      {shopItem.item.nameEn}&quot; from your shop? This action
-                      cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleDelete}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      Remove Item
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-
+            <div className="flex items-center justify-end pt-4">
               <div className="flex gap-2">
                 <Button
                   type="button"
@@ -404,6 +363,21 @@ export default function EditShopItemPage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* Danger Zone */}
+      <div className="mt-8">
+        <DangerZone
+          title="Remove Item from Shop"
+          description="Permanently remove this item from your shop. This action cannot be undone."
+          buttonText="Remove Item"
+          dialogTitle="Remove Item from Shop"
+          dialogDescription="This action will remove the item from your shop but will not delete the item itself."
+          itemName={shopItem.item.nameEn}
+          onConfirm={handleDelete}
+          isLoading={isDeleting}
+          disabled={isSubmitting}
+        />
+      </div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Card, CardContent } from "~/components/ui/card";
 import Link from "next/link";
 import { Download, Package, Users, Calendar } from "lucide-react";
 import { PageHeader } from "~/components/ui/page-header";
+import { DownloadLatestButton } from "~/components/modpacks/download-latest-button";
 
 export default async function ModpacksPage() {
   // Fetch public modpacks
@@ -113,12 +114,11 @@ export default async function ModpacksPage() {
                       <Link href={`/modpacks/${modpack.id}`}>
                         <Button variant="outline">View Details</Button>
                       </Link>
-                      <Link href={`/modpacks/${modpack.id}/download`}>
-                        <Button>
-                          <Download className="mr-2 h-4 w-4" />
-                          Download Latest
-                        </Button>
-                      </Link>
+                      <DownloadLatestButton
+                        modpackName={modpack.name}
+                        modpackVersion={modpack.version}
+                        fileSize={modpack.fileSize}
+                      />
                     </div>
                   </div>
                 </CardContent>

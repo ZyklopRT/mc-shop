@@ -11,20 +11,11 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
-import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
+
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { DangerZone } from "~/components/ui/danger-zone";
 import {
   getRequestDetails,
   updateRequest,
@@ -159,46 +150,6 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
               Update your request details below
             </p>
           </div>
-
-          {/* Delete Request Button */}
-          {requestData && canDeleteRequest(requestData.status) && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Trash2 className="h-4 w-4" />
-                  )}
-                  Delete Request
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Request</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete this request? This action
-                    cannot be undone. All associated offers and negotiations
-                    will also be deleted.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDeleteRequest}
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    Delete Request
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
         </div>
       </div>
 
@@ -222,6 +173,23 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
           />
         </CardContent>
       </Card>
+
+      {/* Danger Zone */}
+      {requestData && canDeleteRequest(requestData.status) && (
+        <div className="mt-8">
+          <DangerZone
+            title="Delete Request"
+            description="Permanently delete this request and all associated data. This action cannot be undone."
+            buttonText="Delete Request"
+            dialogTitle="Delete Request"
+            dialogDescription="This action will permanently delete the request and all associated offers and negotiations."
+            itemName={`Request #${requestData.id.slice(-8)}`}
+            onConfirm={handleDeleteRequest}
+            isLoading={isDeleting}
+            disabled={false}
+          />
+        </div>
+      )}
     </div>
   );
 }
