@@ -91,9 +91,10 @@ export function EditModpackForm({ params, modpack }: EditModpackFormProps) {
       const result = await updateModpack(data);
 
       if (result.success) {
-        toast.success("Modpack updated successfully!");
-        router.push(`/admin/modpacks/${params.id}`);
-        router.refresh();
+        toast.success("Modpack Updated", {
+          description: "Changes have been saved successfully.",
+        });
+        router.push(`/modpacks/${params.id}`);
       } else {
         toast.error(result.error ?? "Failed to update modpack");
       }
@@ -392,7 +393,7 @@ export function EditModpackForm({ params, modpack }: EditModpackFormProps) {
               </div>
 
               <div className="flex gap-3">
-                <Link href={`/admin/modpacks/${params.id}`}>
+                <Link href={`/modpacks/${params.id}`}>
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>

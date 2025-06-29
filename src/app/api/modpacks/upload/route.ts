@@ -5,7 +5,7 @@
 // This keeps the heavy network payload outside of the Server Action channel (no 1 MB limit) while
 // still leveraging all the validation/DB logic that already exists.
 
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs/promises";
 import crypto from "node:crypto";

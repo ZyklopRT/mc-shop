@@ -180,7 +180,7 @@ prisma/
 
 #### Enhanced Admin Interface
 
-- **Detailed modpack view** at `/admin/modpacks/[id]` with comprehensive information
+- **Detailed modpack view** at `/modpacks/[id]` with comprehensive information (public access)
 - **Visual mod listing** displaying detected mods with logos and metadata
 - **Technical details** showing file sizes, checksums, and loader information
 - **Action buttons** for editing, downloading, and management

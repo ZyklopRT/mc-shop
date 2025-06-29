@@ -23,15 +23,42 @@ export default async function ModpackManagementPage() {
     redirect("/modpacks?error=admin_required");
   }
 
-  // Fetch modpacks
+  // Fetch modpacks (keeping the existing approach for now)
   const modpacksResult = await getModpacks({
-    limit: 20,
+    limit: 50, // Increased to get more modpacks for grouping
     offset: 0,
   });
 
   const modpacks = modpacksResult.success
     ? (modpacksResult.data?.modpacks ?? [])
     : [];
+
+  // Group modpacks by name for display
+  const modpackGroups = modpacks.reduce(
+    (groups: Record<string, typeof modpacks>, modpack) => {
+      groups[modpack.name] ??= [];
+      groups[modpack.name]!.push(modpack);
+      return groups;
+    },
+    {},
+  );
+
+  // Sort versions within each group by release date (newest first)
+  Object.values(modpackGroups).forEach((versions) => {
+    versions.sort(
+      (a, b) =>
+        new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime(),
+    );
+  });
+
+  const groupCount = Object.keys(modpackGroups).length;
+  const totalModpacks = modpacks.length;
+  const activeModpacks = Object.values(modpackGroups).filter((versions) =>
+    versions.some((v) => v.isActive),
+  ).length;
+  const featuredModpacks = Object.values(modpackGroups).filter((versions) =>
+    versions.some((v) => v.isFeatured),
+  ).length;
 
   return (
     <PageContainer>
@@ -54,20 +81,22 @@ export default async function ModpackManagementPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Modpacks
+              Total Versions
             </CardTitle>
             <Package className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{modpacks.length}</div>
-            <p className="text-muted-foreground text-xs">Across all versions</p>
+            <div className="text-2xl font-bold">{totalModpacks}</div>
+            <p className="text-muted-foreground text-xs">
+              Across {groupCount} modpack{groupCount !== 1 ? "s" : ""}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Active Versions
+              Active Modpacks
             </CardTitle>
             <Badge
               variant="secondary"
@@ -77,9 +106,7 @@ export default async function ModpackManagementPage() {
             </Badge>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {modpacks.filter((m) => m.isActive).length}
-            </div>
+            <div className="text-2xl font-bold">{activeModpacks}</div>
             <p className="text-muted-foreground text-xs">
               Available for download
             </p>
@@ -97,21 +124,19 @@ export default async function ModpackManagementPage() {
             </Badge>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {modpacks.filter((m) => m.isFeatured).length}
-            </div>
+            <div className="text-2xl font-bold">{featuredModpacks}</div>
             <p className="text-muted-foreground text-xs">
-              Highlighted versions
+              Highlighted modpacks
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Modpack List */}
+      {/* Modpack Groups List */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Modpack Versions</h2>
+        <h2 className="text-xl font-semibold">Modpacks</h2>
 
-        {modpacks.length === 0 ? (
+        {Object.keys(modpackGroups).length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Package className="text-muted-foreground mb-4 h-12 w-12" />
@@ -130,119 +155,151 @@ export default async function ModpackManagementPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4">
-            {modpacks.map((modpack) => (
-              <Card
-                key={modpack.id}
-                className="transition-shadow hover:shadow-md"
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <CardTitle className="text-lg">{modpack.name}</CardTitle>
-                      <CardDescription>
-                        Version {modpack.version} • {modpack.modLoader} • MC{" "}
-                        {modpack.minecraftVersion}
-                      </CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                      {modpack.isFeatured && (
-                        <Badge variant="secondary">Featured</Badge>
-                      )}
-                      {modpack.isActive ? (
-                        <Badge variant="default">Active</Badge>
-                      ) : (
-                        <Badge variant="outline">Inactive</Badge>
-                      )}
-                      {!modpack.isPublic && (
-                        <Badge variant="destructive">Private</Badge>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {modpack.description && (
-                    <p className="text-muted-foreground mb-4 text-sm">
-                      {modpack.description}
-                    </p>
-                  )}
+          <div className="space-y-4">
+            {Object.entries(modpackGroups).map(([name, versions]) => {
+              const latestVersion = versions[0]!;
+              const totalDownloads = versions.reduce(
+                (sum, v) => sum + v.downloadCount,
+                0,
+              );
+              const hasActive = versions.some((v) => v.isActive);
+              const hasFeatured = versions.some((v) => v.isFeatured);
+              const hasPublic = versions.some((v) => v.isPublic);
 
-                  <div className="flex items-center justify-between">
-                    <div className="text-muted-foreground flex items-center gap-4 text-sm">
-                      <div className="flex items-center gap-1">
-                        <Package className="h-4 w-4" />
-                        {modpack._count?.mods ?? 0} mods
+              return (
+                <Card key={name} className="transition-shadow hover:shadow-md">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-3">
+                          <CardTitle className="text-lg">{name}</CardTitle>
+                          <Badge variant="outline">
+                            {versions.length} version
+                            {versions.length !== 1 ? "s" : ""}
+                          </Badge>
+                          <Badge variant="secondary">
+                            Latest: v{latestVersion.version}
+                          </Badge>
+                        </div>
+                        <CardDescription>
+                          {latestVersion.modLoader} • MC{" "}
+                          {latestVersion.minecraftVersion}
+                          {latestVersion.description &&
+                            ` • ${latestVersion.description}`}
+                        </CardDescription>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Download className="h-4 w-4" />
-                        {modpack.downloadCount} downloads
+                      <div className="flex items-center gap-2">
+                        {hasFeatured && (
+                          <Badge variant="secondary">Featured</Badge>
+                        )}
+                        {hasActive ? (
+                          <Badge variant="default">Active</Badge>
+                        ) : (
+                          <Badge variant="outline">Inactive</Badge>
+                        )}
+                        {!hasPublic && (
+                          <Badge variant="destructive">Private</Badge>
+                        )}
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        {modpack.createdBy.mcUsername}
+                    </div>
+                  </CardHeader>
+
+                  <CardContent>
+                    <div className="mb-4 flex items-center justify-between">
+                      <div className="text-muted-foreground flex items-center gap-4 text-sm">
+                        <div className="flex items-center gap-1">
+                          <Package className="h-4 w-4" />
+                          {latestVersion._count?.mods ?? 0} mods
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Download className="h-4 w-4" />
+                          {totalDownloads} downloads
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          {latestVersion.createdBy.mcUsername}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Link href={`/modpacks/${latestVersion.id}`}>
+                          <Button variant="outline" size="sm">
+                            View Latest
+                          </Button>
+                        </Link>
+                        <Link
+                          href={`/admin/modpacks/upload?existing=${encodeURIComponent(name)}`}
+                        >
+                          <Button variant="ghost" size="sm">
+                            Add Version
+                          </Button>
+                        </Link>
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Link href={`/modpacks/${modpack.id}`}>
-                        <Button variant="outline" size="sm">
-                          View Details
-                        </Button>
-                      </Link>
-                      <Link href={`/admin/modpacks/${modpack.id}/edit`}>
-                        <Button variant="ghost" size="sm">
-                          Edit
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    {/* All Versions List */}
+                    {versions.length > 1 && (
+                      <div className="space-y-2 border-t pt-4">
+                        <h4 className="text-sm font-medium">All Versions:</h4>
+                        <div className="grid gap-2">
+                          {versions.map((version) => (
+                            <div
+                              key={version.id}
+                              className="flex items-center justify-between rounded-lg border p-3 text-sm"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Badge variant="outline">
+                                  v{version.version}
+                                </Badge>
+                                <span className="text-muted-foreground">
+                                  {new Date(
+                                    version.releaseDate,
+                                  ).toLocaleDateString()}
+                                </span>
+                                <div className="flex gap-1">
+                                  {version.isActive && (
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs"
+                                    >
+                                      Active
+                                    </Badge>
+                                  )}
+                                  {version.isFeatured && (
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs"
+                                    >
+                                      Featured
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <Link href={`/modpacks/${version.id}`}>
+                                  <Button variant="ghost" size="sm">
+                                    View
+                                  </Button>
+                                </Link>
+                                <Link
+                                  href={`/admin/modpacks/${version.id}/edit`}
+                                >
+                                  <Button variant="ghost" size="sm">
+                                    Edit
+                                  </Button>
+                                </Link>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
-      </div>
-
-      {/* Quick Actions */}
-      <div className="bg-muted mt-12 rounded-lg p-6">
-        <h3 className="mb-4 text-lg font-medium">Quick Actions</h3>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Upload New Version</CardTitle>
-              <CardDescription>
-                Add a new modpack version or update an existing one
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/admin/modpacks/upload">
-                <Button className="w-full">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Upload Modpack
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">
-                Browse Public Modpacks
-              </CardTitle>
-              <CardDescription>
-                View modpacks as users would see them
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/modpacks">
-                <Button variant="outline" className="w-full">
-                  <Package className="mr-2 h-4 w-4" />
-                  Public View
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </PageContainer>
   );

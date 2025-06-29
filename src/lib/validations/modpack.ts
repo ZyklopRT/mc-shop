@@ -213,3 +213,64 @@ export type ModpackWithMods = z.infer<typeof ModpackWithModsSchema>;
 export type ModpackListResponse = z.infer<typeof ModpackListResponseSchema>;
 export type ChangelogEntry = z.infer<typeof ChangelogEntrySchema>;
 export type ChangelogData = z.infer<typeof ChangelogDataSchema>;
+
+// Enhanced upload schema that supports adding versions to existing modpacks
+export const ModpackVersionUploadSchema = z.object({
+  file: z.any(), // Will be validated as File in the component
+  existingModpackName: z.string().optional(), // If adding to existing modpack
+  name: z.string().min(1, "Modpack name is required"),
+  version: z.string().min(1, "Version is required"),
+  description: z.string().optional(),
+  releaseNotes: z.string().optional(),
+  minecraftVersion: z.string().default("1.21"),
+  modLoader: ModLoaderSchema.default("NEOFORGE"),
+  modLoaderVersion: z.string().optional(),
+  isPublic: z.boolean().default(true),
+});
+
+// Client-side schema for enhanced upload form
+export const ModpackVersionUploadClientSchema = z.object({
+  existingModpackName: z.string().optional(),
+  name: z.string().min(1, "Modpack name is required"),
+  version: z.string().min(1, "Version is required"),
+  description: z.string().optional(),
+  releaseNotes: z.string().optional(),
+  minecraftVersion: z.string().optional(),
+  modLoader: ModLoaderSchema.optional(),
+  modLoaderVersion: z.string().optional(),
+  isPublic: z.boolean().optional(),
+});
+
+// Type for the form that handles the optional field properly
+export type ModpackVersionUploadClientForm = z.infer<
+  typeof ModpackVersionUploadClientSchema
+>;
+
+// New type for modpack with versions grouped
+export const ModpackGroupSchema = z.object({
+  name: z.string(),
+  description: z.string().nullable(),
+  totalVersions: z.number(),
+  latestVersion: ModpackInfoSchema,
+  allVersions: z.array(ModpackInfoSchema),
+  totalDownloads: z.number(),
+  isActive: z.boolean(),
+  isFeatured: z.boolean(),
+  isPublic: z.boolean(),
+});
+
+export const ModpackGroupListSchema = z.object({
+  modpackGroups: z.array(ModpackGroupSchema),
+  totalCount: z.number(),
+  hasMore: z.boolean(),
+});
+
+// Export types
+export type ModpackVersionUploadData = z.infer<
+  typeof ModpackVersionUploadSchema
+>;
+export type ModpackVersionUploadClientData = z.infer<
+  typeof ModpackVersionUploadClientSchema
+>;
+export type ModpackGroup = z.infer<typeof ModpackGroupSchema>;
+export type ModpackGroupList = z.infer<typeof ModpackGroupListSchema>;

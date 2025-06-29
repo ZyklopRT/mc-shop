@@ -19,6 +19,35 @@ export default async function ModpacksPage() {
     ? (modpacksResult.data?.modpacks ?? [])
     : [];
 
+  // Group modpacks by name and show only latest version
+  const modpackGroups = modpacks.reduce(
+    (groups: Record<string, typeof modpacks>, modpack) => {
+      groups[modpack.name] ??= [];
+      groups[modpack.name]!.push(modpack);
+      return groups;
+    },
+    {},
+  );
+
+  // Sort versions within each group by release date (newest first) and get latest
+  const latestModpacks = Object.entries(modpackGroups).map(([, versions]) => {
+    const sortedVersions = versions.sort(
+      (a, b) =>
+        new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime(),
+    );
+    const latestVersion = sortedVersions[0]!;
+    const totalDownloads = versions.reduce(
+      (sum, v) => sum + v.downloadCount,
+      0,
+    );
+
+    return {
+      ...latestVersion,
+      versionCount: versions.length,
+      totalDownloads,
+    };
+  });
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
@@ -29,13 +58,13 @@ export default async function ModpacksPage() {
       />
 
       {/* Available Modpacks */}
-      {modpacks.length > 0 && (
+      {latestModpacks.length > 0 && (
         <div>
           <h2 className="mb-6 text-2xl font-semibold">Available Modpacks</h2>
           <div className="space-y-4">
-            {modpacks.map((modpack) => (
+            {latestModpacks.map((modpack) => (
               <Card
-                key={modpack.id}
+                key={modpack.name}
                 className="transition-shadow hover:shadow-md"
               >
                 <CardContent className="p-6">
@@ -46,6 +75,11 @@ export default async function ModpacksPage() {
                           {modpack.name}
                         </h3>
                         <Badge variant="outline">v{modpack.version}</Badge>
+                        {modpack.versionCount > 1 && (
+                          <Badge variant="secondary">
+                            {modpack.versionCount} versions
+                          </Badge>
+                        )}
                         <Badge variant="secondary">{modpack.modLoader}</Badge>
                       </div>
 
@@ -62,7 +96,7 @@ export default async function ModpacksPage() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Download className="h-4 w-4" />
-                          {modpack.downloadCount} downloads
+                          {modpack.totalDownloads} downloads
                         </div>
                         <div className="flex items-center gap-1">
                           <Users className="h-4 w-4" />
@@ -82,7 +116,7 @@ export default async function ModpacksPage() {
                       <Link href={`/modpacks/${modpack.id}/download`}>
                         <Button>
                           <Download className="mr-2 h-4 w-4" />
-                          Download
+                          Download Latest
                         </Button>
                       </Link>
                     </div>
@@ -95,7 +129,7 @@ export default async function ModpacksPage() {
       )}
 
       {/* Empty State */}
-      {modpacks.length === 0 && (
+      {latestModpacks.length === 0 && (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Package className="text-muted-foreground mb-4 h-16 w-16" />
@@ -104,9 +138,6 @@ export default async function ModpacksPage() {
               There are currently no public modpacks available for download.
               Check back later or contact the server administrators.
             </p>
-            <Link href="/requests">
-              <Button variant="outline">Request a Modpack</Button>
-            </Link>
           </CardContent>
         </Card>
       )}

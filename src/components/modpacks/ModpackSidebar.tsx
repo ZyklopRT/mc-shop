@@ -1,6 +1,6 @@
+import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { Badge } from "~/components/ui/badge";
 import Link from "next/link";
 import {
   Edit,
@@ -12,11 +12,13 @@ import {
   User,
   CheckCircle,
   XCircle,
+  Plus,
 } from "lucide-react";
 
 interface ModpackSidebarProps {
   modpack: {
     id: string;
+    name?: string;
     isPublic: boolean;
     isActive: boolean;
     modLoader: string;
@@ -43,17 +45,30 @@ export function ModpackSidebar({
         </CardHeader>
         <CardContent className="space-y-3">
           {canEdit && (
-            <div>
-              <Link
-                href={`/admin/modpacks/${modpack.id}/edit`}
-                className="w-full"
-              >
-                <Button className="w-full">
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Modpack
-                </Button>
-              </Link>
-            </div>
+            <>
+              <div>
+                <Link
+                  href={`/admin/modpacks/${modpack.id}/edit`}
+                  className="w-full"
+                >
+                  <Button className="w-full">
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit Modpack
+                  </Button>
+                </Link>
+              </div>
+              <div>
+                <Link
+                  href={`/admin/modpacks/upload?existing=${encodeURIComponent(modpack.name ?? "")}`}
+                  className="w-full"
+                >
+                  <Button variant="outline" className="w-full">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Version
+                  </Button>
+                </Link>
+              </div>
+            </>
           )}
           <div>
             <Button variant="outline" className="w-full">

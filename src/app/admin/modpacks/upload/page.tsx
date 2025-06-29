@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -41,16 +41,20 @@ import {
   Loader2,
   CheckCircle,
   AlertCircle,
+  PackageOpen,
+  Plus,
 } from "lucide-react";
 import { FormPageHeader } from "~/components/ui/form-page-header";
 import { PageContainer } from "~/components/ui/page-container";
 import {
-  ModpackUploadSchema,
-  ModpackUploadClientSchema,
-  type ModpackUploadData,
-  type ModpackUploadClientData,
+  ModpackVersionUploadClientSchema,
+  type ModpackVersionUploadClientForm,
 } from "~/lib/validations/modpack";
 import { useDropzone } from "react-dropzone";
+import {
+  getExistingModpackNames,
+  suggestNextVersion,
+} from "~/server/actions/modpacks/versions";
 
 type UploadStage =
   | "idle"
@@ -70,16 +74,24 @@ interface ProcessingStatus {
 
 export default function UploadModpackPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const existingModpackParam = searchParams.get("existing");
+
   const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>({
     stage: "idle",
     message: "",
     progress: 0,
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [existingModpacks, setExistingModpacks] = useState<string[]>([]);
+  const [selectedExistingModpack, setSelectedExistingModpack] =
+    useState<string>("");
+  const [isNewModpack, setIsNewModpack] = useState(true);
 
-  const form = useForm<Required<ModpackUploadClientData>>({
-    resolver: zodResolver(ModpackUploadClientSchema),
+  const form = useForm<ModpackVersionUploadClientForm>({
+    resolver: zodResolver(ModpackVersionUploadClientSchema),
     defaultValues: {
+      existingModpackName: "",
       name: "",
       version: "",
       description: "",
@@ -90,6 +102,50 @@ export default function UploadModpackPage() {
       isPublic: true,
     },
   });
+
+  // Load existing modpack names on component mount
+  useEffect(() => {
+    async function loadExistingModpacks() {
+      try {
+        const result = await getExistingModpackNames();
+        if (result.success && result.data) {
+          setExistingModpacks(result.data);
+
+          // Auto-select modpack if specified in URL
+          if (
+            existingModpackParam &&
+            result.data.includes(existingModpackParam)
+          ) {
+            setIsNewModpack(false);
+            setSelectedExistingModpack(existingModpackParam);
+            form.setValue("existingModpackName", existingModpackParam);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load existing modpacks:", error);
+      }
+    }
+    void loadExistingModpacks();
+  }, [existingModpackParam, form]);
+
+  // Auto-suggest version when existing modpack is selected
+  useEffect(() => {
+    async function handleExistingModpackChange() {
+      if (selectedExistingModpack) {
+        try {
+          const result = await suggestNextVersion(selectedExistingModpack);
+          if (result.success && result.data) {
+            form.setValue("version", result.data);
+            form.setValue("name", selectedExistingModpack);
+            form.setValue("existingModpackName", selectedExistingModpack);
+          }
+        } catch (error) {
+          console.error("Failed to suggest next version:", error);
+        }
+      }
+    }
+    void handleExistingModpackChange();
+  }, [selectedExistingModpack, form]);
 
   // Dropzone setup
   const onDrop = (acceptedFiles: File[]) => {
@@ -108,7 +164,7 @@ export default function UploadModpackPage() {
     noKeyboard: true,
   });
 
-  const onSubmit = async (data: Required<ModpackUploadClientData>) => {
+  const onSubmit = async (data: ModpackVersionUploadClientForm) => {
     try {
       setProcessingStatus({
         stage: "uploading",
@@ -116,7 +172,8 @@ export default function UploadModpackPage() {
         progress: 10,
       });
 
-      const file = selectedFile;
+      // Check if file is valid
+      const file = selectedFile ?? null;
       if (!file) {
         toast.error("Please select a modpack file to upload");
         return;
@@ -144,14 +201,15 @@ export default function UploadModpackPage() {
       // Create FormData for file upload
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("existingModpackName", data.existingModpackName ?? "");
       formData.append("name", data.name);
       formData.append("version", data.version);
-      formData.append("description", data.description);
-      formData.append("releaseNotes", data.releaseNotes);
-      formData.append("minecraftVersion", data.minecraftVersion);
-      formData.append("modLoader", data.modLoader);
-      formData.append("modLoaderVersion", data.modLoaderVersion);
-      formData.append("isPublic", data.isPublic.toString());
+      formData.append("description", data.description ?? "");
+      formData.append("releaseNotes", data.releaseNotes ?? "");
+      formData.append("minecraftVersion", data.minecraftVersion ?? "1.21");
+      formData.append("modLoader", data.modLoader ?? "NEOFORGE");
+      formData.append("modLoaderVersion", data.modLoaderVersion ?? "");
+      formData.append("isPublic", (data.isPublic ?? true).toString());
 
       setProcessingStatus({
         stage: "analyzing",
@@ -181,7 +239,7 @@ export default function UploadModpackPage() {
 
         toast.success("Modpack uploaded and processed successfully!");
         setTimeout(() => {
-          router.push(`/admin/modpacks/${result.data?.modpackId}`);
+          router.push(`/modpacks/${result.data?.modpackId}`);
         }, 2000);
       } else {
         setProcessingStatus({
@@ -265,12 +323,88 @@ export default function UploadModpackPage() {
         <CardHeader>
           <CardTitle>Modpack Details</CardTitle>
           <CardDescription>
-            Provide information about your modpack and upload the ZIP file
+            Create a new modpack or add a version to an existing one
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Modpack Type Selection */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Button
+                    type="button"
+                    variant={isNewModpack ? "default" : "outline"}
+                    className="h-auto p-4"
+                    onClick={() => {
+                      setIsNewModpack(true);
+                      setSelectedExistingModpack("");
+                      form.setValue("existingModpackName", "");
+                      form.setValue("name", "");
+                      form.setValue("version", "");
+                    }}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <Plus className="h-6 w-6" />
+                      <span className="font-medium">New Modpack</span>
+                      <span className="text-muted-foreground text-xs">
+                        Create a brand new modpack
+                      </span>
+                    </div>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant={!isNewModpack ? "default" : "outline"}
+                    className="h-auto p-4"
+                    onClick={() => {
+                      setIsNewModpack(false);
+                      form.setValue("existingModpackName", "");
+                    }}
+                    disabled={existingModpacks.length === 0}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <PackageOpen className="h-6 w-6" />
+                      <span className="font-medium">Add Version</span>
+                      <span className="text-muted-foreground text-xs">
+                        Add to existing modpack
+                      </span>
+                    </div>
+                  </Button>
+                </div>
+
+                {/* Existing Modpack Selection */}
+                {!isNewModpack && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      Select Existing Modpack
+                    </label>
+                    <Select
+                      value={selectedExistingModpack}
+                      onValueChange={setSelectedExistingModpack}
+                      disabled={isProcessing}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose an existing modpack" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {existingModpacks.map((name) => (
+                          <SelectItem key={name} value={name}>
+                            {name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedExistingModpack && (
+                      <p className="text-muted-foreground text-sm">
+                        A new version will be added to &quot;
+                        {selectedExistingModpack}&quot;
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {/* File Upload (Dropzone) */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Modpack File *</label>
@@ -323,10 +457,15 @@ export default function UploadModpackPage() {
                       <FormControl>
                         <Input
                           placeholder="My Awesome Modpack"
-                          disabled={isProcessing}
+                          disabled={isProcessing || !isNewModpack}
                           {...field}
                         />
                       </FormControl>
+                      {!isNewModpack && (
+                        <FormDescription>
+                          Name is inherited from selected modpack
+                        </FormDescription>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -345,6 +484,11 @@ export default function UploadModpackPage() {
                           {...field}
                         />
                       </FormControl>
+                      {!isNewModpack && selectedExistingModpack && (
+                        <FormDescription>
+                          Auto-suggested based on existing versions
+                        </FormDescription>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -496,7 +640,7 @@ export default function UploadModpackPage() {
               />
 
               {/* Submit Button */}
-              <div className="flex justify-end gap-4">
+              <div className="flex justify-end gap-3">
                 <Button
                   type="button"
                   variant="outline"
@@ -515,7 +659,9 @@ export default function UploadModpackPage() {
                     ? "Processing..."
                     : isComplete
                       ? "Completed"
-                      : "Upload Modpack"}
+                      : !isNewModpack && selectedExistingModpack
+                        ? `Add Version to ${selectedExistingModpack}`
+                        : "Upload Modpack"}
                 </Button>
               </div>
             </form>

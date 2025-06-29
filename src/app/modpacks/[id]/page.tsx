@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getModpackById } from "~/server/actions/modpacks";
+import { getModpackVersions } from "~/server/actions/modpacks/versions";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import Link from "next/link";
@@ -15,13 +16,14 @@ import { Button } from "~/components/ui/button";
 import { ModList } from "~/components/modpacks/ModList";
 import { ModpackSidebar } from "~/components/modpacks/ModpackSidebar";
 import { PageContainer } from "~/components/ui/page-container";
+import { VersionSwitcher } from "~/components/modpacks/VersionSwitcher";
 
-export default async function PublicModpackPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { id } = params;
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function ModpackDetailPage({ params }: PageProps) {
+  const { id } = await params;
 
   const session = await auth();
 
@@ -30,6 +32,10 @@ export default async function PublicModpackPage({
     notFound();
   }
   const modpack = result.data;
+
+  // Get all versions of this modpack
+  const versionsResult = await getModpackVersions(modpack.name);
+  const allVersions = versionsResult.success ? (versionsResult.data ?? []) : [];
 
   // Determine edit permission
   let canEdit = false;
@@ -79,7 +85,13 @@ export default async function PublicModpackPage({
             )}
           </div>
         </div>
+
+        {/* Version Switcher - only show if multiple versions exist */}
+        {allVersions.length > 1 && (
+          <VersionSwitcher currentVersion={modpack} allVersions={allVersions} />
+        )}
       </div>
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="flex flex-col gap-4 lg:col-span-2">
           {modpack.description && (
