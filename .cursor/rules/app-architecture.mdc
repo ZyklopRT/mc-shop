@@ -33,6 +33,7 @@ alwaysApply: false
 5. **Item Management**: Comprehensive item database with image support
 6. **User Authentication**: Multi-step registration with Minecraft integration
 7. **Admin Tools**: Item import, testing utilities
+8. **Modpack Management**: Upload, version, and distribute modpacks with download functionality
 
 ### Request & Offer Workflow
 1. **Request Creation**: Users create requests for items they need
@@ -40,6 +41,13 @@ alwaysApply: false
 3. **Offer Management**: Accept/reject/withdraw offers with status tracking
 4. **Negotiation**: Accepted offers move to negotiation phase
 5. **Transaction**: Final completion through Minecraft server integration
+
+### Modpack Distribution Workflow
+1. **Admin Upload**: Admins upload ZIP files with mod analysis and version tracking
+2. **Mod Extraction**: Automated parsing of NeoForge/Forge metadata with asset extraction
+3. **Public Browsing**: Users browse available modpacks with detailed information
+4. **Download System**: Streaming downloads with progress tracking and analytics
+5. **Version Management**: Support for multiple versions and latest downloads
 
 ## File Structure Patterns
 
@@ -52,6 +60,11 @@ actions/
 ├── search-actions.ts            # Global search functionality
 ├── shop-items.ts               # Shop inventory management
 ├── shops.ts                    # Shop CRUD operations
+├── modpacks/                   # Modpack management actions
+│   ├── core.ts                 # CRUD operations
+│   ├── upload.ts              # File upload and processing
+│   ├── download.ts            # Download generation and analytics
+│   └── index.ts               # Action exports
 └── requests/                   # Request system actions
     ├── create-request.ts       # Request creation
     ├── update-request.ts       # Request updates
@@ -67,10 +80,18 @@ actions/
 ```
 components/
 ├── ui/                         # ShadCN UI components
+│   ├── danger-zone.tsx         # Destructive action component (NEW)
+│   ├── page-container.tsx      # Layout wrapper component
+│   ├── page-header.tsx         # Standard page headers
+│   └── form-page-header.tsx    # Form page headers with back button
 ├── auth/                       # Authentication components
 ├── navigation.tsx              # Main navigation
 ├── items/                      # Item-related components
 ├── shops/                      # Shop management components
+├── modpacks/                   # Modpack management components
+│   ├── download-modal.tsx      # Download progress modal (NEW)
+│   ├── download-latest-button.tsx # Latest version download (NEW)
+│   └── ModpackSidebar.tsx      # Modpack detail sidebar
 ├── requests/                   # Request system components
 │   ├── request-details.tsx     # Request detail view
 │   ├── offer-form.tsx          # Offer creation form
@@ -88,7 +109,8 @@ validations/
 ├── auth.ts      # Authentication and registration schemas
 ├── request.ts   # Request and offer validation schemas
 ├── search.ts    # Search parameter validation
-└── shop.ts      # Shop and shop item validation schemas
+├── shop.ts      # Shop and shop item validation schemas
+└── modpack.ts   # Modpack upload and management schemas (NEW)
 ```
 
 ### Types (`src/lib/types/`)
@@ -128,6 +150,9 @@ app/
 │   ├── new/page.tsx          # Shop creation
 │   └── [id]/                 # Individual shop pages
 ├── items/page.tsx             # Item management
+├── modpacks/                  # Modpack system (NEW)
+│   ├── page.tsx              # Public modpack listing
+│   └── [id]/page.tsx         # Modpack details
 ├── requests/                  # Request system
 │   ├── page.tsx              # Request listing
 │   ├── new/page.tsx          # Request creation
@@ -135,7 +160,21 @@ app/
 │       ├── page.tsx          # Request details with offers
 │       └── edit/page.tsx     # Request editing
 └── admin/                     # Administrative functions
-    └── items/                # Item management tools
+    ├── items/                # Item management tools
+    └── modpacks/             # Modpack administration (NEW)
+        ├── page.tsx          # Admin modpack dashboard
+        ├── upload/page.tsx   # Modpack upload interface
+        └── [id]/edit/page.tsx # Modpack editing
+```
+
+### API Routes (`src/app/api/`)
+```
+api/
+├── auth/[...nextauth]/route.ts    # Authentication endpoints
+├── minecraft/uuid/route.ts        # Minecraft UUID validation
+└── modpacks/                      # Modpack download endpoints (NEW)
+    ├── [id]/download/route.ts     # Download specific version
+    └── latest/[name]/download/route.ts # Download latest version
 ```
 
 ## Server Action Patterns
@@ -197,6 +236,33 @@ export function ClientComponent({ exampleAction }: Props) {
 }
 ```
 
+### Download Actions with Streaming
+```typescript
+"use server";
+
+import JSZip from "jszip";
+import { Readable } from "stream";
+
+export async function downloadModpack(modpackId: string) {
+  // 1. Validate modpack and permissions
+  const modpack = await validateModpackAccess(modpackId);
+  
+  // 2. Extract mods from original ZIP
+  const originalBuffer = await fs.readFile(modpack.filePath);
+  const originalZip = await JSZip.loadAsync(originalBuffer);
+  
+  // 3. Create new ZIP with only mods folder
+  const newZip = new JSZip();
+  await extractModsFolder(originalZip, newZip);
+  
+  // 4. Track analytics
+  await recordDownload(modpackId, session.user.id);
+  
+  // 5. Return buffer for streaming
+  return await newZip.generateAsync({ type: "nodebuffer" });
+}
+```
+
 ## Database Schema Patterns
 
 ### Core Models
@@ -207,6 +273,9 @@ export function ClientComponent({ exampleAction }: Props) {
 - **Request**: User requests for items with status tracking
 - **RequestOffer**: Offers made on requests with negotiation flow
 - **RequestNegotiation**: Accepted offers in negotiation phase
+- **Modpack**: Versioned modpack files with metadata (NEW)
+- **Mod**: Individual mod information extracted from modpacks (NEW)
+- **ModpackDownload**: Download analytics and tracking (NEW)
 
 ### Relationship Patterns
 ```prisma
@@ -215,6 +284,8 @@ User {
   shops     Shop[]
   requests  Request[]
   offers    RequestOffer[]
+  modpacks  Modpack[]         // NEW: Admin-created modpacks
+  downloads ModpackDownload[] // NEW: Download tracking
 }
 
 // Shop contains multiple items
@@ -229,6 +300,101 @@ Request {
   negotiations RequestNegotiation[]
   requester    User
 }
+
+// Modpack contains multiple mods (NEW)
+Modpack {
+  mods         Mod[]
+  downloads    ModpackDownload[]
+  createdBy    User
+}
+```
+
+## UI Component Patterns
+
+### DangerZone Component for Destructive Actions
+**Location**: [src/components/ui/danger-zone.tsx](mdc:src/components/ui/danger-zone.tsx)
+
+**Purpose**: Standardized component for all destructive actions (delete, remove, cancel) across the application.
+
+**Features**:
+- Red-themed warning design with danger icon
+- Customizable title, description, and button text
+- Built-in confirmation dialog with double-check
+- Loading states and error handling
+- Consistent spacing and typography
+
+**Usage Pattern**:
+```typescript
+import { DangerZone } from "~/components/ui/danger-zone";
+
+// In any edit/management page
+<DangerZone
+  title="Delete Shop"
+  description="This will permanently delete the shop and all its items. This action cannot be undone."
+  buttonText="Delete Shop"
+  onConfirm={async () => {
+    const result = await deleteShopAction(shopId);
+    if (result.success) {
+      router.push('/shops');
+    }
+  }}
+/>
+```
+
+**Implementations**:
+- Shop deletion in [src/app/shops/[id]/edit/page.tsx](mdc:src/app/shops/[id]/edit/page.tsx)
+- Shop item removal in [src/app/shops/[id]/items/[itemId]/edit/page.tsx](mdc:src/app/shops/[id]/items/[itemId]/edit/page.tsx)
+- Request deletion in [src/app/requests/[id]/edit/page.tsx](mdc:src/app/requests/[id]/edit/page.tsx)
+- Modpack deletion in [src/app/admin/modpacks/[id]/edit/edit-form.tsx](mdc:src/app/admin/modpacks/[id]/edit/edit-form.tsx)
+
+### Download Modal with Progress Tracking
+**Location**: [src/components/modpacks/download-modal.tsx](mdc:src/components/modpacks/download-modal.tsx)
+
+**Purpose**: Provides visual feedback during long-running modpack downloads with fake progress animation.
+
+**Features**:
+- Multi-state interface: Idle, Downloading, Success, Error
+- Smooth progress animation during server processing
+- Real-time file size and progress display
+- Toast notifications for completion/errors
+- Automatic cleanup and modal management
+
+**Usage Pattern**:
+```typescript
+import { DownloadModal } from "~/components/modpacks/download-modal";
+
+const [isModalOpen, setIsModalOpen] = useState(false);
+
+// Trigger from button click
+<Button onClick={() => setIsModalOpen(true)}>
+  Download Modpack
+</Button>
+
+<DownloadModal
+  isOpen={isModalOpen}
+  onOpenChange={setIsModalOpen}
+  modpackId={modpack.id}
+  modpackName={modpack.name}
+  version={modpack.version}
+  fileSize={modpack.fileSize}
+/>
+```
+
+### Conditional Download Availability
+**Pattern**: Hide download functionality for inactive/unavailable content
+
+**Implementation**:
+```typescript
+// In ModpackSidebar component
+{modpack.isActive ? (
+  <Button onClick={() => setIsDownloadModalOpen(true)}>
+    Download v{modpack.version}
+  </Button>
+) : (
+  <Button disabled variant="secondary">
+    Download Unavailable (Inactive)
+  </Button>
+)}
 ```
 
 ## Search System Architecture
@@ -295,6 +461,12 @@ export async function updateOffer(formData: FormData) {
 - **Dynamic Loading**: Images loaded based on user preference
 - **Path Structure**: `public/items/{pack}/{namespace}__{item}.png`
 
+### Modpack Assets
+- **Logo Extraction**: Automatic extraction from JAR files
+- **Organized Storage**: `public/modpacks/logos/` for web-accessible logos
+- **Fallback Handling**: Default icons for mods without logos
+- **Optimized Loading**: Proper image optimization and caching
+
 ### Image Utilities
 ```typescript
 // Image path resolution with fallbacks
@@ -354,6 +526,9 @@ const onSubmit = async (data: SchemaType) => {
 3. **Form Validation**: Real-time validation with helpful error messages
 4. **Responsive Design**: Mobile-first approach with Tailwind CSS
 5. **Accessibility**: Proper ARIA labels and keyboard navigation
+6. **Destructive Actions**: Always use DangerZone component for delete operations
+7. **Long Operations**: Provide progress feedback with modals or progress bars
+8. **Conditional UI**: Hide unavailable actions (e.g., download inactive content)
 
 ## Adding New Features
 
@@ -409,3 +584,29 @@ const onSubmit = async (data: SchemaType) => {
   - Adds a **Back** button and optional status indicator while keeping the same alignment rules.
 
 > 💡 **Rule of thumb**: Every top-level page component should start with `PageContainer` and a suitable `PageHeader` / `FormPageHeader` so that navigation, headlines, and content all share the same vertical grid.
+
+### Destructive Action Guidelines
+
+**Always use DangerZone component** for any destructive operations:
+
+1. **Delete Operations**: Shop deletion, item removal, request cancellation
+2. **Irreversible Actions**: Account deactivation, data purging
+3. **State Changes**: Moving from active to inactive states that affect user access
+
+**DangerZone Implementation Pattern**:
+```tsx
+// Place DangerZone in a separate section at bottom of edit forms
+<div className="mt-8 pt-8 border-t">
+  <DangerZone
+    title="Delete [Entity]"
+    description="Specific description of what will be permanently lost"
+    buttonText="Delete [Entity]"
+    onConfirm={handleDelete}
+  />
+</div>
+```
+
+**Don't use DangerZone for**:
+- Reversible actions (archiving, hiding)
+- State changes that can be undone
+- Actions that only affect current user's view

@@ -21,4 +21,9 @@ export { downloadModpack, downloadLatestModpack } from "./download";
 
 // Future exports ready for Phase 2:
 // export { extractModMetadata, parseNeoForgeToml } from "./parsers";
-// export { generateChangelog, compareVersions } from "./changelog";
+export {
+  generateChangelog,
+  compareModpackVersions,
+  getModpackChangelog,
+  regenerateAndStoreChangelog,
+} from "./changelog";

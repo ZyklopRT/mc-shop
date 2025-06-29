@@ -114,15 +114,20 @@ src/
 ├── app/
 │   ├── admin/modpacks/page.tsx          # Admin dashboard
 │   └── modpacks/page.tsx                # Public browsing
-├── server/actions/modpacks.ts           # Server actions
+├── server/actions/modpacks/             # Modular server actions (NEW)
 ├── lib/
 │   ├── validations/modpack.ts           # Zod schemas
 │   └── utils/admin-utils.ts             # Admin helpers
-└── components/navigation.tsx            # Updated navigation
+├── components/
+│   ├── navigation.tsx                   # Updated navigation
+│   ├── ui/danger-zone.tsx              # Destructive actions (NEW)
+│   └── modpacks/                       # Modpack components (NEW)
+└── hooks/                              # Custom hooks for modpack features
 
 docs/
 ├── MODPACK_MANAGEMENT_PRD.md           # Product requirements
 ├── ADMIN_SETUP.md                      # Admin setup guide
+├── DOWNLOAD_FEATURE_IMPLEMENTATION.md  # Download feature docs (NEW)
 └── IMPLEMENTATION_STATUS.md            # This document
 
 prisma/
@@ -138,6 +143,8 @@ prisma/
 - **UI**: ShadCN/UI with Tailwind CSS
 - **Backend**: Next.js Server Actions
 - **Types**: Full TypeScript integration
+- **File Processing**: JSZip for modpack manipulation (NEW)
+- **Progress Tracking**: Real-time UI feedback with fake progress (NEW)
 
 ### Performance Considerations
 
@@ -145,6 +152,8 @@ prisma/
 - **Paginated results** to handle large modpack collections
 - **Optimized Prisma queries** with selective field loading
 - **Client-side caching** through React Server Components
+- **Streaming downloads** with progress tracking (NEW)
+- **Analytics tracking** for usage monitoring (NEW)
 
 ## Phase 2: NeoForge Implementation ✅ COMPLETED
 
@@ -243,20 +252,213 @@ public/modpacks/               # Public assets (web-accessible)
 - ✅ **Type Safety Maintained**: Full TypeScript coverage throughout
 - ✅ **Error Handling Robust**: Comprehensive validation and user feedback
 
+## Phase 3: Download System & User Experience ✅ COMPLETED
+
+### What's Been Implemented
+
+#### Download Infrastructure
+
+- **Server-side download actions** in `src/server/actions/modpacks/download.ts`
+  - `downloadModpack(id)` - Download specific version by ID
+  - `downloadLatestModpack(name)` - Download latest version by modpack name
+- **API endpoints** for file serving:
+  - `/api/modpacks/[id]/download` - Specific version downloads
+  - `/api/modpacks/latest/[name]/download` - Latest version downloads
+- **Mod extraction logic** - Creates ZIP files containing only the `mods/` folder
+- **Analytics tracking** - Records download events with user and IP data
+
+#### Download Processing
+
+- **Selective extraction**: Only `.jar` files from `mods/` directory included
+- **File integrity**: SHA-256 checksums for download verification
+- **Streaming delivery**: Large file support with proper HTTP headers
+- **Error handling**: Graceful failures with user feedback
+- **Access control**: Public downloads for active modpacks only
+
+#### Enhanced User Interface
+
+**Download Modal System** (`src/components/modpacks/download-modal.tsx`):
+
+- **Multi-state interface**: Idle, Downloading, Success, Error states
+- **Progress animation**: Smooth fake progress during server processing (addresses 15-second delay)
+- **Real-time feedback**: File size display and download status
+- **Toast integration**: Success/error notifications with auto-cleanup
+- **Accessibility**: Proper ARIA labels and keyboard navigation
+
+**Conditional Downloads** (ModpackSidebar component):
+
+- **Active-only downloads**: Download button only shown for active modpacks
+- **Inactive state handling**: Disabled button with clear messaging
+- **Version display**: Clear indication of download version
+
+**Latest Download Support**:
+
+- **DownloadLatestButton** component for modpack listings
+- **Consistent UI**: Same modal experience for latest downloads
+- **Automatic resolution**: Finds latest active version automatically
+
+#### Database Analytics
+
+- **ModpackDownload** tracking with:
+  - User association (if logged in)
+  - IP address and user agent
+  - Download timestamp and success status
+  - File size and version information
+- **Download counters**: Automatic increment of modpack download counts
+- **Usage insights**: Data ready for admin analytics dashboards
+
+### Current Capabilities
+
+#### For Admin Users
+
+1. **Upload & Manage**: Complete modpack lifecycle management
+2. **Monitor Downloads**: Track download analytics and user engagement
+3. **Control Access**: Enable/disable downloads via active/inactive status
+4. **View Statistics**: Download counts and user behavior data
+5. **Manage Versions**: Multiple version support with latest auto-resolution
+
+#### For Regular Users
+
+1. **Browse Active Modpacks**: See available downloads with clear indicators
+2. **Download with Feedback**: Visual progress during long downloads
+3. **Version Selection**: Download specific versions or latest automatically
+4. **Error Recovery**: Clear error messages and retry capabilities
+5. **Mobile Experience**: Responsive design for all screen sizes
+
+### Technical Implementation Details
+
+#### Download Flow
+
+```
+User Click → Modal Open → Server Action → ZIP Processing →
+Stream Response → Progress Animation → Download Complete → Analytics
+```
+
+#### File Processing Pipeline
+
+```
+Original ZIP → Extract Mods → Filter .jar Files →
+Create New ZIP → Generate Response → Track Analytics
+```
+
+#### Progress Enhancement Strategy
+
+- **Immediate feedback**: Progress bar starts immediately on click
+- **Staged animation**: 0-50% fast, 50-75% medium, 75-85% slow, 85%+ very slow
+- **Real completion**: Jumps to 100% when server processing finishes
+- **User psychology**: Provides sense of progress during wait time
+
+### Success Criteria ✅ ACHIEVED
+
+- ✅ **Download System Functional**: Both ID and name-based downloads working
+- ✅ **User Experience Enhanced**: Modal with progress feedback eliminates confusion
+- ✅ **Mobile Compatible**: Responsive design works across devices
+- ✅ **Analytics Implemented**: Complete download tracking for insights
+- ✅ **Access Control Working**: Inactive modpacks properly restricted
+- ✅ **Error Handling Robust**: Graceful failures with recovery options
+- ✅ **Performance Optimized**: Streaming downloads handle large files efficiently
+
+## Phase 4: UI/UX Polish & Safety Features ✅ COMPLETED
+
+### What's Been Implemented
+
+#### DangerZone Component System
+
+- **Reusable component** at `src/components/ui/danger-zone.tsx`
+- **Standardized destructive actions** across all admin interfaces
+- **Consistent styling**: Red-themed warning design with danger icons
+- **Built-in confirmation**: Double-check dialog prevents accidental deletions
+- **Loading states**: Proper feedback during destructive operations
+- **Accessibility**: Screen reader support and keyboard navigation
+
+#### Applied Across All Admin Areas
+
+**Modpack Management**:
+
+- Delete modpack functionality in edit forms
+- Proper separation from regular edit actions
+- Clear messaging about data loss
+
+**Shop Management**:
+
+- Shop deletion with item cascade warnings
+- Item removal from shop inventory
+- Consistent placement at bottom of edit forms
+
+**Request Management**:
+
+- Request deletion with offer handling
+- Clear indication of irreversible actions
+- Proper user notification of consequences
+
+#### UI Consistency Improvements
+
+- **Unified destructive action pattern**: All delete operations use DangerZone
+- **Proper information hierarchy**: Danger zones separated from main content
+- **Visual consistency**: Same styling and behavior across features
+- **User safety**: Confirmation dialogs prevent accidental data loss
+
+### Current Safety Features
+
+#### For Admin Users
+
+1. **Protected Deletions**: All destructive actions require confirmation
+2. **Clear Consequences**: Detailed descriptions of what will be lost
+3. **Visual Warnings**: Consistent red-themed danger indicators
+4. **Graceful Loading**: Proper feedback during destructive operations
+5. **Error Recovery**: Clear error messages if operations fail
+
+#### For All Users
+
+1. **Confirmation Dialogs**: No accidental deletions possible
+2. **Clear Messaging**: Understand exactly what will happen
+3. **Cancel Options**: Always possible to back out of destructive actions
+4. **Loading Feedback**: Visual indication during processing
+5. **Error Handling**: Helpful messages if something goes wrong
+
+### Technical Implementation Details
+
+#### DangerZone Pattern
+
+```typescript
+<DangerZone
+  title="Delete [Entity]"
+  description="Specific description of permanent data loss"
+  buttonText="Delete [Entity]"
+  onConfirm={handleDestructiveAction}
+/>
+```
+
+#### Placement Guidelines
+
+- **Separate section**: Always in distinct area at bottom of forms
+- **Visual separation**: Border or spacing to separate from main content
+- **Consistent messaging**: Clear description of consequences
+- **Loading handling**: Proper disabled states during operations
+
+### Success Criteria ✅ ACHIEVED
+
+- ✅ **Consistent UI**: All destructive actions use same component
+- ✅ **User Safety**: Confirmation required for all deletions
+- ✅ **Visual Clarity**: Clear separation and warning indicators
+- ✅ **Accessibility**: Screen reader and keyboard support
+- ✅ **Error Handling**: Graceful failure handling with user feedback
+- ✅ **Code Reusability**: Single component used across entire application
+
 ### Current Status
 
-- **File Upload System**: Fully functional with progress tracking
-- **NeoForge Parser**: Complete implementation with legacy fallback
-- **Admin Interface**: Professional upload and management UI
-- **Database Schema**: Populated with real modpack and mod data
-- **Asset Pipeline**: Automated logo extraction and storage
-- **Error Handling**: Graceful failures with detailed reporting
+- **Download System**: Fully functional with progress feedback and analytics
+- **Safety Features**: Complete with DangerZone implementation across all admin areas
+- **User Experience**: Professional-grade interface with proper feedback
+- **Mobile Support**: Responsive design working on all screen sizes
+- **Performance**: Optimized for large file downloads with streaming
+- **Analytics**: Complete tracking for usage insights and monitoring
 
-The system is now ready for **Phase 3: Version Management** with changelog generation and comparison features.
+The modpack management system is now **feature-complete** for core functionality with professional UI/UX polish.
 
-## Phase 3: Version Management (Next Priority)
+## Next Priority: Version Management & Changelog Generation
 
-**Goal**: Version comparison and changelog generation
+**Goal**: Version comparison and automated changelog generation
 
 ### Planned Deliverables
 
@@ -264,15 +466,18 @@ The system is now ready for **Phase 3: Version Management** with changelog gener
 - Automated changelog generation showing added, updated, and removed mods
 - Admin version management interface with rollback capabilities
 - Enhanced public browsing with version history
+- Visual diff interfaces for comparing modpack versions
 
 ### Ready for Implementation
 
-The Phase 2 foundation provides:
+The completed phases provide:
 
 - ✅ **Version Storage**: Multiple versions stored with proper organization
 - ✅ **Metadata Database**: Complete mod information for comparison
 - ✅ **File Management**: Organized storage ready for version diff analysis
 - ✅ **Type System**: Proper types for version comparison operations
+- ✅ **Download System**: Foundation for version-specific downloads
+- ✅ **UI Framework**: Established patterns for complex interfaces
 
 ## Important Development Considerations
 
@@ -299,11 +504,12 @@ The Phase 2 foundation provides:
 - **Future**: Consider admin management interface
 - **Security**: No self-elevation possible, admin-only operations
 
-#### File Upload Security (Phase 2)
+#### Download Security
 
-- **Planning**: Comprehensive file validation required
-- **Considerations**: ZIP bomb protection, malicious file scanning
-- **Infrastructure**: Sandboxed processing environment
+- **Current**: File integrity validation with checksums
+- **Access control**: Public downloads for active modpacks only
+- **Rate limiting**: Consider implementing for production use
+- **Monitoring**: Analytics track download patterns
 
 ### Scalability Planning
 
@@ -313,69 +519,95 @@ The Phase 2 foundation provides:
 - **Monitoring**: Query performance as data grows
 - **Optimization**: Consider read replicas for heavy browsing
 
-#### File Storage
+#### File Storage & Downloads
 
-- **Planning**: Separate storage service for production
-- **Backup**: Automated backup strategy needed
+- **Current**: Local file system storage
+- **Production**: Consider cloud storage (S3, etc.) for scalability
 - **CDN**: Global distribution for download speed
+- **Backup**: Automated backup strategy for modpack files
 
 #### Caching Strategy
 
 - **Current**: React Server Component caching
 - **Future**: Redis for frequent queries
-- **Optimization**: Static generation for public pages
+- **Download optimization**: Consider CDN integration
+- **Static generation**: For public modpack listings
 
 ## Development Workflow Recommendations
 
 ### Code Organization
 
-1. **Split large files** as they grow (following @app-architecture pattern)
-2. **Separate concerns** between UI, business logic, and data access
-3. **Maintain type safety** throughout the development process
-4. **Document breaking changes** in schema or API
+1. **Modular server actions** in dedicated folders
+2. **Reusable UI components** following DangerZone pattern
+3. **Consistent validation** with Zod schemas
+4. **Type safety** throughout the development process
+5. **Documentation** for breaking changes in schema or API
 
 ### Testing Strategy
 
 1. **Unit tests** for server actions and utilities
-2. **Integration tests** for file processing (Phase 2)
-3. **E2E tests** for critical user flows
-4. **Performance tests** for file uploads and processing
+2. **Integration tests** for download functionality
+3. **E2E tests** for critical user flows (upload, download, delete)
+4. **Performance tests** for file processing and downloads
+5. **Accessibility tests** for UI components
 
 ### Deployment Considerations
 
-1. **Environment variables** for storage configuration
+1. **Environment variables** for storage and download configuration
 2. **Database migrations** in production pipeline
 3. **File storage permissions** and backup strategies
-4. **Monitoring** for upload success rates and performance
+4. **CDN configuration** for static assets and downloads
+5. **Monitoring** for download success rates and performance
 
 ## Success Metrics & Monitoring
 
 ### Current Metrics Available
 
-- Modpack download counts
+- Modpack download counts (by version and total)
 - User engagement with admin dashboard
 - Public browsing patterns
 - Error rates in server actions
+- Download success/failure rates
+- File processing performance
 
-### Recommended Monitoring (Phase 2+)
+### Recommended Production Monitoring
 
-- File upload success/failure rates
-- Processing time for modpack analysis
-- Storage usage and growth
+- Download bandwidth usage and costs
+- Storage growth and cleanup needs
 - User satisfaction with download experience
+- Geographic distribution of downloads
+- Popular modpack trends
 
 ## Conclusion
 
-Phase 1 has established a robust foundation for the Modpack Management System. The architecture is extensible, secure, and ready for file processing capabilities. The admin permission system ensures proper access control, while the public interface provides a clean user experience.
+The Modpack Management System has achieved **feature-complete status** for core functionality. All major user flows work smoothly:
 
-The codebase follows established patterns from the existing MC Shop application and is well-positioned for continued development. The next phase can focus on the core file processing functionality with confidence in the underlying architecture.
+- **Admin Experience**: Professional upload, management, and analytics interface
+- **User Experience**: Smooth browsing and downloading with proper feedback
+- **Safety Features**: Consistent destructive action handling across the application
+- **Performance**: Optimized for large file handling with progress feedback
+- **Mobile Support**: Responsive design for all screen sizes
 
-Key strengths of the current implementation:
+### Key Strengths of Current Implementation
 
-- **Type-safe** throughout the stack
-- **Secure** with proper admin controls
-- **Extensible** for multiple mod loaders
-- **User-friendly** with polished interfaces
-- **Well-documented** for future development
+- **Type-safe** throughout the entire stack
+- **Secure** with proper admin controls and access validation
+- **Extensible** architecture ready for multiple mod loaders
+- **User-friendly** with polished interfaces and proper feedback
+- **Professional-grade** UI/UX with consistent patterns
+- **Analytics-ready** with comprehensive tracking
+- **Mobile-compatible** with responsive design
+- **Safety-focused** with confirmation dialogs and clear messaging
 
-The system is ready for Phase 2: NeoForge Implementation and file processing capabilities.
+### Ready for Production
+
+The system is now **production-ready** for basic modpack distribution needs. Future enhancements (version comparison, changelog generation) can be developed incrementally without disrupting current functionality.
+
+The codebase follows established patterns and is well-positioned for continued development with features like:
+
+- Automated changelog generation
+- Version comparison interfaces
+- Advanced admin analytics dashboards
+- Integration with mod update checking services
+
+The foundation is solid, secure, and scalable for future growth.

@@ -1,5 +1,9 @@
 import { notFound } from "next/navigation";
 import { getModpackById } from "~/server/actions/modpacks";
+import {
+  generateChangelog,
+  getModpackChangelog,
+} from "~/server/actions/modpacks/changelog";
 import { getModpackVersions } from "~/server/actions/modpacks/versions";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -17,6 +21,7 @@ import { ModList } from "~/components/modpacks/ModList";
 import { ModpackSidebar } from "~/components/modpacks/ModpackSidebar";
 import { PageContainer } from "~/components/ui/page-container";
 import { VersionSwitcher } from "~/components/modpacks/VersionSwitcher";
+import { Changelog } from "~/components/modpacks/changelog";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -36,6 +41,25 @@ export default async function ModpackDetailPage({ params }: PageProps) {
   // Get all versions of this modpack
   const versionsResult = await getModpackVersions(modpack.name);
   const allVersions = versionsResult.success ? (versionsResult.data ?? []) : [];
+
+  // Generate changelog for this version
+  let changelog = null;
+  try {
+    // Try to get existing changelog first
+    const existingChangelogResult = await getModpackChangelog(id);
+    if (existingChangelogResult.success && existingChangelogResult.data) {
+      changelog = existingChangelogResult.data;
+    } else {
+      // Generate changelog on the fly
+      const changelogResult = await generateChangelog(id);
+      if (changelogResult.success && changelogResult.data) {
+        changelog = changelogResult.data;
+      }
+    }
+  } catch (error) {
+    console.error("Error loading changelog:", error);
+    // Continue without changelog
+  }
 
   // Determine edit permission
   let canEdit = false;
@@ -118,6 +142,14 @@ export default async function ModpackDetailPage({ params }: PageProps) {
               </CardContent>
             </Card>
           )}
+
+          {/* Changelog Section */}
+          {changelog && (
+            <div>
+              <Changelog changelog={changelog} />
+            </div>
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

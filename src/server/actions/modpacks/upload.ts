@@ -508,6 +508,42 @@ export async function uploadModpack(formData: FormData): Promise<UploadResult> {
       `[MODPACK UPLOAD] Successfully created modpack ${finalData.name} v${finalData.version} with ${mods.length} mods`,
     );
 
+    // Generate and store changelog for this version
+    try {
+      const { generateChangelog } = await import("./changelog");
+      const changelogResult = await generateChangelog(modpack.id);
+      if (changelogResult.success && changelogResult.data) {
+        // Store the changelog in the database
+        const { changes } = changelogResult.data;
+        if (changes.length > 0) {
+          await db.modpackChangelog.createMany({
+            data: changes.map((change) => ({
+              modpackId: modpack.id,
+              changeType: change.changeType,
+              modId: change.modId,
+              modName: change.modName,
+              oldVersion: change.oldVersion,
+              newVersion: change.newVersion,
+              description: change.description,
+              impact: change.impact,
+            })),
+          });
+          console.log(
+            `[MODPACK UPLOAD] Generated changelog with ${changes.length} entries`,
+          );
+        }
+      }
+    } catch (changelogError) {
+      const errorMessage =
+        changelogError instanceof Error
+          ? changelogError.message
+          : String(changelogError);
+      console.warn(
+        `[MODPACK UPLOAD] Failed to generate changelog: ${errorMessage}`,
+      );
+      // Don't fail the upload if changelog generation fails
+    }
+
     // Success! Return the created modpack
     return {
       success: true,

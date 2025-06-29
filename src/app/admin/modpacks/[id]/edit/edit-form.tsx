@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Save, Loader2, Edit } from "lucide-react";
+import { Save, Loader2, Edit, RotateCcw } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -45,6 +45,7 @@ import {
   type ModpackWithMods,
 } from "~/lib/validations/modpack";
 import { updateModpack, deleteModpack } from "~/server/actions/modpacks";
+import { regenerateAndStoreChangelog } from "~/server/actions/modpacks/changelog";
 
 interface EditModpackFormProps {
   params: {
@@ -57,6 +58,7 @@ export function EditModpackForm({ params, modpack }: EditModpackFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isRegeneratingChangelog, setIsRegeneratingChangelog] = useState(false);
 
   const form = useForm<UpdateModpackData>({
     resolver: zodResolver(UpdateModpackSchema),
@@ -116,6 +118,29 @@ export function EditModpackForm({ params, modpack }: EditModpackFormProps) {
       });
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleRegenerateChangelog = async () => {
+    setIsRegeneratingChangelog(true);
+    try {
+      const result = await regenerateAndStoreChangelog(modpack.id);
+      if (result.success) {
+        toast.success("Changelog Regenerated", {
+          description:
+            "The changelog has been updated with the latest changes.",
+        });
+      } else {
+        toast.error("Regeneration Failed", {
+          description: result.error ?? "Unknown error",
+        });
+      }
+    } catch {
+      toast.error("Regeneration Failed", {
+        description: "An unexpected error occurred",
+      });
+    } finally {
+      setIsRegeneratingChangelog(false);
     }
   };
 
@@ -405,6 +430,50 @@ export function EditModpackForm({ params, modpack }: EditModpackFormProps) {
             </div>
           </form>
         </Form>
+
+        {/* Admin Utilities */}
+        <div className="mt-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Admin Utilities</CardTitle>
+              <CardDescription>
+                Administrative tools for managing this modpack
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="mb-2 text-sm font-medium">
+                    Changelog Management
+                  </h4>
+                  <p className="text-muted-foreground mb-3 text-sm">
+                    Regenerate the changelog by comparing this version with the
+                    previous version. This will overwrite any existing changelog
+                    data.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleRegenerateChangelog}
+                    disabled={isRegeneratingChangelog || isSubmitting}
+                  >
+                    {isRegeneratingChangelog ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Regenerating...
+                      </>
+                    ) : (
+                      <>
+                        <RotateCcw className="mr-2 h-4 w-4" />
+                        Regenerate Changelog
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Danger Zone */}
         <div className="mt-8">
