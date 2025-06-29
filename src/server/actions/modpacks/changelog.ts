@@ -5,10 +5,16 @@ import { db } from "~/server/db";
 import {
   type ChangelogData,
   type ChangelogEntry,
+  type ChangelogWithAISummary,
+  type AIGeneratedSummary,
   VersionComparisonSchema,
   type VersionComparisonData,
 } from "~/lib/validations/modpack";
 import { ChangeType, ChangeImpact } from "@prisma/client";
+import {
+  generateChangelogSummary,
+  generateNewModpackSummary,
+} from "~/server/ai/changelog-summarizer";
 
 // Standard action result type
 type ActionResult<T = null> = {
@@ -18,11 +24,11 @@ type ActionResult<T = null> = {
 };
 
 /**
- * Compare two modpack versions and generate changelog
+ * Compare two modpack versions and generate changelog with AI summary
  */
 export async function compareModpackVersions(
   data: VersionComparisonData,
-): Promise<ActionResult<ChangelogData>> {
+): Promise<ActionResult<ChangelogWithAISummary>> {
   try {
     const validatedData = VersionComparisonSchema.parse(data);
     const { version1, version2, modpackName } = validatedData;
@@ -67,9 +73,19 @@ export async function compareModpackVersions(
       modpack2.id,
     );
 
+    // Generate AI summary
+    const aiSummary = await generateChangelogSummary(
+      changelog,
+      modpackName,
+      version2,
+    );
+
     return {
       success: true,
-      data: changelog,
+      data: {
+        ...changelog,
+        aiSummary: aiSummary ?? undefined,
+      },
     };
   } catch (error) {
     console.error("Error comparing modpack versions:", error);
@@ -81,12 +97,12 @@ export async function compareModpackVersions(
 }
 
 /**
- * Generate changelog for the latest version of a modpack
+ * Generate changelog with AI summary for the latest version of a modpack
  * Compares with the previous version
  */
 export async function generateChangelog(
   modpackId: string,
-): Promise<ActionResult<ChangelogData>> {
+): Promise<ActionResult<ChangelogWithAISummary>> {
   try {
     // Get the current modpack
     const currentModpack = await db.modpack.findUnique({
@@ -119,28 +135,46 @@ export async function generateChangelog(
       },
     });
 
+    let changelog: ChangelogData;
+    let aiSummary: AIGeneratedSummary | undefined = undefined;
+
     // If no previous version, everything is new
     if (!previousModpack) {
-      const changelog = await generateNewModpackChangelog(
+      changelog = await generateNewModpackChangelog(
         currentModpack.mods,
         modpackId,
       );
-      return {
-        success: true,
-        data: changelog,
-      };
-    }
 
-    // Generate changelog by comparing with previous version
-    const changelog = await generateChangelogFromMods(
-      previousModpack.mods,
-      currentModpack.mods,
-      modpackId,
-    );
+      // Generate AI summary for new modpack
+      aiSummary =
+        (await generateNewModpackSummary(
+          currentModpack.mods,
+          currentModpack.name,
+          currentModpack.version,
+        )) ?? undefined;
+    } else {
+      // Generate changelog by comparing with previous version
+      changelog = await generateChangelogFromMods(
+        previousModpack.mods,
+        currentModpack.mods,
+        modpackId,
+      );
+
+      // Generate AI summary for changelog
+      aiSummary =
+        (await generateChangelogSummary(
+          changelog,
+          currentModpack.name,
+          currentModpack.version,
+        )) ?? undefined;
+    }
 
     return {
       success: true,
-      data: changelog,
+      data: {
+        ...changelog,
+        aiSummary,
+      },
     };
   } catch (error) {
     console.error("Error generating changelog:", error);
@@ -202,11 +236,11 @@ export async function getModpackChangelog(
 }
 
 /**
- * Force regenerate and store changelog for a modpack
+ * Force regenerate and store changelog for a modpack with AI summary
  */
 export async function regenerateAndStoreChangelog(
   modpackId: string,
-): Promise<ActionResult<ChangelogData>> {
+): Promise<ActionResult<ChangelogWithAISummary>> {
   try {
     // Check authentication and admin status
     const session = await auth();

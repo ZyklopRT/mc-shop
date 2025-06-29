@@ -193,6 +193,47 @@ export const ChangelogDataSchema = z.object({
   }),
 });
 
+// AI-Generated Summary Schemas
+export const ModpackUpdateCategorySchema = z.enum([
+  "MAGIC",
+  "TECHNOLOGY",
+  "ADVENTURE",
+  "EXPLORATION",
+  "BUILDING",
+  "UTILITY",
+  "OPTIMIZATION",
+  "COSMETIC",
+  "GAMEPLAY",
+  "PERFORMANCE",
+  "CONTENT",
+  "BUGFIX",
+  "MIXED",
+]);
+
+export const AIGeneratedSummarySchema = z.object({
+  focus: z
+    .string()
+    .describe(
+      "What this update focuses on in German (e.g., 'Magie und Abenteuer', 'Technologie und Bauen')",
+    ),
+  description: z
+    .string()
+    .describe("A 1-2 sentence description of what the update brings in German"),
+  categories: z
+    .array(ModpackUpdateCategorySchema)
+    .describe("Primary categories this update focuses on"),
+  highlights: z
+    .array(z.string())
+    .describe("2-4 key highlights or notable additions/changes in German"),
+  impact: z
+    .enum(["LOW", "MEDIUM", "HIGH"])
+    .describe("Overall impact level of this update"),
+});
+
+export const ChangelogWithAISummarySchema = ChangelogDataSchema.extend({
+  aiSummary: AIGeneratedSummarySchema.optional(),
+});
+
 // Type exports
 export type ModLoader = z.infer<typeof ModLoaderSchema>;
 export type ModSide = z.infer<typeof ModSideSchema>;
@@ -274,3 +315,10 @@ export type ModpackVersionUploadClientData = z.infer<
 >;
 export type ModpackGroup = z.infer<typeof ModpackGroupSchema>;
 export type ModpackGroupList = z.infer<typeof ModpackGroupListSchema>;
+
+// AI-related type exports
+export type ModpackUpdateCategory = z.infer<typeof ModpackUpdateCategorySchema>;
+export type AIGeneratedSummary = z.infer<typeof AIGeneratedSummarySchema>;
+export type ChangelogWithAISummary = z.infer<
+  typeof ChangelogWithAISummarySchema
+>;

@@ -17,18 +17,109 @@ import {
   Sparkles,
   AlertTriangle,
   Info,
+  Brain,
+  Target,
+  Star,
 } from "lucide-react";
 import { useState } from "react";
 import { ChangeType, ChangeImpact } from "@prisma/client";
 import {
-  type ChangelogData,
+  type ChangelogWithAISummary,
   type ChangelogEntry,
+  type AIGeneratedSummary,
+  type ModpackUpdateCategory,
 } from "~/lib/validations/modpack";
 
 interface ChangelogProps {
-  changelog: ChangelogData;
+  changelog: ChangelogWithAISummary;
   showUnchanged?: boolean;
 }
+
+// Category display configuration
+const categoryConfig: Record<
+  ModpackUpdateCategory,
+  {
+    label: string;
+    className: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }
+> = {
+  MAGIC: {
+    label: "Magic",
+    className: "bg-purple-100 text-purple-800",
+    icon: Sparkles,
+  },
+  TECHNOLOGY: {
+    label: "Technology",
+    className: "bg-blue-100 text-blue-800",
+    icon: Target,
+  },
+  ADVENTURE: {
+    label: "Adventure",
+    className: "bg-orange-100 text-orange-800",
+    icon: Star,
+  },
+  EXPLORATION: {
+    label: "Exploration",
+    className: "bg-green-100 text-green-800",
+    icon: Target,
+  },
+  BUILDING: {
+    label: "Building",
+    className: "bg-amber-100 text-amber-800",
+    icon: Target,
+  },
+  UTILITY: {
+    label: "Utility",
+    className: "bg-gray-100 text-gray-800",
+    icon: Target,
+  },
+  OPTIMIZATION: {
+    label: "Optimization",
+    className: "bg-teal-100 text-teal-800",
+    icon: Target,
+  },
+  COSMETIC: {
+    label: "Cosmetic",
+    className: "bg-pink-100 text-pink-800",
+    icon: Target,
+  },
+  GAMEPLAY: {
+    label: "Gameplay",
+    className: "bg-indigo-100 text-indigo-800",
+    icon: Target,
+  },
+  PERFORMANCE: {
+    label: "Performance",
+    className: "bg-cyan-100 text-cyan-800",
+    icon: Target,
+  },
+  CONTENT: {
+    label: "Content",
+    className: "bg-emerald-100 text-emerald-800",
+    icon: Target,
+  },
+  BUGFIX: {
+    label: "Bug Fix",
+    className: "bg-red-100 text-red-800",
+    icon: Target,
+  },
+  MIXED: {
+    label: "Mixed",
+    className: "bg-slate-100 text-slate-800",
+    icon: Target,
+  },
+};
+
+// Impact display configuration
+const impactDisplayConfig = {
+  LOW: { label: "Low Impact", className: "bg-green-100 text-green-800" },
+  MEDIUM: {
+    label: "Medium Impact",
+    className: "bg-yellow-100 text-yellow-800",
+  },
+  HIGH: { label: "High Impact", className: "bg-red-100 text-red-800" },
+};
 
 const changeTypeConfig = {
   [ChangeType.ADDED]: {
@@ -74,6 +165,61 @@ const impactConfig = {
     className: "text-gray-600",
   },
 };
+
+function AISummarySection({ aiSummary }: { aiSummary: AIGeneratedSummary }) {
+  const impactConfig = impactDisplayConfig[aiSummary.impact];
+
+  return (
+    <Card className="border-l-4 border-l-blue-500">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="h-5 w-5 text-blue-600" />
+          Update Focus: {aiSummary.focus}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-muted-foreground leading-relaxed">
+          {aiSummary.description}
+        </p>
+
+        <div className="flex flex-wrap gap-2">
+          {aiSummary.categories.map((category) => {
+            const config = categoryConfig[category];
+            const IconComponent = config.icon;
+            return (
+              <Badge
+                key={category}
+                variant="secondary"
+                className={config.className}
+              >
+                <IconComponent className="mr-1 h-3 w-3" />
+                {config.label}
+              </Badge>
+            );
+          })}
+          <Badge variant="outline" className={impactConfig.className}>
+            {impactConfig.label}
+          </Badge>
+        </div>
+
+        <div>
+          <h4 className="mb-2 text-sm font-medium">Key Highlights</h4>
+          <ul className="space-y-1">
+            {aiSummary.highlights.map((highlight, index) => (
+              <li
+                key={index}
+                className="text-muted-foreground flex items-start gap-2 text-sm"
+              >
+                <Star className="mt-0.5 h-3 w-3 flex-shrink-0 fill-yellow-500 text-yellow-500" />
+                {highlight}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function Changelog({
   changelog,
@@ -181,6 +327,11 @@ export function Changelog({
           </div>
         </CardContent>
       </Card>
+
+      {/* AI Summary Section */}
+      {changelog.aiSummary && (
+        <AISummarySection aiSummary={changelog.aiSummary} />
+      )}
 
       {/* Detailed Changes */}
       <div className="space-y-3">

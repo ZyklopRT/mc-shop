@@ -1,9 +1,6 @@
 import { notFound } from "next/navigation";
 import { getModpackById } from "~/server/actions/modpacks";
-import {
-  generateChangelog,
-  getModpackChangelog,
-} from "~/server/actions/modpacks/changelog";
+import { generateChangelog } from "~/server/actions/modpacks/changelog";
 import { getModpackVersions } from "~/server/actions/modpacks/versions";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -42,19 +39,13 @@ export default async function ModpackDetailPage({ params }: PageProps) {
   const versionsResult = await getModpackVersions(modpack.name);
   const allVersions = versionsResult.success ? (versionsResult.data ?? []) : [];
 
-  // Generate changelog for this version
+  // Generate changelog with AI summary for this version
   let changelog = null;
   try {
-    // Try to get existing changelog first
-    const existingChangelogResult = await getModpackChangelog(id);
-    if (existingChangelogResult.success && existingChangelogResult.data) {
-      changelog = existingChangelogResult.data;
-    } else {
-      // Generate changelog on the fly
-      const changelogResult = await generateChangelog(id);
-      if (changelogResult.success && changelogResult.data) {
-        changelog = changelogResult.data;
-      }
+    // Always generate changelog with AI summary (includes stored data + fresh AI analysis)
+    const changelogResult = await generateChangelog(id);
+    if (changelogResult.success && changelogResult.data) {
+      changelog = changelogResult.data;
     }
   } catch (error) {
     console.error("Error loading changelog:", error);

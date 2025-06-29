@@ -19,6 +19,7 @@ export const env = createEnv({
     MINECRAFT_RCON_HOST: z.string().optional(),
     MINECRAFT_RCON_PORT: z.coerce.number().optional(),
     MINECRAFT_RCON_PASSWORD: z.string().optional(),
+    OPENAI_API_KEY: z.string().optional(),
   },
 
   /**
@@ -40,6 +41,7 @@ export const env = createEnv({
     MINECRAFT_RCON_HOST: process.env.MINECRAFT_RCON_HOST,
     MINECRAFT_RCON_PORT: process.env.MINECRAFT_RCON_PORT,
     MINECRAFT_RCON_PASSWORD: process.env.MINECRAFT_RCON_PASSWORD,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
