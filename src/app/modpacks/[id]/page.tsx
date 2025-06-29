@@ -19,6 +19,7 @@ import { ModpackSidebar } from "~/components/modpacks/ModpackSidebar";
 import { PageContainer } from "~/components/ui/page-container";
 import { VersionSwitcher } from "~/components/modpacks/VersionSwitcher";
 import { Changelog } from "~/components/modpacks/changelog";
+import { UpdateInstructions } from "~/components/modpacks/update-instructions";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -38,6 +39,26 @@ export default async function ModpackDetailPage({ params }: PageProps) {
   // Get all versions of this modpack
   const versionsResult = await getModpackVersions(modpack.name);
   const allVersions = versionsResult.success ? (versionsResult.data ?? []) : [];
+
+  // Get previous version for update instructions
+  const previousVersion = allVersions
+    .filter(
+      (v) =>
+        v.id !== modpack.id &&
+        new Date(v.releaseDate) < new Date(modpack.releaseDate),
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime(),
+    )[0];
+
+  // Generate download URL for the current modpack
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : process.env.NODE_ENV === "production"
+      ? "https://your-domain.com"
+      : "http://localhost:3000";
+  const downloadUrl = `${baseUrl}/modpacks/${modpack.id}`;
 
   // Generate changelog with AI summary for this version
   let changelog = null;
@@ -139,6 +160,19 @@ export default async function ModpackDetailPage({ params }: PageProps) {
             <div>
               <Changelog changelog={changelog} />
             </div>
+          )}
+
+          {/* Update Instructions - only show if there's a previous version */}
+          {previousVersion && (
+            <UpdateInstructions
+              modpackName={modpack.name}
+              modpackVersion={modpack.version}
+              downloadUrl={downloadUrl}
+              previousModLoaderVersion={
+                previousVersion.modLoaderVersion ?? undefined
+              }
+              currentModLoaderVersion={modpack.modLoaderVersion ?? undefined}
+            />
           )}
 
           <Card>

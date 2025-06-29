@@ -102,8 +102,30 @@ export async function compareModpackVersions(
  */
 export async function generateChangelog(
   modpackId: string,
+  forceRegeneration = false,
 ): Promise<ActionResult<ChangelogWithAISummary>> {
   try {
+    // Check if changelog already exists (unless forcing regeneration)
+    if (!forceRegeneration) {
+      const existingChangelog = await db.modpackChangelog.findFirst({
+        where: { modpackId },
+      });
+
+      if (existingChangelog) {
+        // Return existing changelog with fresh AI summary
+        const existingResult = await getModpackChangelog(modpackId);
+        if (existingResult.success && existingResult.data) {
+          return {
+            success: true,
+            data: {
+              ...existingResult.data,
+              aiSummary: undefined, // Don't regenerate AI summary
+            },
+          };
+        }
+      }
+    }
+
     // Get the current modpack
     const currentModpack = await db.modpack.findUnique({
       where: { id: modpackId },
@@ -263,8 +285,8 @@ export async function regenerateAndStoreChangelog(
       };
     }
 
-    // Generate the changelog
-    const changelogResult = await generateChangelog(modpackId);
+    // Generate the changelog (force regeneration for admin actions)
+    const changelogResult = await generateChangelog(modpackId, true);
     if (!changelogResult.success || !changelogResult.data) {
       return changelogResult;
     }
