@@ -12,6 +12,8 @@ import Link from "next/link";
 import { ArrowLeft, MapPin, Package, Plus, Edit } from "lucide-react";
 
 import { ItemPreview } from "~/components/items/item-preview";
+import { ShopTeleport } from "~/components/shops";
+import { hasValidTeleportCoordinates } from "~/lib/utils/coordinates";
 
 export default function ShopDetailsPage() {
   const params = useParams();
@@ -133,12 +135,38 @@ export default function ShopDetailsPage() {
               shop.locationZ !== null && (
                 <div className="mb-4">
                   <h3 className="mb-2 font-medium text-gray-700">Location</h3>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <MapPin className="h-4 w-4" />
-                    <span>
-                      {shop.locationX}, {shop.locationY}, {shop.locationZ}
-                    </span>
-                  </div>
+                  {hasValidTeleportCoordinates(
+                    shop.locationX,
+                    shop.locationY,
+                    shop.locationZ,
+                  ) && session?.user?.mcUsername ? (
+                    <ShopTeleport
+                      shopName={shop.name}
+                      x={shop.locationX}
+                      y={shop.locationY}
+                      z={shop.locationZ}
+                      mcUsername={session.user.mcUsername}
+                    />
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <MapPin className="h-4 w-4" />
+                        <span className="font-mono">
+                          {shop.locationX}, {shop.locationY}, {shop.locationZ}
+                        </span>
+                      </div>
+                      {hasValidTeleportCoordinates(
+                        shop.locationX,
+                        shop.locationY,
+                        shop.locationZ,
+                      ) &&
+                        !session?.user?.mcUsername && (
+                          <p className="text-sm text-gray-500">
+                            Login to get teleport commands
+                          </p>
+                        )}
+                    </div>
+                  )}
                 </div>
               )}
 

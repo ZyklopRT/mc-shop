@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { MinecraftRconService, type RconCommandResult } from "../rcon";
+import { formatTeleportTellrawCommand } from "../utils/shop-utils";
 
 // Schema for sending messages to players
 const sendMessageSchema = z.object({
@@ -13,6 +14,15 @@ const sendMessageSchema = z.object({
 const sendTellrawSchema = z.object({
   playerName: z.string().min(1, "Player name is required"),
   command: z.string().min(1, "Tellraw command is required"),
+});
+
+// Schema for sending shop teleport commands
+const sendShopTeleportSchema = z.object({
+  playerName: z.string().min(1, "Player name is required"),
+  shopName: z.string().min(1, "Shop name is required"),
+  x: z.number().int(),
+  y: z.number().int(),
+  z: z.number().int(),
 });
 
 // Schema for checking if player is online
@@ -135,6 +145,35 @@ export async function sendTellrawCommand(
     const rconService = MinecraftRconService.fromEnvironment();
 
     return await rconService.executeCommand(validatedData.command);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Send a shop teleport command to a player via tellraw
+ * Creates a clickable message that allows teleporting to shop coordinates
+ */
+export async function sendShopTeleportCommand(
+  data: z.infer<typeof sendShopTeleportSchema>,
+): Promise<RconCommandResult> {
+  try {
+    const validatedData = sendShopTeleportSchema.parse(data);
+    const rconService = MinecraftRconService.fromEnvironment();
+
+    // Format the teleport tellraw command
+    const tellrawCommand = formatTeleportTellrawCommand(
+      validatedData.playerName,
+      validatedData.shopName,
+      validatedData.x,
+      validatedData.y,
+      validatedData.z,
+    );
+
+    return await rconService.executeCommand(tellrawCommand);
   } catch (error) {
     return {
       success: false,
