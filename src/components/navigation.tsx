@@ -39,7 +39,7 @@ export function Navigation() {
         <div className="flex h-16 justify-between">
           <div className="flex items-center space-x-8">
             <Link href="/" className="text-foreground text-xl font-bold">
-              MC Shop Admin
+              MC <span className="text-primary">Shop</span>
             </Link>
 
             <div className="hidden items-center space-x-6 md:flex">
