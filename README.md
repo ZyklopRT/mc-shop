@@ -2,6 +2,9 @@
 
 A comprehensive web application for administrating Minecraft shops through RCON (Remote Console) connection. This platform serves as an administrative interface for managing virtual shops, item requests, and player interactions on a Minecraft server.
 
+![Global Search Example](docs/global_search.png)
+_Global search for items and players across all shops_
+
 ## 🚀 Features
 
 ### 🏪 Shop Management System
@@ -29,9 +32,6 @@ _Shop management and item listing interface_
 - **Keyboard Navigation**: Full keyboard support with arrow keys and enter navigation
 - **Smart Categorization**: Results grouped by type (players, items, shops)
 - **Advanced Filtering**: Filter search results by type and criteria
-
-![Global Search Example](docs/global_search.png)
-_Global search for items and players across all shops_
 
 ### 🎯 Request & Offer System
 
