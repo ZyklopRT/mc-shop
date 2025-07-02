@@ -12,7 +12,7 @@ A comprehensive web application for administrating Minecraft shops through RCON 
 - **Location Integration**: Set shop coordinates and generate teleport commands
 - **Ownership Controls**: Only shop owners can edit their shops and manage inventory
 
-![Shop List Example](shop_list.png)
+![Shop List Example](docs/shop_list.png)
 _Shop management and item listing interface_
 
 ### 📦 Item Database & Management
@@ -30,7 +30,7 @@ _Shop management and item listing interface_
 - **Smart Categorization**: Results grouped by type (players, items, shops)
 - **Advanced Filtering**: Filter search results by type and criteria
 
-![Global Search Example](global_search.png)
+![Global Search Example](docs/global_search.png)
 _Global search for items and players across all shops_
 
 ### 🎯 Request & Offer System
@@ -42,7 +42,7 @@ _Global search for items and players across all shops_
 - **Status Tracking**: Complete lifecycle tracking from request to completion
 - **Currency Support**: Support for emeralds and emerald blocks as currency
 
-![Request Board Example](request_board.png)
+![Request Board Example](docs/request_board.png)
 _Request board for item and service requests_
 
 ### 🔐 Authentication & User Management
@@ -53,10 +53,10 @@ _Request board for item and service requests_
 - **UUID Integration**: Automatic player UUID retrieval for profile features
 - **Secure Authentication**: Hashed passwords with NextAuth.js integration
 
-![Registration Example](register.png)
+![Registration Example](docs/register.png)
 _Step 1 of the registration process_
 
-![Sign In Example](sign_in.png)
+![Sign In Example](docs/sign_in.png)
 _Sign in with your Minecraft username and password_
 
 ### ⚡ RCON Integration
