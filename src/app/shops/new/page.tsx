@@ -11,6 +11,7 @@ import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Switch } from "~/components/ui/switch";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import { createShop } from "~/server/actions/shops";
 import { createShopSchema } from "~/lib/validations/shop";
 import Link from "next/link";
@@ -80,17 +81,17 @@ export default function NewShopPage() {
 
   if (status === "loading") {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageWrapper>
         <div className="flex items-center justify-center">
           <p>Loading...</p>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
   if (status === "unauthenticated") {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageWrapper>
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold">Authentication Required</h1>
           <p className="text-muted-foreground mb-4">
@@ -100,12 +101,12 @@ export default function NewShopPage() {
             <Link href="/auth/login">Login</Link>
           </Button>
         </Card>
-      </div>
+      </PageWrapper>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <PageWrapper>
       <div className="mx-auto max-w-2xl">
         <div className="mb-8">
           <Button variant="outline" asChild className="mb-4">
@@ -279,6 +280,6 @@ export default function NewShopPage() {
           </ul>
         </Card>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

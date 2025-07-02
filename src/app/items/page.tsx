@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Card } from "~/components/ui/card";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import { searchItems } from "~/server/actions/item-actions";
 import { getItemImageUrl } from "~/lib/utils/item-images";
 
@@ -55,7 +56,7 @@ export default function ItemsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <PageWrapper>
       <h1 className="mb-8 text-3xl font-bold">Minecraft Items</h1>
 
       {/* Search Section */}
@@ -146,6 +147,6 @@ export default function ItemsPage() {
           </div>
         </Card>
       )}
-    </div>
+    </PageWrapper>
   );
 }

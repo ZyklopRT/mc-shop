@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import { getShopDetails } from "~/server/actions/shops";
 
 import type { ShopWithItems } from "~/lib/types/shop";
@@ -48,17 +49,17 @@ export default function ShopDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageWrapper>
         <div className="flex items-center justify-center">
           <p>Loading shop details...</p>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
   if (error || !shop) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageWrapper>
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
           <p className="text-muted-foreground mb-4">
@@ -68,14 +69,14 @@ export default function ShopDetailsPage() {
             <Link href="/shops">Back to Shops</Link>
           </Button>
         </Card>
-      </div>
+      </PageWrapper>
     );
   }
 
   const isOwner = session?.user?.id === shop.owner.id;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <PageWrapper>
       <div className="mb-8">
         <Button variant="outline" asChild className="mb-4">
           <Link href="/shops">
@@ -254,6 +255,6 @@ export default function ShopDetailsPage() {
           </Card>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

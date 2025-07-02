@@ -16,6 +16,7 @@ import {
   CardTitle,
   CardDescription,
 } from "~/components/ui/card";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Switch } from "~/components/ui/switch";
@@ -182,11 +183,11 @@ export default function EditShopItemPage() {
 
   if (status === "loading") {
     return (
-      <div className="container mx-auto max-w-4xl p-6">
+      <PageWrapper className="max-w-4xl">
         <div className="flex h-64 items-center justify-center">
           <div className="text-lg">Loading...</div>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
@@ -197,17 +198,17 @@ export default function EditShopItemPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto max-w-4xl p-6">
+      <PageWrapper className="max-w-4xl">
         <div className="flex h-64 items-center justify-center">
           <div className="text-lg">Loading shop item...</div>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
   if (error || !shopItem) {
     return (
-      <div className="container mx-auto max-w-4xl p-6">
+      <PageWrapper className="max-w-4xl">
         <div className="mb-4 flex items-center gap-4">
           <Button variant="ghost" onClick={() => router.back()}>
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -219,7 +220,7 @@ export default function EditShopItemPage() {
             <p className="text-destructive">{error ?? "Shop item not found"}</p>
           </CardContent>
         </Card>
-      </div>
+      </PageWrapper>
     );
   }
 
@@ -230,16 +231,16 @@ export default function EditShopItemPage() {
 
   if (!isOwner && shopItem) {
     return (
-      <div className="container mx-auto max-w-2xl px-4 py-8">
+      <PageWrapper className="max-w-2xl">
         <div className="flex h-64 items-center justify-center">
           <div className="text-lg">Checking permissions...</div>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
   return (
-    <div className="container mx-auto max-w-2xl px-4 py-8">
+    <PageWrapper className="max-w-2xl">
       <div className="mb-8">
         <Button variant="outline" asChild className="mb-4">
           <Link href={`/shops/${shopId}`}>
@@ -413,6 +414,6 @@ export default function EditShopItemPage() {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </PageWrapper>
   );
 }

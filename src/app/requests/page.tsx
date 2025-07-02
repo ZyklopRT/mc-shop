@@ -5,6 +5,7 @@ import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { PageHeader } from "~/components/ui/page-header";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import { Plus, Sparkles, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { getRequests } from "~/server/actions/requests/get-requests";
@@ -17,7 +18,7 @@ export const dynamic = "force-dynamic";
 
 export default async function RequestsPage() {
   return (
-    <div className="container mx-auto py-6">
+    <PageWrapper>
       <PageHeader
         icon={<MessageSquare className="h-8 w-8" />}
         title="Request Board"
@@ -71,7 +72,7 @@ export default async function RequestsPage() {
           </Suspense>
         </TabsContent>
       </Tabs>
-    </div>
+    </PageWrapper>
   );
 }
 

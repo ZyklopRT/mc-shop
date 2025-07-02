@@ -6,6 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { PageHeader } from "~/components/ui/page-header";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import {
   searchShopsForBrowse,
   getShopsForBrowse,
@@ -168,16 +169,16 @@ export default function BrowseShopsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageWrapper>
         <div className="flex items-center justify-center">
           <p>Loading shops...</p>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <PageWrapper>
       <div className="mb-8">
         <PageHeader
           icon={<Store className="h-8 w-8" />}
@@ -307,6 +308,6 @@ export default function BrowseShopsPage() {
           </p>
         </div>
       )}
-    </div>
+    </PageWrapper>
   );
 }

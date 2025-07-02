@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import { sendMessageToPlayer } from "../../server/actions/rcon-actions";
 import { checkPlayerOnline } from "../../server/actions/rcon-actions";
 
@@ -81,8 +82,8 @@ export default function TestRconPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="mx-auto max-w-2xl space-y-6">
+    <div className="min-h-screen bg-gray-100">
+      <PageWrapper className="max-w-2xl space-y-6">
         <div className="rounded-lg bg-white p-6 shadow-md">
           <h1 className="mb-6 text-2xl font-bold text-gray-800">
             Test RCON Connection
@@ -208,7 +209,7 @@ export default function TestRconPage() {
             </p>
           </div>
         </div>
-      </div>
+      </PageWrapper>
     </div>
   );
 }

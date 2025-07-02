@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,7 +19,7 @@ export default function NewRequestPage() {
   const router = useRouter();
 
   return (
-    <div className="container mx-auto max-w-2xl py-6">
+    <PageWrapper className="max-w-2xl">
       <div className="mb-8">
         <Button variant="outline" asChild className="mb-4">
           <Link href="/requests">
@@ -51,6 +52,6 @@ export default function NewRequestPage() {
           />
         </CardContent>
       </Card>
-    </div>
+    </PageWrapper>
   );
 }

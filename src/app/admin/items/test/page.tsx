@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 
 export default function TestItemsPage() {
   const [result, setResult] = useState<string | null>(null);
@@ -37,7 +38,7 @@ export default function TestItemsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <PageWrapper>
       <h1 className="mb-8 text-3xl font-bold">Test Items Import</h1>
 
       <div className="space-y-4">
@@ -52,6 +53,6 @@ export default function TestItemsPage() {
           </div>
         )}
       </div>
-    </div>
+    </PageWrapper>
   );
 }

@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import {
   Form,
   FormControl,
@@ -100,7 +101,7 @@ export default function AddItemToShopPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-2xl px-4 py-8">
+    <PageWrapper className="max-w-2xl">
       <div className="mb-8">
         <Button variant="outline" asChild className="mb-4">
           <Link href={`/shops/${shopId}`}>
@@ -261,6 +262,6 @@ export default function AddItemToShopPage() {
           </Form>
         </CardContent>
       </Card>
-    </div>
+    </PageWrapper>
   );
 }

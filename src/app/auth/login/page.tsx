@@ -16,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import {
   Form,
   FormControl,
@@ -72,81 +73,86 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="bg-background flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-center text-2xl font-bold">
-            Sign In
-          </CardTitle>
-          <CardDescription className="text-center">
-            Enter your Minecraft username and password to access MC Shop
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {error && (
-                <div className="rounded-md border border-red-200 bg-red-50 p-3">
-                  <p className="text-sm text-red-600">{error}</p>
-                </div>
-              )}
-
-              <FormField
-                control={form.control}
-                name="mcUsername"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Minecraft Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your Minecraft username"
-                        {...field}
-                        disabled={isLoading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter your password"
-                        {...field}
-                        disabled={isLoading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign In"}
-              </Button>
-            </form>
-          </Form>
-
-          <div className="mt-6 text-center">
-            <p className="text-muted-foreground text-sm">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/auth/register"
-                className="font-medium text-blue-600 hover:text-blue-500"
+    <div className="bg-background flex min-h-screen items-center justify-center">
+      <PageWrapper className="flex items-center justify-center py-12">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-center text-2xl font-bold">
+              Sign In
+            </CardTitle>
+            <CardDescription className="text-center">
+              Enter your Minecraft username and password to access MC Shop
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
               >
-                Register here
-              </Link>
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+                {error && (
+                  <div className="rounded-md border border-red-200 bg-red-50 p-3">
+                    <p className="text-sm text-red-600">{error}</p>
+                  </div>
+                )}
+
+                <FormField
+                  control={form.control}
+                  name="mcUsername"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Minecraft Username</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your Minecraft username"
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter your password"
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Signing in..." : "Sign In"}
+                </Button>
+              </form>
+            </Form>
+
+            <div className="mt-6 text-center">
+              <p className="text-muted-foreground text-sm">
+                Don&apos;t have an account?{" "}
+                <Link
+                  href="/auth/register"
+                  className="font-medium text-blue-600 hover:text-blue-500"
+                >
+                  Register here
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </PageWrapper>
     </div>
   );
 }

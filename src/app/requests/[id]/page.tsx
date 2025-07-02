@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { auth } from "~/server/auth";
@@ -27,7 +28,7 @@ export default async function RequestDetailsPage({
   const { id } = await params;
 
   return (
-    <div className="container mx-auto max-w-4xl py-6">
+    <PageWrapper className="max-w-4xl">
       <div className="mb-8 flex items-center gap-4">
         <Button variant="ghost" size="sm" asChild>
           <Link href="/requests">
@@ -40,7 +41,7 @@ export default async function RequestDetailsPage({
       <Suspense fallback={<RequestDetailsLoading />}>
         <RequestDetailsContent requestId={id} />
       </Suspense>
-    </div>
+    </PageWrapper>
   );
 }
 

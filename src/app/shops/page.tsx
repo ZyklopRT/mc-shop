@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { PageHeader } from "~/components/ui/page-header";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import { getMyShopsWithItems } from "~/server/actions/shops";
 import Link from "next/link";
 import { Plus, Package, User } from "lucide-react";
@@ -48,17 +49,17 @@ export default function ShopsPage() {
 
   if (status === "loading" || isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageWrapper>
         <div className="flex items-center justify-center">
           <p>Loading shops...</p>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
   if (status === "unauthenticated") {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageWrapper>
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold">Authentication Required</h1>
           <p className="text-muted-foreground mb-4">
@@ -68,24 +69,24 @@ export default function ShopsPage() {
             <Link href="/auth/login">Login</Link>
           </Button>
         </Card>
-      </div>
+      </PageWrapper>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <PageWrapper>
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
           <p className="text-muted-foreground mb-4">{error}</p>
           <Button onClick={loadShops}>Try Again</Button>
         </Card>
-      </div>
+      </PageWrapper>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <PageWrapper>
       <PageHeader
         icon={<User className="h-8 w-8" />}
         title="My Shops"
@@ -123,6 +124,6 @@ export default function ShopsPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageWrapper>
   );
 }

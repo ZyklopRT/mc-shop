@@ -1,4 +1,5 @@
 import { GlobalSearchBar } from "~/components/search/global-search-bar";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import Image from "next/image";
 
 export default async function HomePage() {
@@ -22,7 +23,7 @@ export default async function HomePage() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container flex flex-col items-center justify-center gap-8 px-4 py-16">
+      <PageWrapper className="relative z-10 flex flex-col items-center justify-center gap-8 py-16">
         <h1 className="text-5xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-[6rem]">
           MC <span className="text-primary">Shop</span>
         </h1>
@@ -34,7 +35,7 @@ export default async function HomePage() {
         <div className="w-full max-w-2xl">
           <GlobalSearchBar className="w-full" />
         </div>
-      </div>
+      </PageWrapper>
     </main>
   );
 }

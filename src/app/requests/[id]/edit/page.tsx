@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
+import { PageWrapper } from "~/components/ui/page-wrapper";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -122,7 +123,7 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
 
   if (isLoading || !requestId) {
     return (
-      <div className="container mx-auto max-w-2xl py-6">
+      <PageWrapper className="max-w-2xl">
         <div className="mb-8">
           <Button variant="outline" asChild className="mb-4">
             <Link href="/requests">
@@ -139,12 +140,12 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </PageWrapper>
     );
   }
 
   return (
-    <div className="container mx-auto max-w-2xl py-6">
+    <PageWrapper className="max-w-2xl">
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
@@ -222,6 +223,6 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
           />
         </CardContent>
       </Card>
-    </div>
+    </PageWrapper>
   );
 }
