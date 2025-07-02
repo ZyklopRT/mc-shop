@@ -194,7 +194,7 @@ export function GlobalSearchBar({
     <div ref={searchRef} className={`relative ${className}`}>
       <form onSubmit={handleFormSubmit} className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+          <Search className="dark:text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-white" />
           <Input
             ref={inputRef}
             type="text"
@@ -203,14 +203,14 @@ export function GlobalSearchBar({
             onChange={(e) => updateQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             onFocus={openDropdown}
-            className="pr-10 pl-10"
+            className="bg-input/30 dark:bg-card dark:text-card-foreground dark:placeholder:text-muted-foreground pr-10 pl-10 text-white placeholder:text-white/70"
           />
           {query && (
             <Button
               size="sm"
               variant="ghost"
               type="button"
-              className="absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 p-0"
+              className="dark:text-muted-foreground dark:hover:text-foreground absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 p-0 text-white hover:text-white"
               onClick={() => {
                 clearSearch();
                 inputRef.current?.focus();
@@ -220,7 +220,7 @@ export function GlobalSearchBar({
             </Button>
           )}
           {isLoading && (
-            <Loader2 className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin" />
+            <Loader2 className="dark:text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin text-white" />
           )}
         </div>
 

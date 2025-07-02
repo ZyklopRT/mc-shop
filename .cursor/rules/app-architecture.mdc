@@ -23,6 +23,109 @@ alwaysApply: false
 - **Toast Notifications**: Using Sonner for user feedback
 - **Form Handling**: React Hook Form with Zod validation throughout
 
+### Theming & Dark Mode System
+- **Dark Mode Support**: Full dark mode implementation using CSS custom properties and `.dark` class toggle
+- **Color System**: All colors use semantic CSS variables defined in [src/styles/globals.css](mdc:src/styles/globals.css)
+- **Theme Colors**: Use semantic color classes instead of hardcoded colors for dark mode compatibility
+- **Primary Color**: Tailwind CSS blue-600 (`oklch(0.546 0.245 262.881)`) used as primary brand color
+
+#### Required Color Classes
+All components MUST use these semantic color classes for proper dark mode support:
+
+**Text Colors:**
+```typescript
+// Primary text and content
+<h1 className="text-foreground">Main heading</h1>
+<p className="text-foreground">Primary content text</p>
+
+// Secondary/muted text
+<p className="text-muted-foreground">Secondary information</p>
+<span className="text-muted-foreground">Subtle details</span>
+
+// Primary brand color
+<button className="text-primary">Primary action</button>
+<a className="text-primary hover:text-primary/80">Primary link</a>
+```
+
+**Background Colors:**
+```typescript
+// Main backgrounds
+<div className="bg-background">Page background</div>
+<div className="bg-card">Card background</div>
+<div className="bg-popover">Popover background</div>
+
+// Interactive elements
+<button className="bg-primary text-primary-foreground">Primary button</button>
+<div className="bg-secondary text-secondary-foreground">Secondary element</div>
+<div className="bg-muted text-muted-foreground">Muted background</div>
+```
+
+**Border Colors:**
+```typescript
+// Standard borders
+<div className="border border-border">Standard border</div>
+<input className="border-input">Form input border</input>
+
+// Focus states
+<input className="focus:ring-ring">Focus ring</input>
+```
+
+#### Color Usage Examples
+```typescript
+// ✅ CORRECT: Semantic color usage
+export function ExampleCard({ title, description, isActive }: Props) {
+  return (
+    <div className="bg-card border border-border rounded-lg p-4">
+      <h3 className="text-foreground font-semibold">{title}</h3>
+      <p className="text-muted-foreground text-sm mt-2">{description}</p>
+      <button className={cn(
+        "mt-4 px-4 py-2 rounded-md",
+        isActive 
+          ? "bg-primary text-primary-foreground" 
+          : "bg-secondary text-secondary-foreground"
+      )}>
+        {isActive ? "Active" : "Inactive"}
+      </button>
+    </div>
+  );
+}
+
+// ❌ INCORRECT: Hardcoded colors (breaks dark mode)
+export function BadExample() {
+  return (
+    <div className="bg-white text-black border-gray-200">
+      <h3 className="text-gray-900">Title</h3>
+      <p className="text-gray-600">Description</p>
+      <button className="bg-blue-600 text-white">Button</button>
+    </div>
+  );
+}
+```
+
+#### Available Color Variables
+```css
+/* From src/styles/globals.css */
+--color-background         /* Page/app background */
+--color-foreground         /* Primary text color */
+--color-card              /* Card backgrounds */
+--color-card-foreground   /* Card text */
+--color-popover           /* Popover/dropdown backgrounds */
+--color-popover-foreground /* Popover text */
+--color-primary           /* Brand primary color (blue) */
+--color-primary-foreground /* Primary button text */
+--color-secondary         /* Secondary backgrounds */
+--color-secondary-foreground /* Secondary text */
+--color-muted             /* Muted backgrounds */
+--color-muted-foreground  /* Muted/secondary text */
+--color-accent            /* Accent backgrounds */
+--color-accent-foreground /* Accent text */
+--color-destructive       /* Error/danger color */
+--color-destructive-foreground /* Error text */
+--color-border            /* Border color */
+--color-input             /* Input border color */
+--color-ring              /* Focus ring color */
+```
+
 ## Application Features
 
 ### Core Systems
@@ -354,6 +457,9 @@ const onSubmit = async (data: SchemaType) => {
 3. **Form Validation**: Real-time validation with helpful error messages
 4. **Responsive Design**: Mobile-first approach with Tailwind CSS
 5. **Accessibility**: Proper ARIA labels and keyboard navigation
+6. **Dark Mode Compatibility**: All components must use semantic color classes (`text-foreground`, `text-muted-foreground`, `text-primary`, etc.)
+7. **Color Consistency**: Never use hardcoded Tailwind colors (e.g., `text-gray-900`, `bg-white`) - always use theme variables
+8. **Primary Actions**: Use `text-primary` and `bg-primary` for primary buttons, links, and brand elements
 
 ## Adding New Features
 
@@ -362,10 +468,11 @@ const onSubmit = async (data: SchemaType) => {
 2. **Types**: Create TypeScript interfaces in [src/lib/types/](mdc:src/lib/types)
 3. **Validation**: Add Zod schemas in [src/lib/validations/](mdc:src/lib/validations)
 4. **Server Actions**: Implement with `"use server"` in [src/server/actions/](mdc:src/server/actions)
-5. **Components**: Build UI using ShadCN components
-6. **Pages**: Create routes in [src/app/](mdc:src/app)
-7. **Hooks**: Custom hooks for complex state management
-8. **Testing**: Ensure proper error handling and edge cases
+5. **Components**: Build UI using ShadCN components with semantic color classes
+6. **Dark Mode Testing**: Verify components work in both light and dark themes
+7. **Pages**: Create routes in [src/app/](mdc:src/app)
+8. **Hooks**: Custom hooks for complex state management
+9. **Testing**: Ensure proper error handling and edge cases
 
 ### Integration Patterns
 - **Authentication**: Always check user sessions in server actions

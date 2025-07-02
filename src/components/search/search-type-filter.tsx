@@ -27,7 +27,11 @@ export function SearchTypeFilter({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" type="button" className="shrink-0">
+        <Button
+          variant="outline"
+          type="button"
+          className="bg-input/30 dark:bg-card dark:text-card-foreground dark:border-border dark:hover:bg-card/80 shrink-0 border-white/20 text-white hover:bg-white/10"
+        >
           <div className="flex items-center gap-1">
             <currentConfig.icon className="h-3 w-3" />
             <span className="hidden sm:inline">{currentConfig.label}</span>
