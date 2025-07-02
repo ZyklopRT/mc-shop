@@ -7,6 +7,9 @@ import Link from "next/link";
 import { MapPin, Edit, ExternalLink } from "lucide-react";
 import { StackedShopItems } from "./stacked-shop-items";
 import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
+import { hasValidTeleportCoordinates } from "~/lib/utils/coordinates";
+import { useSession } from "next-auth/react";
+import { TeleportShopButton } from "./teleport-shop-button";
 
 interface ShopCardProps {
   shop: ShopWithDetails & { shopItems?: ShopItemWithItem[] };
@@ -23,6 +26,12 @@ export function ShopCard({
 }: ShopCardProps) {
   const isOwner = currentUserId === shop.owner.id;
   const canEdit = showEditButton && isOwner;
+  const canTeleport = hasValidTeleportCoordinates(
+    shop.locationX,
+    shop.locationY,
+    shop.locationZ,
+  );
+  const { data: session } = useSession();
 
   return (
     <Card
@@ -75,24 +84,22 @@ export function ShopCard({
         )}
 
         {/* Location */}
-        {shop.locationX !== null &&
-          shop.locationY !== null &&
-          shop.locationZ !== null && (
-            <div className="text-muted-foreground mb-4 flex items-center gap-2 text-sm">
-              <MapPin className="text-muted-foreground h-4 w-4" />
-              <span className="font-mono text-xs">
-                {shop.locationX}, {shop.locationY}, {shop.locationZ}
-              </span>
-            </div>
-          )}
+        {canTeleport && (
+          <div className="text-muted-foreground mb-4 flex items-center gap-2 text-sm">
+            <MapPin className="text-muted-foreground h-4 w-4" />
+            <span className="font-mono text-xs">
+              {shop.locationX}, {shop.locationY}, {shop.locationZ}
+            </span>
+          </div>
+        )}
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-1">
+        <div className="space-y-3">
           <Button
             asChild
-            variant="outline"
+            variant="default"
             size="sm"
-            className="group-hover:border-primary/20 flex-1"
+            className="group-hover:border-primary/20 w-full"
           >
             <Link
               href={`/shops/${shop.id}`}
@@ -104,7 +111,7 @@ export function ShopCard({
           </Button>
 
           {canEdit && (
-            <Button asChild size="sm" className="flex-1">
+            <Button asChild size="sm" className="w-full" variant="outline">
               <Link
                 href={`/shops/${shop.id}/edit`}
                 className="flex items-center justify-center gap-2"
@@ -113,6 +120,17 @@ export function ShopCard({
                 Edit
               </Link>
             </Button>
+          )}
+
+          {canTeleport && (
+            <TeleportShopButton
+              shopName={shop.name}
+              x={shop.locationX ?? 0}
+              y={shop.locationY ?? 0}
+              z={shop.locationZ ?? 0}
+              mcUsername={session?.user?.mcUsername ?? ""}
+              variant="outline"
+            />
           )}
         </div>
       </div>
