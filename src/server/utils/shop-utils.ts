@@ -206,38 +206,41 @@ export async function validateShopItemOwnership(
 }
 
 /**
- * Format location coordinates for display
+ * Format teleport tellraw command for Minecraft
  */
-export function formatLocation(x?: number, y?: number, z?: number): string {
-  if (x === undefined || y === undefined || z === undefined) {
-    return "No location set";
-  }
-  return `${x}, ${y}, ${z}`;
-}
+export function formatTeleportTellrawCommand(
+  playerName: string,
+  shopName: string,
+  x: number,
+  y: number,
+  z: number,
+): string {
+  const tellrawData = {
+    text: "",
+    extra: [
+      { text: "[MC-Shop] ", color: "green", bold: true },
+      { text: "Teleport to ", color: "white" },
+      { text: shopName, color: "aqua", bold: true },
+      { text: " at ", color: "white" },
+      { text: `${x}, ${y}, ${z}`, color: "yellow" },
+      { text: " - ", color: "white" },
+      {
+        text: "[CLICK TO TELEPORT]",
+        color: "gold",
+        bold: true,
+        clickEvent: {
+          action: "run_command",
+          value: `/tp ${playerName} ${x} ${y} ${z}`,
+        },
+        hoverEvent: {
+          action: "show_text",
+          value: `Click to teleport to ${shopName}`,
+        },
+      },
+    ],
+  };
 
-/**
- * Calculate distance between two locations
- */
-export function calculateDistance(
-  pos1: { x?: number; y?: number; z?: number },
-  pos2: { x?: number; y?: number; z?: number },
-): number | null {
-  if (
-    pos1.x === undefined ||
-    pos1.y === undefined ||
-    pos1.z === undefined ||
-    pos2.x === undefined ||
-    pos2.y === undefined ||
-    pos2.z === undefined
-  ) {
-    return null;
-  }
-
-  const dx = pos1.x - pos2.x;
-  const dy = pos1.y - pos2.y;
-  const dz = pos1.z - pos2.z;
-
-  return Math.sqrt(dx * dx + dy * dy + dz * dz);
+  return `tellraw ${playerName} ${JSON.stringify(tellrawData)}`;
 }
 
 /**

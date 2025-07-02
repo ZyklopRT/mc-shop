@@ -12,6 +12,8 @@ import Link from "next/link";
 import { ArrowLeft, MapPin, Package, Plus, Edit } from "lucide-react";
 
 import { ItemPreview } from "~/components/items/item-preview";
+import { ShopTeleport } from "~/components/shops";
+import { hasValidTeleportCoordinates } from "~/lib/utils/coordinates";
 
 export default function ShopDetailsPage() {
   const params = useParams();
@@ -88,7 +90,7 @@ export default function ShopDetailsPage() {
               <h1 className="text-3xl font-bold">{shop.name}</h1>
               <div className="flex items-center gap-2">
                 <div
-                  className={`h-3 w-3 rounded-full ${shop.isActive ? "bg-green-500" : "bg-gray-400"}`}
+                  className={`h-3 w-3 rounded-full ${shop.isActive ? "bg-green-500" : "bg-muted-foreground"}`}
                 />
                 <span className="text-muted-foreground text-sm">
                   {shop.isActive ? "Active" : "Inactive"}
@@ -139,12 +141,38 @@ export default function ShopDetailsPage() {
               shop.locationZ !== null && (
                 <div className="mb-4">
                   <h3 className="text-foreground mb-2 font-medium">Location</h3>
-                  <div className="text-muted-foreground flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    <span>
-                      {shop.locationX}, {shop.locationY}, {shop.locationZ}
-                    </span>
-                  </div>
+                  {hasValidTeleportCoordinates(
+                    shop.locationX,
+                    shop.locationY,
+                    shop.locationZ,
+                  ) && session?.user?.mcUsername ? (
+                    <ShopTeleport
+                      shopName={shop.name}
+                      x={shop.locationX}
+                      y={shop.locationY}
+                      z={shop.locationZ}
+                      mcUsername={session.user.mcUsername}
+                    />
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="text-foreground flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        <span className="font-mono">
+                          {shop.locationX}, {shop.locationY}, {shop.locationZ}
+                        </span>
+                      </div>
+                      {hasValidTeleportCoordinates(
+                        shop.locationX,
+                        shop.locationY,
+                        shop.locationZ,
+                      ) &&
+                        !session?.user?.mcUsername && (
+                          <p className="text-muted-foreground text-sm">
+                            Login to get teleport commands
+                          </p>
+                        )}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -182,8 +210,10 @@ export default function ShopDetailsPage() {
 
             {shop.shopItems.length === 0 ? (
               <div className="py-8 text-center">
-                <Package className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                <h3 className="mb-2 text-lg font-semibold">No items yet</h3>
+                <Package className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  No items yet
+                </h3>
                 <p className="text-muted-foreground mb-4">
                   {isOwner
                     ? "Start adding items to your shop to attract customers."
