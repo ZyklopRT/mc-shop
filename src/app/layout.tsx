@@ -10,7 +10,7 @@ import { Toaster } from "~/components/ui/sonner";
 import { ThemeProvider } from "~/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "MC Shop Admin",
+  title: "MC Shop",
   description: "Minecraft Shop Administration Panel",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
