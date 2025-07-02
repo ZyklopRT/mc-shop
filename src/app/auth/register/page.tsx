@@ -71,16 +71,18 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="bg-background flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">MC Shop</h1>
+          <h1 className="text-foreground text-3xl font-bold">
+            MC <span className="text-primary">Shop</span>
+          </h1>
           <p className="text-muted-foreground mt-2 text-sm">
             Create your account to get started
           </p>
         </div>
 
-        <div className="rounded-lg bg-white p-8 shadow-xl">
+        <div className="bg-card text-card-foreground rounded-lg p-8 shadow-xl">
           <div className="space-y-6">
             <div className="space-y-2">
               <Progress
@@ -88,7 +90,7 @@ export default function RegisterPage() {
                 className="h-2"
                 aria-label={`Registration progress: ${Math.round(progressValue)}%`}
               />
-              <div className="flex justify-between text-xs text-gray-500">
+              <div className="text-muted-foreground flex justify-between text-xs">
                 <span>
                   Step {currentStep} of {REGISTRATION_STEPS.length}
                 </span>
@@ -97,7 +99,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2 text-center">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-foreground text-xl font-semibold">
                 {currentStepData?.title}
               </h2>
               <p className="text-muted-foreground text-sm">
