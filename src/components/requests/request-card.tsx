@@ -109,13 +109,13 @@ export function RequestCard({
           {price && (
             <div className="rounded-lg border bg-green-50 p-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Offered Reward:</span>
+                <span className="text-sm font-medium text-green-600">
+                  Offered Reward:
+                </span>
                 <div className="flex items-center gap-2">
                   {getCurrencyIcon(currency)}
                   <span className="text-lg font-bold text-green-600">
-                    {price.toFixed(2)}
-                  </span>
-                  <span className="text-muted-foreground text-sm">
+                    {price.toFixed(2)}{" "}
                     {currencyDisplayNames[currency] ?? currency}
                   </span>
                 </div>
