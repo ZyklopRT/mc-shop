@@ -75,7 +75,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">MC Shop</h1>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="text-muted-foreground mt-2 text-sm">
             Create your account to get started
           </p>
         </div>
@@ -100,7 +100,7 @@ export default function RegisterPage() {
               <h2 className="text-xl font-semibold text-gray-900">
                 {currentStepData?.title}
               </h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-muted-foreground text-sm">
                 {currentStepData?.description}
               </p>
             </div>

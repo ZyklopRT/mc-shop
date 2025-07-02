@@ -113,7 +113,7 @@ export default function AddItemToShopPage() {
           <Plus className="text-primary h-8 w-8" />
           <h1 className="text-3xl font-bold">Add Item to Shop</h1>
         </div>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Add a new item to your shop with pricing and currency options.
         </p>
       </div>

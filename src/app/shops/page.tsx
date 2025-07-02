@@ -61,7 +61,7 @@ export default function ShopsPage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold">Authentication Required</h1>
-          <p className="mb-4 text-gray-600">
+          <p className="text-muted-foreground mb-4">
             Please login to manage your shops.
           </p>
           <Button asChild>
@@ -77,7 +77,7 @@ export default function ShopsPage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
-          <p className="mb-4 text-gray-600">{error}</p>
+          <p className="text-muted-foreground mb-4">{error}</p>
           <Button onClick={loadShops}>Try Again</Button>
         </Card>
       </div>
@@ -102,9 +102,9 @@ export default function ShopsPage() {
 
       {shops.length === 0 ? (
         <Card className="p-8 text-center">
-          <Package className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+          <Package className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
           <h2 className="mb-2 text-xl font-semibold">No shops yet</h2>
-          <p className="mb-4 text-gray-600">
+          <p className="text-muted-foreground mb-4">
             Create your first shop to start selling items to other players.
           </p>
           <Button asChild>

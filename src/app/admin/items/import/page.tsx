@@ -73,19 +73,21 @@ export default function ImportItemsPage() {
                 <div className="text-2xl font-bold text-blue-600">
                   {stats.total}
                 </div>
-                <div className="text-sm text-gray-600">Total Items</div>
+                <div className="text-muted-foreground text-sm">Total Items</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">
                   {stats.availableInShops}
                 </div>
-                <div className="text-sm text-gray-600">In Shops</div>
+                <div className="text-muted-foreground text-sm">In Shops</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-600">
+                <div className="text-muted-foreground text-2xl font-bold">
                   {stats.withoutShops}
                 </div>
-                <div className="text-sm text-gray-600">Not in Shops</div>
+                <div className="text-muted-foreground text-sm">
+                  Not in Shops
+                </div>
               </div>
             </div>
           ) : (
@@ -98,7 +100,7 @@ export default function ImportItemsPage() {
         {/* Import Section */}
         <Card className="mb-6 p-6">
           <h2 className="mb-4 text-xl font-semibold">Import Items from JSON</h2>
-          <p className="mb-4 text-gray-600">
+          <p className="text-muted-foreground mb-4">
             This will import all items from the{" "}
             <code className="rounded bg-gray-100 px-1 py-0.5">
               public/items.json
@@ -144,7 +146,7 @@ export default function ImportItemsPage() {
         {/* Instructions */}
         <Card className="mt-6 p-6">
           <h2 className="mb-4 text-xl font-semibold">Instructions</h2>
-          <div className="space-y-3 text-sm text-gray-600">
+          <div className="text-muted-foreground space-y-3 text-sm">
             <p>
               1. Make sure your{" "}
               <code className="rounded bg-gray-100 px-1 py-0.5">

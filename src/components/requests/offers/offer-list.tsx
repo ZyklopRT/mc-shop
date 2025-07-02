@@ -105,8 +105,10 @@ export function OfferList({
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-            <span className="ml-2 text-gray-600">Loading offers...</span>
+            <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+            <span className="text-muted-foreground ml-2">
+              Loading offers...
+            </span>
           </div>
         </CardContent>
       </Card>
@@ -141,8 +143,8 @@ export function OfferList({
       </CardHeader>
       <CardContent>
         {offers.length === 0 ? (
-          <div className="py-8 text-center text-gray-500">
-            <HandHeart className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+          <div className="text-muted-foreground py-8 text-center">
+            <HandHeart className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <p>No offers yet.</p>
             {!isRequestOwner && (
               <p className="mt-2 text-sm">Be the first to make an offer!</p>

@@ -92,7 +92,7 @@ export default function TestRconPage() {
             <div>
               <label
                 htmlFor="playerName"
-                className="mb-1 block text-sm font-medium text-gray-700"
+                className="text-foreground mb-1 block text-sm font-medium"
               >
                 Player Name
               </label>
@@ -110,7 +110,7 @@ export default function TestRconPage() {
             <div>
               <label
                 htmlFor="message"
-                className="mb-1 block text-sm font-medium text-gray-700"
+                className="text-foreground mb-1 block text-sm font-medium"
               >
                 Message
               </label>
@@ -139,7 +139,7 @@ export default function TestRconPage() {
               <h3 className="mb-2 text-sm font-medium text-gray-800">
                 Result:
               </h3>
-              <p className="text-sm whitespace-pre-wrap text-gray-600">
+              <p className="text-muted-foreground text-sm whitespace-pre-wrap">
                 {result}
               </p>
             </div>
@@ -155,7 +155,7 @@ export default function TestRconPage() {
             <div>
               <label
                 htmlFor="checkPlayerName"
-                className="mb-1 block text-sm font-medium text-gray-700"
+                className="text-foreground mb-1 block text-sm font-medium"
               >
                 Player Name to Check
               </label>
@@ -184,7 +184,7 @@ export default function TestRconPage() {
               <h3 className="mb-2 text-sm font-medium text-gray-800">
                 Status Check Result:
               </h3>
-              <p className="text-sm whitespace-pre-wrap text-gray-600">
+              <p className="text-muted-foreground text-sm whitespace-pre-wrap">
                 {checkResult}
               </p>
             </div>

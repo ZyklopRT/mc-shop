@@ -187,7 +187,7 @@ export function OfferForm({
                     />
                   </FormControl>
                   {suggestedPrice && suggestedPrice > 0 && (
-                    <div className="text-sm text-gray-600">
+                    <div className="text-muted-foreground text-sm">
                       <div className="flex items-center gap-1">
                         <span>💡</span>
                         <span>

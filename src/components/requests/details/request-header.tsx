@@ -33,7 +33,9 @@ export function RequestHeader({
       {/* Request Title and Description */}
       <div className="space-y-3">
         <div className="flex items-start justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">{request.title}</h1>
+          <h1 className="text-foreground text-3xl font-bold">
+            {request.title}
+          </h1>
 
           {/* Owner Actions */}
           {isOwner && canEdit && (
@@ -45,19 +47,19 @@ export function RequestHeader({
           )}
         </div>
 
-        <p className="text-lg leading-relaxed text-gray-700">
+        <p className="text-foreground text-lg leading-relaxed">
           {request.description}
         </p>
       </div>
 
       {/* Request Author - Small and Compact */}
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className="text-muted-foreground flex items-center gap-2 text-sm">
         <span>Requested by</span>
         <UserAvatar
           username={request.requester.mcUsername}
           size="sm"
           showUsername
-          className="text-gray-900"
+          className="text-foreground"
         />
       </div>
 
@@ -66,7 +68,7 @@ export function RequestHeader({
         {/* Item Details (for item requests) */}
         {request.requestType === "ITEM" && request.item && (
           <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-foreground text-lg font-semibold">
               Item Requested
             </h3>
             <ItemPreview
@@ -81,7 +83,7 @@ export function RequestHeader({
         {/* Suggested Price */}
         {request.suggestedPrice !== null && (
           <div className="flex h-full flex-col space-y-3">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-foreground text-lg font-semibold">
               Suggested Price
             </h3>
             <div className="flex flex-1 flex-col justify-center rounded-lg border bg-green-50 p-4">

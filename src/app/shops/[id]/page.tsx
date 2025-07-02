@@ -59,7 +59,9 @@ export default function ShopDetailsPage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
-          <p className="mb-4 text-gray-600">{error ?? "Shop not found"}</p>
+          <p className="text-muted-foreground mb-4">
+            {error ?? "Shop not found"}
+          </p>
           <Button asChild>
             <Link href="/shops">Back to Shops</Link>
           </Button>
@@ -88,12 +90,14 @@ export default function ShopDetailsPage() {
                 <div
                   className={`h-3 w-3 rounded-full ${shop.isActive ? "bg-green-500" : "bg-gray-400"}`}
                 />
-                <span className="text-sm text-gray-600">
+                <span className="text-muted-foreground text-sm">
                   {shop.isActive ? "Active" : "Inactive"}
                 </span>
               </div>
             </div>
-            <p className="text-gray-600">Owner: {shop.owner.mcUsername}</p>
+            <p className="text-muted-foreground">
+              Owner: {shop.owner.mcUsername}
+            </p>
           </div>
 
           {isOwner && (
@@ -123,8 +127,10 @@ export default function ShopDetailsPage() {
 
             {shop.description && (
               <div className="mb-4">
-                <h3 className="mb-2 font-medium text-gray-700">Description</h3>
-                <p className="text-gray-600">{shop.description}</p>
+                <h3 className="text-foreground mb-2 font-medium">
+                  Description
+                </h3>
+                <p className="text-muted-foreground">{shop.description}</p>
               </div>
             )}
 
@@ -132,8 +138,8 @@ export default function ShopDetailsPage() {
               shop.locationY !== null &&
               shop.locationZ !== null && (
                 <div className="mb-4">
-                  <h3 className="mb-2 font-medium text-gray-700">Location</h3>
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <h3 className="text-foreground mb-2 font-medium">Location</h3>
+                  <div className="text-muted-foreground flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
                     <span>
                       {shop.locationX}, {shop.locationY}, {shop.locationZ}
@@ -143,16 +149,16 @@ export default function ShopDetailsPage() {
               )}
 
             <div className="mb-4">
-              <h3 className="mb-2 font-medium text-gray-700">Statistics</h3>
-              <div className="flex items-center gap-2 text-gray-600">
+              <h3 className="text-foreground mb-2 font-medium">Statistics</h3>
+              <div className="text-muted-foreground flex items-center gap-2">
                 <Package className="h-4 w-4" />
                 <span>{shop.shopItems.length} items available</span>
               </div>
             </div>
 
             <div>
-              <h3 className="mb-2 font-medium text-gray-700">Created</h3>
-              <p className="text-gray-600">
+              <h3 className="text-foreground mb-2 font-medium">Created</h3>
+              <p className="text-muted-foreground">
                 {new Date(shop.createdAt).toLocaleDateString()}
               </p>
             </div>
@@ -178,7 +184,7 @@ export default function ShopDetailsPage() {
               <div className="py-8 text-center">
                 <Package className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                 <h3 className="mb-2 text-lg font-semibold">No items yet</h3>
-                <p className="mb-4 text-gray-600">
+                <p className="text-muted-foreground mb-4">
                   {isOwner
                     ? "Start adding items to your shop to attract customers."
                     : "This shop doesn't have any items for sale yet."}

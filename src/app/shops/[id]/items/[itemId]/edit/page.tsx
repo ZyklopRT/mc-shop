@@ -252,7 +252,7 @@ export default function EditShopItemPage() {
           <Pencil className="text-primary h-8 w-8" />
           <h1 className="text-3xl font-bold">Edit Shop Item</h1>
         </div>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Update the pricing and availability for this item.
         </p>
       </div>

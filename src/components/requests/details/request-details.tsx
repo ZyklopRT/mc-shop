@@ -66,10 +66,10 @@ export function RequestDetails({
           <div className="space-y-4 text-center">
             <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-foreground text-lg font-semibold">
                 Error Loading Request
               </h3>
-              <p className="mt-2 text-gray-600">{error}</p>
+              <p className="text-muted-foreground mt-2">{error}</p>
             </div>
           </div>
         </CardContent>
@@ -88,7 +88,7 @@ export function RequestDetails({
           <CardContent className="py-8">
             <div className="flex items-center justify-center space-x-2">
               <Loader2 className="h-5 w-5 animate-spin" />
-              <span className="text-gray-600">Refreshing...</span>
+              <span className="text-muted-foreground">Refreshing...</span>
             </div>
           </CardContent>
         </Card>

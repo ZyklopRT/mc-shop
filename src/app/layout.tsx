@@ -7,6 +7,7 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "~/server/auth";
 import { Navigation } from "~/components/navigation";
 import { Toaster } from "~/components/ui/sonner";
+import { ThemeProvider } from "~/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "MC Shop Admin",
@@ -25,13 +26,20 @@ export default async function RootLayout({
   const session = await auth();
 
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
       <body>
-        <SessionProvider session={session}>
-          <Navigation />
-          <main className="min-h-screen">{children}</main>
-          <Toaster />
-        </SessionProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SessionProvider session={session}>
+            <Navigation />
+            <main className="min-h-screen">{children}</main>
+            <Toaster />
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

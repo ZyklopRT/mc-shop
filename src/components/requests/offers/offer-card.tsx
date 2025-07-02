@@ -72,10 +72,10 @@ export function OfferCard({
           <div className="flex items-center gap-3">
             <UserAvatar username={offer.offerer.mcUsername} size="md" />
             <div>
-              <div className="font-medium text-gray-900">
+              <div className="text-foreground font-medium">
                 {offer.offerer.mcUsername}
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-muted-foreground text-sm">
                 {formatDate(offer.createdAt)}
               </div>
             </div>
@@ -90,12 +90,12 @@ export function OfferCard({
           {/* Price */}
           {offer.offeredPrice !== null && (
             <div>
-              <div className="text-sm text-gray-600">Offered Price</div>
+              <div className="text-muted-foreground text-sm">Offered Price</div>
               <CurrencyDisplay
                 amount={offer.offeredPrice}
                 currency={offer.currency}
                 size="lg"
-                className="font-semibold text-gray-900"
+                className="text-foreground font-semibold"
               />
             </div>
           )}
@@ -103,8 +103,8 @@ export function OfferCard({
           {/* Message */}
           {offer.message && (
             <div>
-              <div className="text-sm text-gray-600">Message</div>
-              <p className="rounded-lg bg-gray-50 p-3 text-sm text-gray-900">
+              <div className="text-muted-foreground text-sm">Message</div>
+              <p className="bg-muted text-foreground rounded-lg p-3 text-sm">
                 {offer.message}
               </p>
             </div>

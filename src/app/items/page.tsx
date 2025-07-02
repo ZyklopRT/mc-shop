@@ -115,7 +115,7 @@ export default function ItemsPage() {
                 <h3 className="text-sm font-semibold">
                   {language === "en" ? item.nameEn : item.nameDe}
                 </h3>
-                <p className="mt-1 text-xs text-gray-600">{item.id}</p>
+                <p className="text-muted-foreground mt-1 text-xs">{item.id}</p>
               </div>
             </Card>
           ))}
@@ -125,7 +125,7 @@ export default function ItemsPage() {
       {/* No Results */}
       {searchQuery && !isLoading && items.length === 0 && (
         <Card className="p-6 text-center">
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             No items found for &ldquo;{searchQuery}&rdquo;
           </p>
         </Card>
@@ -135,7 +135,7 @@ export default function ItemsPage() {
       {!searchQuery && (
         <Card className="p-6">
           <h2 className="mb-4 text-xl font-semibold">How to use</h2>
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="text-muted-foreground space-y-2 text-sm">
             <p>• Enter a search term to find Minecraft items</p>
             <p>
               • Search by item name or ID (e.g. &ldquo;diamond sword&rdquo; or

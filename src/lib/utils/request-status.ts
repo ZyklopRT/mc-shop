@@ -47,7 +47,7 @@ export const REQUEST_STATUS_CONFIG = {
   CANCELLED: {
     label: "Cancelled",
     color: "bg-gray-500",
-    textColor: "text-gray-700",
+    textColor: "text-foreground",
     bgColor: "bg-gray-50",
     borderColor: "border-gray-300",
   },
@@ -71,7 +71,7 @@ export const OFFER_STATUS_CONFIG = {
   },
   WITHDRAWN: {
     label: "Withdrawn",
-    color: "border-gray-300 text-gray-600",
+    color: "border-gray-300 text-muted-foreground",
     icon: XCircle,
   },
 } as const;

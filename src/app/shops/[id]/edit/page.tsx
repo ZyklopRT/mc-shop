@@ -175,7 +175,9 @@ export default function EditShopPage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold">Authentication Required</h1>
-          <p className="mb-4 text-gray-600">Please login to edit shops.</p>
+          <p className="text-muted-foreground mb-4">
+            Please login to edit shops.
+          </p>
           <Button asChild>
             <Link href="/auth/login">Login</Link>
           </Button>
@@ -189,7 +191,7 @@ export default function EditShopPage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
-          <p className="mb-4 text-gray-600">{error}</p>
+          <p className="text-muted-foreground mb-4">{error}</p>
           <div className="flex justify-center gap-2">
             <Button onClick={loadShop}>Try Again</Button>
             <Button asChild variant="outline">
@@ -206,7 +208,7 @@ export default function EditShopPage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold">Shop Not Found</h1>
-          <p className="mb-4 text-gray-600">
+          <p className="text-muted-foreground mb-4">
             The shop you&apos;re looking for doesn&apos;t exist.
           </p>
           <Button asChild>
@@ -225,7 +227,7 @@ export default function EditShopPage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold">Access Denied</h1>
-          <p className="mb-4 text-gray-600">
+          <p className="text-muted-foreground mb-4">
             You don&apos;t have permission to edit this shop.
           </p>
           <Button asChild>
@@ -249,7 +251,7 @@ export default function EditShopPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold">Edit Shop</h1>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Update your shop&apos;s information
               </p>
             </div>
@@ -257,7 +259,7 @@ export default function EditShopPage() {
               <div
                 className={`h-3 w-3 rounded-full ${shop.isActive ? "bg-green-500" : "bg-gray-400"}`}
               />
-              <span className="text-sm text-gray-600">
+              <span className="text-muted-foreground text-sm">
                 {shop.isActive ? "Active" : "Inactive"}
               </span>
             </div>
@@ -308,7 +310,10 @@ export default function EditShopPage() {
               <Label>Location (Optional)</Label>
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="locationX" className="text-sm text-gray-600">
+                  <Label
+                    htmlFor="locationX"
+                    className="text-muted-foreground text-sm"
+                  >
                     X Coordinate
                   </Label>
                   <Input
@@ -325,7 +330,10 @@ export default function EditShopPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="locationY" className="text-sm text-gray-600">
+                  <Label
+                    htmlFor="locationY"
+                    className="text-muted-foreground text-sm"
+                  >
                     Y Coordinate
                   </Label>
                   <Input
@@ -342,7 +350,10 @@ export default function EditShopPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="locationZ" className="text-sm text-gray-600">
+                  <Label
+                    htmlFor="locationZ"
+                    className="text-muted-foreground text-sm"
+                  >
                     Z Coordinate
                   </Label>
                   <Input
@@ -443,23 +454,23 @@ export default function EditShopPage() {
           <h2 className="mb-4 text-lg font-semibold">Shop Statistics</h2>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-gray-600">Total Items</p>
+              <p className="text-muted-foreground">Total Items</p>
               <p className="font-semibold">{shop.shopItems.length}</p>
             </div>
             <div>
-              <p className="text-gray-600">Created</p>
+              <p className="text-muted-foreground">Created</p>
               <p className="font-semibold">
                 {new Date(shop.createdAt).toLocaleDateString()}
               </p>
             </div>
             <div>
-              <p className="text-gray-600">Last Updated</p>
+              <p className="text-muted-foreground">Last Updated</p>
               <p className="font-semibold">
                 {new Date(shop.updatedAt).toLocaleDateString()}
               </p>
             </div>
             <div>
-              <p className="text-gray-600">Owner</p>
+              <p className="text-muted-foreground">Owner</p>
               <p className="font-semibold">{shop.owner.mcUsername}</p>
             </div>
           </div>

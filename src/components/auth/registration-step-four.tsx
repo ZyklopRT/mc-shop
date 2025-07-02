@@ -19,7 +19,7 @@ export function RegistrationStepFour({
       </div>
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">Registration Completed!</h3>
-        <p className="max-w-sm text-gray-600">
+        <p className="text-muted-foreground max-w-sm">
           Welcome, {mcUsername}! You will be redirected to the login page in a
           few seconds...
         </p>

@@ -32,12 +32,12 @@ export function ShopCard({
         {/* Header with title and status */}
         <div className="mb-3 flex items-start justify-between">
           <div className="min-w-0 flex-1">
-            <h3 className="truncate text-lg font-semibold text-gray-900">
+            <h3 className="text-foreground truncate text-lg font-semibold">
               {shop.name}
             </h3>
-            <p className="mt-0.5 text-sm text-gray-500">
+            <p className="text-muted-foreground mt-0.5 text-sm">
               Owner:{" "}
-              <span className="font-medium text-gray-700">
+              <span className="text-foreground font-medium">
                 {shop.owner.mcUsername}
               </span>
             </p>
@@ -49,7 +49,7 @@ export function ShopCard({
             className={`ml-3 ${
               shop.isActive
                 ? "border-green-200 bg-green-100 text-green-800"
-                : "border-gray-200 bg-gray-100 text-gray-600"
+                : "border-border bg-muted text-muted-foreground"
             }`}
           >
             {shop.isActive ? "Active" : "Inactive"}
@@ -58,7 +58,7 @@ export function ShopCard({
 
         {/* Description */}
         {shop.description && (
-          <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-gray-600">
+          <p className="text-muted-foreground mb-3 line-clamp-2 text-sm leading-relaxed">
             {shop.description}
           </p>
         )}
@@ -66,7 +66,7 @@ export function ShopCard({
         {/* Shop Items Section - Grouped together */}
         {shop.shopItems && (
           <div className="mb-3 space-y-1.5">
-            <div className="text-xs font-medium text-gray-500">
+            <div className="text-muted-foreground text-xs font-medium">
               {shop._count.shopItems} item
               {shop._count.shopItems === 1 ? "" : "s"} available
             </div>
@@ -78,8 +78,8 @@ export function ShopCard({
         {shop.locationX !== null &&
           shop.locationY !== null &&
           shop.locationZ !== null && (
-            <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
-              <MapPin className="h-4 w-4 text-gray-400" />
+            <div className="text-muted-foreground mb-4 flex items-center gap-2 text-sm">
+              <MapPin className="text-muted-foreground h-4 w-4" />
               <span className="font-mono text-xs">
                 {shop.locationX}, {shop.locationY}, {shop.locationZ}
               </span>

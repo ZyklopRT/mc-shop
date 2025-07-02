@@ -78,7 +78,7 @@ export function NegotiationMessage({
           {message.messageType === "ACCEPT" && message.priceOffer !== null && (
             <div className="mb-2">
               <div
-                className={`text-sm ${isCurrentUser ? "text-blue-100" : "text-gray-600"}`}
+                className={`text-sm ${isCurrentUser ? "text-blue-100" : "text-muted-foreground"}`}
               >
                 Accepting terms:
               </div>

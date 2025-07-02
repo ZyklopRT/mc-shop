@@ -93,7 +93,9 @@ export default function NewShopPage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
           <h1 className="mb-4 text-2xl font-bold">Authentication Required</h1>
-          <p className="mb-4 text-gray-600">Please login to create a shop.</p>
+          <p className="text-muted-foreground mb-4">
+            Please login to create a shop.
+          </p>
           <Button asChild>
             <Link href="/auth/login">Login</Link>
           </Button>
@@ -113,7 +115,9 @@ export default function NewShopPage() {
             </Link>
           </Button>
           <h1 className="text-3xl font-bold">Create New Shop</h1>
-          <p className="text-gray-600">Set up your new Minecraft shop</p>
+          <p className="text-muted-foreground">
+            Set up your new Minecraft shop
+          </p>
         </div>
 
         <Card className="p-6">
@@ -156,7 +160,10 @@ export default function NewShopPage() {
               <Label>Location (Optional)</Label>
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="locationX" className="text-sm text-gray-600">
+                  <Label
+                    htmlFor="locationX"
+                    className="text-muted-foreground text-sm"
+                  >
                     X Coordinate
                   </Label>
                   <Input
@@ -173,7 +180,10 @@ export default function NewShopPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="locationY" className="text-sm text-gray-600">
+                  <Label
+                    htmlFor="locationY"
+                    className="text-muted-foreground text-sm"
+                  >
                     Y Coordinate
                   </Label>
                   <Input
@@ -190,7 +200,10 @@ export default function NewShopPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="locationZ" className="text-sm text-gray-600">
+                  <Label
+                    htmlFor="locationZ"
+                    className="text-muted-foreground text-sm"
+                  >
                     Z Coordinate
                   </Label>
                   <Input
@@ -207,7 +220,7 @@ export default function NewShopPage() {
                   )}
                 </div>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-muted-foreground text-sm">
                 Enter the coordinates where your shop is located in Minecraft.
                 This helps other players find your shop.
               </p>
@@ -253,7 +266,7 @@ export default function NewShopPage() {
         {/* Help Text */}
         <Card className="mt-6 p-4">
           <h3 className="mb-2 font-semibold">Tips for creating a good shop:</h3>
-          <ul className="space-y-1 text-sm text-gray-600">
+          <ul className="text-muted-foreground space-y-1 text-sm">
             <li>
               • Choose a clear, descriptive name that tells players what you
               sell

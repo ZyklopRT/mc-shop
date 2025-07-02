@@ -263,7 +263,7 @@ export default function BrowseShopsPage() {
 
       {hasActiveFilters && (
         <div className="mb-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-muted-foreground text-sm">
             {!hasResults
               ? "No shops found matching your search criteria"
               : `Found ${shops.length} shop${shops.length === 1 ? "" : "s"} matching your search`}
@@ -275,7 +275,7 @@ export default function BrowseShopsPage() {
         <Card className="p-8 text-center">
           <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
           <h2 className="mb-2 text-xl font-semibold">No Active Shops</h2>
-          <p className="mb-4 text-gray-600">
+          <p className="text-muted-foreground mb-4">
             There are currently no active shops on the server.
           </p>
           <Button asChild>
@@ -286,7 +286,7 @@ export default function BrowseShopsPage() {
         <Card className="p-8 text-center">
           <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
           <h2 className="mb-2 text-xl font-semibold">No Results</h2>
-          <p className="mb-4 text-gray-600">
+          <p className="text-muted-foreground mb-4">
             No shops match your search criteria. Try different keywords or
             browse all shops.
           </p>
@@ -302,7 +302,7 @@ export default function BrowseShopsPage() {
 
       {!hasActiveFilters && hasResults && (
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-muted-foreground text-sm">
             Showing {shops.length} active shop{shops.length === 1 ? "" : "s"}
           </p>
         </div>

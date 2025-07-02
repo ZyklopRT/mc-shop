@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { getMinecraftAvatarUrl } from "~/lib/utils/minecraft-api";
+import { ModeToggle } from "~/components/mode-toggle";
 
 export function Navigation() {
   const { data: session, status } = useSession();
@@ -28,16 +29,16 @@ export function Navigation() {
   const linkClass = (path: string) =>
     `transition-all duration-200 ${
       isActive(path)
-        ? "text-gray-900 font-medium shadow-[inset_0_-2px_0_0] shadow-blue-500"
-        : "text-gray-600 hover:text-gray-900"
+        ? "text-foreground font-medium shadow-[inset_0_-2px_0_0] shadow-primary"
+        : "text-muted-foreground hover:text-foreground"
     }`;
 
   return (
-    <nav className="border-b bg-white shadow-sm">
+    <nav className="bg-background border-b shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="text-xl font-bold text-gray-900">
+            <Link href="/" className="text-foreground text-xl font-bold">
               MC Shop Admin
             </Link>
 
@@ -57,8 +58,9 @@ export function Navigation() {
           </div>
 
           <div className="flex items-center space-x-4">
+            <ModeToggle />
             {status === "loading" ? (
-              <div className="h-8 w-16 animate-pulse rounded bg-gray-200"></div>
+              <div className="bg-muted h-8 w-16 animate-pulse rounded"></div>
             ) : session?.user ? (
               <div className="flex items-center space-x-4">
                 <Avatar className="rounded-full">
@@ -67,7 +69,7 @@ export function Navigation() {
                     {session.user.name?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm text-gray-700">
+                <span className="text-muted-foreground text-sm">
                   Welcome, {session.user.mcUsername || session.user.name}
                 </span>
                 <Button

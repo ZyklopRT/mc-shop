@@ -156,7 +156,7 @@ export function NegotiationStatus({
 
         {/* Current offer price */}
         <div className="text-right">
-          <div className="text-sm text-gray-600">Current Terms</div>
+          <div className="text-muted-foreground text-sm">Current Terms</div>
           <CurrencyDisplay
             amount={currentOffer.price}
             currency={currentOffer.currency}
@@ -205,7 +205,7 @@ export function NegotiationStatus({
 
       {/* Progress indicator */}
       {negotiation.status === "IN_PROGRESS" && (
-        <div className="text-center text-sm text-gray-600">
+        <div className="text-muted-foreground text-center text-sm">
           {requesterAccepted && offererAccepted ? (
             <div className="font-medium text-green-600">
               ✓ Both parties have accepted the current terms

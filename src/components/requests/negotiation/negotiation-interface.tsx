@@ -241,7 +241,7 @@ export function NegotiationInterface({
               <div className="font-medium text-green-600">
                 🎉 Negotiation Complete!
               </div>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Both parties have agreed to the terms. You can now mark this
                 request as completed.
               </p>

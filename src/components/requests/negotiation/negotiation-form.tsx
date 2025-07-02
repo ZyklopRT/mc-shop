@@ -245,7 +245,7 @@ export function NegotiationForm({
                       />
                     </FormControl>
                     {currentOfferPrice && currentOfferPrice > 0 && (
-                      <div className="mt-1 text-sm text-gray-600">
+                      <div className="text-muted-foreground mt-1 text-sm">
                         <div className="flex items-center gap-1">
                           <span>💡</span>
                           <span>

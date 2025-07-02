@@ -62,13 +62,13 @@ export function StackedShopItems({
       <div className={`flex flex-col items-center gap-2 ${className}`}>
         <div className="relative flex items-center">
           <Avatar className="border-background h-10 w-10 border-2">
-            <AvatarFallback className="bg-gray-100 text-gray-400">
+            <AvatarFallback className="bg-muted text-muted-foreground">
               <Package className="h-4 w-4" />
             </AvatarFallback>
           </Avatar>
         </div>
         <div className="text-center">
-          <p className="text-xs text-gray-500">No items available</p>
+          <p className="text-muted-foreground text-xs">No items available</p>
         </div>
       </div>
     );
@@ -104,7 +104,7 @@ export function StackedShopItems({
               className="object-contain p-1"
               onError={() => handleImageError(shopItem.item.id)}
             />
-            <AvatarFallback className="bg-gray-100 text-xs text-gray-400">
+            <AvatarFallback className="bg-muted text-muted-foreground text-xs">
               {shopItem.item.nameEn.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -120,7 +120,7 @@ export function StackedShopItems({
 
       {/* Items Label */}
       <div className="max-w-[180px] text-left">
-        <p className="text-xs leading-tight text-gray-600">
+        <p className="text-muted-foreground text-xs leading-tight">
           Sells{" "}
           <span className="font-medium">
             {uniqueItemNames.join(", ")}
