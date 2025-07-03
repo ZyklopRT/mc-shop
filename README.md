@@ -91,142 +91,80 @@ _Sign in with your Minecraft username and password_
 - **Loading States**: Comprehensive loading and error state management
 - **Toast Notifications**: User-friendly feedback for all actions
 
-## 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- **Node.js** (v18 or higher)
-- **pnpm** (v8 or higher) - `npm install -g pnpm`
-- **Docker & Docker Compose** (for containerized deployment)
-- **PostgreSQL** (if running without Docker)
-
 ## 🛠️ Installation
 
-### Option 1: Quick Start with Docker (Recommended)
+Get MC Shop running in minutes with our streamlined installation process.
 
-The easiest way to get MC Shop running is with Docker. This method automatically sets up the database and application.
+### Quick Start
 
-1. **Clone the repository:**
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd mc-shop
 
-   ```bash
-   git clone <your-repo-url>
-   cd mc-shop
-   ```
+# Copy environment file
+cp .env.example .env
 
-2. **Create environment file:**
+# Start with Docker (recommended)
+docker compose up --build
+```
 
-   ```bash
-   cp .env.example .env
-   ```
+The application will be available at `http://localhost:5000`
 
-   Edit the `.env` file with your configuration:
+### 📖 Complete Installation Guide
 
-   ```bash
-   # Database (for Docker Compose)
-   DATABASE_URL="postgresql://mc_shop_user:mc_shop_password@postgres:5432/mc_shop_db"
+For detailed installation instructions, environment configuration, troubleshooting, and production deployment:
 
-   # NextAuth - Generate with: openssl rand -base64 32
-   AUTH_SECRET="your-auth-secret-here"
+**➡️ [View Full Installation Guide](INSTALLATION.md)**
 
-   # NextAuth URL for proper redirects (adjust for your domain in production)
-   NEXTAUTH_URL="http://localhost:5000"
+The installation guide covers:
 
-   # Minecraft RCON Configuration (optional)
-   MINECRAFT_RCON_HOST="your-minecraft-server-host"
-   MINECRAFT_RCON_PORT=25575
-   MINECRAFT_RCON_PASSWORD="your-rcon-password"
-   ```
+- Prerequisites and system requirements
+- Docker setup (recommended) vs. local development
+- Minecraft server RCON configuration
+- Environment variables and security
+- Production deployment
+- Troubleshooting common issues
 
-3. **Start the application:**
+## 🔐 User Registration & Admin Setup
 
-   ```bash
-   docker compose up --build
-   ```
+### First-Time Setup
 
-   The application will be available at `http://localhost:5000`
+The registration process is designed to integrate seamlessly with your Minecraft server:
 
-For detailed Docker setup instructions, troubleshooting, and production deployment, see [DOCKER_SETUP.md](DOCKER_SETUP.md).
+**🚨 Important: The first user to register becomes the system administrator automatically.**
 
-### Option 2: Local Development Setup
+### Registration Process
 
-For development or if you prefer to run without Docker:
+1. **Player Must Be Online**: Users can only register while online on your Minecraft server
+2. **4-Step Verification Process**:
+   - **Step 1**: Enter Minecraft username (verified via RCON)
+   - **Step 2**: System generates and sends OTP to player in-game
+   - **Step 3**: Player enters verification code from Minecraft chat
+   - **Step 4**: Complete registration with secure password
 
-1. **Clone and install dependencies:**
+3. **Automatic Admin Assignment**:
+   - The **first registered user** automatically receives administrator privileges
+   - Admin users gain access to the admin dashboard at `/admin`
+   - Subsequent users register as standard players
 
-   ```bash
-   git clone <your-repo-url>
-   cd mc-shop
-   pnpm install
-   ```
+### Admin Privileges
 
-2. **Set up the database:**
+Administrator users can:
 
-   ```bash
-   # Make sure PostgreSQL is running locally
-   # Create a database named 'mc_shop_db'
-
-   # Run migrations
-   pnpm db:migrate
-
-   # Generate Prisma client
-   pnpm postinstall
-   ```
-
-3. **Configure environment variables:**
-
-   ```bash
-   cp .env.example .env
-   ```
-
-   Update the `.env` file with your local PostgreSQL connection:
-
-   ```bash
-   DATABASE_URL="postgresql://username:password@localhost:5432/mc_shop_db"
-   AUTH_SECRET="your-auth-secret-here"
-   NEXTAUTH_URL="http://localhost:5000"
-   # Add your Minecraft RCON settings
-   ```
-
-4. **Start the development server:**
-
-   ```bash
-   pnpm dev
-   ```
-
-   The application will be available at `http://localhost:5000`
-
-## 🎮 Minecraft Server Configuration
-
-To use the full feature set, configure RCON on your Minecraft server:
-
-1. **Enable RCON in `server.properties`:**
-
-   ```properties
-   enable-rcon=true
-   rcon.port=25575
-   rcon.password=your-secure-password
-   ```
-
-2. **Update your environment variables:**
-
-   ```bash
-   MINECRAFT_RCON_HOST="your-server-ip"
-   MINECRAFT_RCON_PORT=25575
-   MINECRAFT_RCON_PASSWORD="your-secure-password"
-   ```
-
-3. **Test the connection:**
-   Visit `http://localhost:5000/test-rcon` to verify RCON connectivity.
+- Access the admin dashboard and management tools
+- Import items using the ZIP import system
+- Monitor system status and user activity
+- View all shops and requests across the platform
 
 ## 📚 Usage Guide
 
 ### For Players
 
-1. **Registration:**
-   - Visit the registration page
-   - Enter your Minecraft username (must be online)
-   - Check your Minecraft chat for a verification code
-   - Complete registration with a secure password
+1. **Getting Started:**
+   - Must be online on the Minecraft server to register
+   - Complete the 4-step verification process (see Registration section above)
+   - First user automatically becomes admin
 
 2. **Creating a Shop:**
    - Navigate to "My Shops" → "Create Shop"
@@ -271,30 +209,6 @@ To use the full feature set, configure RCON on your Minecraft server:
    - Teleport command generation
    - UUID resolution for player profiles
 
-## 🔧 Available Scripts
-
-```bash
-# Development
-pnpm dev          # Start development server with Turbo
-pnpm build        # Build for production
-pnpm start        # Start production server
-pnpm preview      # Build and start production preview
-
-# Database
-pnpm db:generate  # Generate migrations (development)
-pnpm db:migrate   # Deploy migrations (production)
-pnpm db:push      # Push schema changes (development)
-pnpm db:studio    # Open Prisma Studio
-
-# Code Quality
-pnpm lint         # Run ESLint
-pnpm lint:fix     # Fix ESLint errors
-pnpm typecheck    # Run TypeScript checks
-pnpm format:check # Check Prettier formatting
-pnpm format:write # Apply Prettier formatting
-pnpm check        # Run all checks (lint + typecheck)
-```
-
 ## 🏗️ Architecture
 
 ### Technology Stack
@@ -338,26 +252,9 @@ mc-shop/
 
 ## 🚀 Deployment
 
-### Production Deployment with Docker
+For production deployment instructions, environment configuration, and Docker setup details, see the [Installation Guide](INSTALLATION.md).
 
-1. **Clone and configure:**
-
-   ```bash
-   git clone <your-repo-url>
-   cd mc-shop
-   cp .env.example .env
-   # Edit .env with production values
-   ```
-
-2. **Deploy:**
-
-   ```bash
-   docker compose up -d --build
-   ```
-
-3. **Important:** Set `NEXTAUTH_URL` to your production domain for proper authentication redirects.
-
-For detailed production deployment instructions, see [DOCKER_SETUP.md](DOCKER_SETUP.md).
+The installation guide covers production-specific topics including environment security, Docker deployment, and troubleshooting.
 
 ## 🤝 Contributing
 
@@ -391,6 +288,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
+- **Installation Help:** See [Installation Guide](INSTALLATION.md) for setup and troubleshooting
 - **Documentation:** Check the `/docs` folder for detailed guides
 - **Issues:** Report bugs via GitHub Issues
 - **RCON Testing:** Use `/test-rcon` page to debug server connections
