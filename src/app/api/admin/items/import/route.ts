@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -95,7 +95,7 @@ async function extractZipContents(zipBuffer: Buffer): Promise<ProcessedFiles> {
 
   try {
     itemsData = JSON.parse(itemsJsonContent);
-  } catch (error) {
+  } catch {
     throw new Error("Invalid JSON format in items.json file");
   }
 
