@@ -7,6 +7,9 @@ import AdmZip from "adm-zip";
 import { promises as fs } from "fs";
 import path from "path";
 
+// File handling utilities - no polyfill needed for server-side processing
+// The File type is available from FormData.get() in Next.js API routes
+
 // Configuration for file uploads
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 minutes for large files
@@ -376,26 +379,22 @@ export async function POST(request: NextRequest) {
       success: true,
       message: hasErrors
         ? `Import completed with ${totalErrors.length} errors. ${dbResult.imported} items imported, ${dbResult.updated} items updated, ${imageResult.copied} images processed.`
-        : `Import completed successfully! ${dbResult.imported} items imported, ${dbResult.updated} items updated, ${imageResult.copied} images processed.`,
+        : `Import successful! ${dbResult.imported} items imported, ${dbResult.updated} items updated, ${imageResult.copied} images processed.`,
       imported: dbResult.imported,
       updated: dbResult.updated,
       total: processedFiles.itemsJson.length,
-      errors: totalErrors.length > 0 ? totalErrors : undefined,
+      errors: totalErrors,
     };
 
     console.log("Import completed:", result);
-
-    return NextResponse.json(result);
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
     console.error("POST /api/admin/items/import error:", error);
-
-    const errorMessage =
-      error instanceof Error ? error.message : "Internal server error";
-
     return NextResponse.json(
       {
         success: false,
-        message: `Import failed: ${errorMessage}`,
+        message:
+          error instanceof Error ? error.message : "Failed to import items",
       },
       { status: 500 },
     );

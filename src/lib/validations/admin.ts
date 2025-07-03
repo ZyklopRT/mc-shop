@@ -13,10 +13,29 @@ export const importItemsSchema = z
   .array(importItemSchema)
   .min(1, "At least one item is required");
 
-// Schema for ZIP file upload
+// File-like object type for server-side validation
+type FileObject = {
+  name: string;
+  type: string;
+  size: number;
+  arrayBuffer(): Promise<ArrayBuffer>;
+};
+
+// Schema for ZIP file upload - server-side validation
+function isValidFileObject(file: unknown): file is FileObject {
+  return Boolean(
+    file &&
+      typeof file === "object" &&
+      "name" in file &&
+      "type" in file &&
+      "size" in file &&
+      "arrayBuffer" in file,
+  );
+}
+
 export const zipUploadSchema = z.object({
   file: z
-    .instanceof(File)
+    .custom<FileObject>(isValidFileObject, "Invalid file object")
     .refine(
       (file) =>
         file.type === "application/zip" ||
