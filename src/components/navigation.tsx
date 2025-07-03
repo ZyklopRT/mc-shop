@@ -138,7 +138,7 @@ export function Navigation() {
                     </div>
 
                     {/* User Section */}
-                    <div className="space-x-4 border-t px-4">
+                    <div className="space-x-4 border-t px-4 pt-4">
                       {status === "loading" ? (
                         <div className="bg-muted h-12 w-full animate-pulse rounded"></div>
                       ) : session?.user ? (
