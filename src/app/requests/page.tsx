@@ -34,13 +34,25 @@ export default async function RequestsPage() {
       />
 
       <Tabs defaultValue="open" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="open">Open</TabsTrigger>
-          <TabsTrigger value="negotiation">In Negotiation</TabsTrigger>
-          <TabsTrigger value="accepted">Accepted</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-          <TabsTrigger value="my-requests">My Requests</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto">
+          <TabsList className="bg-muted text-muted-foreground inline-flex h-10 w-max items-center justify-center rounded-md p-1">
+            <TabsTrigger value="open" className="whitespace-nowrap">
+              Open
+            </TabsTrigger>
+            <TabsTrigger value="negotiation" className="whitespace-nowrap">
+              In Negotiation
+            </TabsTrigger>
+            <TabsTrigger value="accepted" className="whitespace-nowrap">
+              Accepted
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="whitespace-nowrap">
+              Completed
+            </TabsTrigger>
+            <TabsTrigger value="my-requests" className="whitespace-nowrap">
+              My Requests
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="open">
           <Suspense fallback={<RequestsLoading />}>

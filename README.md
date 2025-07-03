@@ -23,7 +23,9 @@ _Shop management and item listing interface_
 - **Comprehensive Item Database**: 3000+ Minecraft items with English and German names (modded)
 - **Item Images**: High-quality item images with fallback support for sphax texture packs
 - **Item Search**: Advanced search across item names and IDs in multiple languages
-- **Admin Import Tools**: Bulk import items from JSON data sources
+- **Admin Import Tools**: ZIP-based bulk import system with automatic image management
+- **Texture Pack Support**: Automatic copying of default textures to Sphax when missing
+- **Import Validation**: Real-time validation and progress tracking during import
 
 ### 🔍 Global Search System
 
@@ -44,6 +46,17 @@ _Shop management and item listing interface_
 
 ![Request Board Example](docs/request_board.png)
 _Request board for item and service requests_
+
+### 🛠️ Admin Item Import System
+
+The platform includes a sophisticated ZIP-based import system for bulk importing Minecraft items:
+
+- **Drag & Drop Interface**: Simply drag your ZIP file or click to browse
+- **Automatic Validation**: Real-time file type and size validation (50MB limit)
+- **Progress Tracking**: Visual progress bar with detailed status updates
+- **Image Management**: Automatic organization and copying of texture files
+- **Error Reporting**: Detailed error logs for troubleshooting failed imports
+- **Dual Texture Support**: Handles both default and Sphax texture variants
 
 ### 🔐 Authentication & User Management
 
@@ -73,6 +86,8 @@ _Sign in with your Minecraft username and password_
 - **ShadCN/UI Components**: Beautiful, accessible component library
 - **Dark/Light Theme**: Automatic theme switching with system preference
 - **Responsive Design**: Mobile-first design that works on all devices
+- **Mobile Navigation**: Slide-out drawer navigation with Sheet component
+- **Horizontal Scrolling**: Mobile-optimized tabs that scroll horizontally
 - **Loading States**: Comprehensive loading and error state management
 - **Toast Notifications**: User-friendly feedback for all actions
 
@@ -233,11 +248,24 @@ To use the full feature set, configure RCON on your Minecraft server:
 ### For Server Administrators
 
 1. **Item Management:**
-   - Use `/admin/items/import` to bulk import items
+   - Access the admin dashboard at `/admin`
+   - Use the ZIP import system to bulk import items with images
    - Test RCON connectivity at `/test-rcon`
    - Monitor user registrations and shop activity
 
-2. **RCON Features:**
+2. **Admin Dashboard:**
+   - Clean, focused interface showing only implemented features
+   - Quick access to item import, shop management, and system status
+
+3. **ZIP Import System:**
+   - Create a ZIP file with `items.json` and image folders
+   - Include `images/default/` for standard textures
+   - Optionally include `images/sphax/` for Sphax texture pack
+   - System automatically copies default images to Sphax if missing
+   - Real-time progress tracking and error reporting
+   - Supports PNG images with namespace\_\_item.png naming convention
+
+4. **RCON Features:**
    - Player verification during registration
    - In-game message delivery
    - Teleport command generation
@@ -286,8 +314,10 @@ pnpm check        # Run all checks (lint + typecheck)
 - **Server Actions Only:** No traditional API routes, all backend logic uses Next.js server actions
 - **Zod Validation:** All data validation uses Zod schemas for type safety
 - **Component-First:** ShadCN UI components for consistent design
+- **Custom Hooks:** Modular React hooks for reusable business logic
 - **Type Safety:** End-to-end TypeScript from database to UI
 - **RCON Integration:** Direct Minecraft server communication for real-time features
+- **Responsive Design:** Mobile-first approach with proper navigation patterns
 
 ### Project Structure
 
@@ -296,7 +326,7 @@ mc-shop/
 ├── src/
 │   ├── app/                    # Next.js app router pages
 │   ├── components/             # React components (ShadCN/UI)
-│   ├── hooks/                  # Custom React hooks
+│   ├── hooks/                  # Custom React hooks (business logic)
 │   ├── lib/                    # Utilities, types, validations
 │   ├── server/                 # Server actions, auth, database
 │   └── styles/                 # Global CSS and TailwindCSS
