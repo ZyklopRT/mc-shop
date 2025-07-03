@@ -17,6 +17,7 @@ declare module "next-auth" {
       id: string;
       mcUsername: string;
       mcUUID: string | null;
+      isAdmin: boolean;
     };
   }
 
@@ -24,6 +25,7 @@ declare module "next-auth" {
     id?: string;
     mcUsername?: string;
     mcUUID?: string | null;
+    isAdmin?: boolean;
     name?: string | null;
     email?: string | null;
     image?: string | null;
@@ -73,6 +75,7 @@ export const authConfig = {
               mcUsername: true,
               mcUUID: true,
               password: true,
+              isAdmin: true,
               name: true,
               email: true,
               image: true,
@@ -94,6 +97,7 @@ export const authConfig = {
             id: user.id,
             mcUsername: user.mcUsername,
             mcUUID: user.mcUUID,
+            isAdmin: user.isAdmin,
             name: user.name,
             email: user.email,
             image: user.image,
@@ -114,6 +118,7 @@ export const authConfig = {
         token.id = user.id;
         token.mcUsername = user.mcUsername;
         token.mcUUID = user.mcUUID;
+        token.isAdmin = user.isAdmin;
       }
       return token;
     },
@@ -124,6 +129,7 @@ export const authConfig = {
         id: (token.id as string) ?? "",
         mcUsername: (token.mcUsername as string) ?? "",
         mcUUID: (token.mcUUID as string | null) ?? null,
+        isAdmin: (token.isAdmin as boolean) ?? false,
       },
     }),
   },

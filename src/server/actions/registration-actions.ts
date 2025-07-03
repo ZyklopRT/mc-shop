@@ -205,6 +205,10 @@ export async function completeRegistration(
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Check if this is the first user (for admin privileges)
+    const userCount = await db.user.count();
+    const isFirstUser = userCount === 0;
+
     // Try to get player UUID via RCON
     let mcUUID: string | undefined;
     try {
@@ -227,6 +231,7 @@ export async function completeRegistration(
         mcUUID,
         password: hashedPassword,
         name: mcUsername,
+        isAdmin: isFirstUser, // First user gets admin privileges
       },
     });
 
@@ -236,8 +241,9 @@ export async function completeRegistration(
 
     await sendMessageToPlayer({
       playerName: mcUsername,
-      message:
-        "§a[MC-Shop] §fRegistration completed successfully! You can now log in to the website.",
+      message: isFirstUser
+        ? "§a[MC-Shop] §fRegistration completed successfully! You can now log in to the website. §6As the first user, you have been granted admin privileges!"
+        : "§a[MC-Shop] §fRegistration completed successfully! You can now log in to the website.",
     });
 
     return {

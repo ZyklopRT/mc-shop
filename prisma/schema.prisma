@@ -122,6 +122,7 @@ model User {
     mcUsername       String    @unique // Minecraft username - primary identifier
     mcUUID           String?   @unique // Minecraft player UUID - obtained via RCON during registration
     password         String    // Hashed password
+    isAdmin          Boolean   @default(false) // Admin privileges for management features
     createdAt        DateTime  @default(now())
     updatedAt        DateTime  @updatedAt
     

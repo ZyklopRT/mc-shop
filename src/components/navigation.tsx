@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { getMinecraftAvatarUrl } from "~/lib/utils/minecraft-api";
 import { ModeToggle } from "~/components/mode-toggle";
+import { Settings } from "lucide-react";
 
 export function Navigation() {
   const { data: session, status } = useSession();
@@ -22,6 +23,9 @@ export function Navigation() {
     }
     if (path === "/shops") {
       return pathname === path;
+    }
+    if (path === "/admin") {
+      return pathname.startsWith(path);
     }
     return false;
   };
@@ -52,6 +56,17 @@ export function Navigation() {
               {session?.user && (
                 <Link href="/shops" className={linkClass("/shops")}>
                   My Shops
+                </Link>
+              )}
+              {session?.user?.isAdmin && (
+                <Link
+                  href="/admin/items/import"
+                  className={linkClass("/admin")}
+                >
+                  <div className="flex items-center space-x-1">
+                    <Settings className="h-4 w-4" />
+                    <span>Admin</span>
+                  </div>
                 </Link>
               )}
             </div>
