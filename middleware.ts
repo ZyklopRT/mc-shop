@@ -1,43 +1,94 @@
 import { NextResponse } from "next/server";
 import { auth } from "~/server/auth";
+import createMiddleware from "next-intl/middleware";
+import { routing } from "~/lib/i18n/routing";
+
+// Create the i18n middleware
+const intlMiddleware = createMiddleware(routing);
+
+// Helper function to extract locale from pathname
+function extractLocale(pathname: string): string {
+  const localeRegex = /^\/([a-z]{2})(?=\/|$)/;
+  const localeMatch = localeRegex.exec(pathname);
+  return localeMatch?.[1] ?? "en";
+}
+
+// Helper function to get pathname without locale prefix
+function getPathnameWithoutLocale(pathname: string): string {
+  return pathname.replace(/^\/[a-z]{2}(?=\/|$)/, "") || "/";
+}
+
+// Helper function to check if path matches any of the given routes
+function matchesRoutes(pathname: string, routes: string[]): boolean {
+  return routes.some((route) => pathname.startsWith(route));
+}
+
+// Helper function to create locale-aware redirect URL
+function createRedirectUrl(
+  pathname: string,
+  targetPath: string,
+  origin: string,
+  callbackUrl?: string,
+): URL {
+  const locale = extractLocale(pathname);
+  const url = new URL(`/${locale}${targetPath}`, origin);
+
+  if (callbackUrl) {
+    url.searchParams.set("callbackUrl", callbackUrl);
+  }
+
+  return url;
+}
 
 export default auth((req) => {
   const { nextUrl } = req;
+  const pathname = nextUrl.pathname;
   const isLoggedIn = !!req.auth;
 
-  // Public routes that don't require authentication
-  const publicRoutes = [
-    "/",
-    "/auth/login",
-    "/auth/register",
-    "/auth/error",
-    "/api/auth",
-  ];
+  // Skip i18n middleware for API routes
+  if (pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
 
-  // Protected routes that require authentication
+  // Handle i18n routing first
+  const intlResponse = intlMiddleware(req);
+
+  // If intl middleware wants to redirect, let it
+  if (intlResponse?.headers.get("location")) {
+    return intlResponse;
+  }
+
+  // Get pathname without locale for route checking
+  const pathnameWithoutLocale = getPathnameWithoutLocale(pathname);
+
+  // Define route groups
+  const publicRoutes = ["/", "/auth/login", "/auth/register", "/auth/error"];
   const protectedRoutes = ["/test-rcon", "/shops", "/admin"];
 
-  const isPublicRoute = publicRoutes.some((route) =>
-    nextUrl.pathname.startsWith(route),
+  const isPublicRoute = matchesRoutes(pathnameWithoutLocale, publicRoutes);
+  const isProtectedRoute = matchesRoutes(
+    pathnameWithoutLocale,
+    protectedRoutes,
   );
 
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    nextUrl.pathname.startsWith(route),
-  );
-
-  // If accessing a protected route without being logged in, redirect to login
+  // Redirect unauthenticated users away from protected routes
   if (isProtectedRoute && !isLoggedIn) {
-    const loginUrl = new URL("/auth/login", nextUrl.origin);
-    loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
+    const loginUrl = createRedirectUrl(
+      pathname,
+      "/auth/login",
+      nextUrl.origin,
+      pathname,
+    );
     return NextResponse.redirect(loginUrl);
   }
 
-  // If logged in and trying to access auth pages, redirect to home
-  if (isLoggedIn && nextUrl.pathname.startsWith("/auth/")) {
-    return NextResponse.redirect(new URL("/", nextUrl.origin));
+  // Redirect authenticated users away from auth pages
+  if (isLoggedIn && pathnameWithoutLocale.startsWith("/auth/")) {
+    const homeUrl = createRedirectUrl(pathname, "/", nextUrl.origin);
+    return NextResponse.redirect(homeUrl);
   }
 
-  return NextResponse.next();
+  return intlResponse || NextResponse.next();
 });
 
 // Specify which routes this middleware should run on
@@ -45,11 +96,11 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
+     * - api (API routes - handled separately)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };

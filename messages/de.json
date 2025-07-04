@@ -1,0 +1,44 @@
+{
+  "seo": {
+    "homepage": {
+      "title": "MC Shop",
+      "description": "Minecraft Shop Verwaltungspanel"
+    },
+    "shops": {
+      "title": "Meine Shops - MC Shop",
+      "description": "Verwalte deine Minecraft Shops"
+    },
+    "browse": {
+      "title": "Shops durchsuchen - MC Shop",
+      "description": "Durchsuche und finde Minecraft Shops"
+    },
+    "requests": {
+      "title": "Anfrage-Board - MC Shop",
+      "description": "Sieh dir Gegenstandsanfragen an und verwalte sie"
+    },
+    "admin": {
+      "title": "Admin Panel - MC Shop",
+      "description": "Verwaltungspanel für MC Shop"
+    }
+  },
+  "navigation": {
+    "browseShops": "Shops durchsuchen",
+    "requestBoard": "Anfrage-Board",
+    "myShops": "Meine Shops",
+    "admin": "Admin",
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "register": "Registrieren",
+    "welcome": "Willkommen, {username}",
+    "administrator": "Administrator",
+    "user": "Benutzer",
+    "toggleMenu": "Menü umschalten",
+    "navigation": "Navigation",
+    "navigationDescription": "Navigiere durch das MC Shop System"
+  },
+  "homepage": {
+    "title": "MC Shop",
+    "subtitle": "Suche nach Spielern und Gegenständen in Minecraft Shops",
+    "heroAlt": "Minecraft Landschaftshintergrund"
+  }
+}

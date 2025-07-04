@@ -1,0 +1,44 @@
+{
+  "seo": {
+    "homepage": {
+      "title": "MC Shop",
+      "description": "Minecraft Shop Administration Panel"
+    },
+    "shops": {
+      "title": "My Shops - MC Shop",
+      "description": "Manage your Minecraft shops"
+    },
+    "browse": {
+      "title": "Browse Shops - MC Shop",
+      "description": "Browse and search Minecraft shops"
+    },
+    "requests": {
+      "title": "Request Board - MC Shop",
+      "description": "View and manage item requests"
+    },
+    "admin": {
+      "title": "Admin Panel - MC Shop",
+      "description": "Administration panel for MC Shop"
+    }
+  },
+  "navigation": {
+    "browseShops": "Browse Shops",
+    "requestBoard": "Request Board",
+    "myShops": "My Shops",
+    "admin": "Admin",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "register": "Register",
+    "welcome": "Welcome, {username}",
+    "administrator": "Administrator",
+    "user": "User",
+    "toggleMenu": "Toggle menu",
+    "navigation": "Navigation",
+    "navigationDescription": "Navigate through the MC Shop system"
+  },
+  "homepage": {
+    "title": "MC Shop",
+    "subtitle": "Search for players and items across Minecraft shops",
+    "heroAlt": "Minecraft landscape background"
+  }
+}

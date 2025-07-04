@@ -3,6 +3,12 @@
  * for Docker builds.
  */
 import "./src/env.js";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin(
+  // This is the default location for the request config
+  "./src/lib/i18n/config.ts",
+);
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -10,4 +16,4 @@ const config = {
   output: "standalone",
 };
 
-export default config;
+export default withNextIntl(config);

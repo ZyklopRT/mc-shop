@@ -2,11 +2,12 @@
 
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
 import { useSession, signOut } from "next-auth/react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from "~/components/ui/button";
+import { Link, usePathname } from "~/lib/i18n/routing";
 import { getMinecraftAvatarUrl } from "~/lib/utils/minecraft-api";
 import { ModeToggle } from "~/components/mode-toggle";
+import { LocaleSelector } from "~/components/locale-selector";
 import {
   Sheet,
   SheetContent,
@@ -23,6 +24,7 @@ export function Navigation() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const avatarUrl = getMinecraftAvatarUrl(session?.user?.mcUUID ?? "");
+  const t = useTranslations("navigation");
 
   const isActive = (path: string) => {
     if (path === "/shops/browse") {
@@ -55,10 +57,10 @@ export function Navigation() {
     }`;
 
   const navigationItems = [
-    { href: "/shops/browse", label: "Browse Shops" },
-    { href: "/requests", label: "Request Board" },
-    ...(session?.user ? [{ href: "/shops", label: "My Shops" }] : []),
-    ...(session?.user?.isAdmin ? [{ href: "/admin", label: "Admin" }] : []),
+    { href: "/shops/browse", label: t("browseShops") },
+    { href: "/requests", label: t("requestBoard") },
+    ...(session?.user ? [{ href: "/shops", label: t("myShops") }] : []),
+    ...(session?.user?.isAdmin ? [{ href: "/admin", label: t("admin") }] : []),
   ];
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -75,21 +77,21 @@ export function Navigation() {
             {/* Desktop Navigation */}
             <div className="hidden items-center space-x-6 md:flex">
               <Link href="/shops/browse" className={linkClass("/shops/browse")}>
-                Browse Shops
+                {t("browseShops")}
               </Link>
               <Link href="/requests" className={linkClass("/requests")}>
-                Request Board
+                {t("requestBoard")}
               </Link>
               {session?.user && (
                 <Link href="/shops" className={linkClass("/shops")}>
-                  My Shops
+                  {t("myShops")}
                 </Link>
               )}
               {session?.user?.isAdmin && (
                 <Link href="/admin" className={linkClass("/admin")}>
                   <div className="flex items-center space-x-1">
                     <Settings className="h-4 w-4" />
-                    <span>Admin</span>
+                    <span>{t("admin")}</span>
                   </div>
                 </Link>
               )}
@@ -97,6 +99,7 @@ export function Navigation() {
           </div>
 
           <div className="flex items-center space-x-4">
+            <LocaleSelector />
             <ModeToggle />
 
             {/* Mobile Menu Button */}
@@ -105,14 +108,14 @@ export function Navigation() {
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="sm">
                     <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle menu</span>
+                    <span className="sr-only">{t("toggleMenu")}</span>
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                   <SheetHeader>
-                    <SheetTitle>Navigation</SheetTitle>
+                    <SheetTitle>{t("navigation")}</SheetTitle>
                     <SheetDescription>
-                      Navigate through the MC Shop system
+                      {t("navigationDescription")}
                     </SheetDescription>
                   </SheetHeader>
 
@@ -128,7 +131,7 @@ export function Navigation() {
                           onClick={closeMobileMenu}
                         >
                           <Link href={item.href}>
-                            {item.label === "Admin" && (
+                            {item.label === t("admin") && (
                               <Settings className="mr-2 h-4 w-4" />
                             )}
                             {item.label}
@@ -159,8 +162,8 @@ export function Navigation() {
                               </p>
                               <p className="text-muted-foreground text-xs">
                                 {session.user.isAdmin
-                                  ? "Administrator"
-                                  : "User"}
+                                  ? t("administrator")
+                                  : t("user")}
                               </p>
                             </div>
                           </div>
@@ -172,7 +175,7 @@ export function Navigation() {
                               closeMobileMenu();
                             }}
                           >
-                            Sign Out
+                            {t("signOut")}
                           </Button>
                         </div>
                       ) : (
@@ -183,14 +186,14 @@ export function Navigation() {
                             className="w-full"
                             onClick={closeMobileMenu}
                           >
-                            <Link href="/auth/login">Sign In</Link>
+                            <Link href="/auth/login">{t("signIn")}</Link>
                           </Button>
                           <Button
                             asChild
                             className="w-full"
                             onClick={closeMobileMenu}
                           >
-                            <Link href="/auth/register">Register</Link>
+                            <Link href="/auth/register">{t("register")}</Link>
                           </Button>
                         </div>
                       )}
@@ -216,23 +219,26 @@ export function Navigation() {
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-muted-foreground text-sm">
-                    Welcome, {session.user.mcUsername || session.user.name}
+                    {t("welcome", {
+                      username:
+                        session.user.mcUsername ?? session.user.name ?? "User",
+                    })}
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => void signOut({ callbackUrl: "/" })}
                   >
-                    Sign Out
+                    {t("signOut")}
                   </Button>
                 </div>
               ) : (
                 <div className="flex items-center space-x-2">
                   <Button asChild variant="outline" size="sm">
-                    <Link href="/auth/login">Sign In</Link>
+                    <Link href="/auth/login">{t("signIn")}</Link>
                   </Button>
                   <Button asChild size="sm">
-                    <Link href="/auth/register">Register</Link>
+                    <Link href="/auth/register">{t("register")}</Link>
                   </Button>
                 </div>
               )}
