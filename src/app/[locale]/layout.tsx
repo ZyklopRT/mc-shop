@@ -3,7 +3,7 @@ import "~/styles/globals.css";
 import { Geist } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { auth } from "~/server/auth";
@@ -40,9 +40,6 @@ export default async function LocaleLayout({ children, params }: Props) {
   // Enable static rendering
   setRequestLocale(locale);
 
-  // Get messages for the locale
-  const messages = await getMessages({ locale });
-
   const session = await auth();
 
   return (
@@ -52,7 +49,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       suppressHydrationWarning
     >
       <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

@@ -15,6 +15,36 @@ services:
       - "5432:5432"
     networks:
       - mc-shop-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mc_shop_user -d mc_shop_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Optional: Run migrations as a separate service
+  # This can be useful for manual migration runs or CI/CD pipelines
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mc-shop-migrate
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://mc_shop_user:mc_shop_password@postgres:5432/mc_shop_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - mc-shop-network
+    command: >
+      sh -c "
+        echo 'Running database migrations...' &&
+        npx prisma migrate deploy &&
+        echo 'Database migrations completed successfully!'
+      "
+    profiles:
+      - migration
 
   app:
     build:
@@ -32,25 +62,47 @@ services:
       - MINECRAFT_RCON_HOST=${MINECRAFT_RCON_HOST:-}
       - MINECRAFT_RCON_PORT=${MINECRAFT_RCON_PORT:-}
       - MINECRAFT_RCON_PASSWORD=${MINECRAFT_RCON_PASSWORD:-}
+      # Next.js standalone server configuration
+      - HOSTNAME=0.0.0.0
+      # Force Node.js to prefer IPv4 for internal requests (Docker best practice)
+      - NODE_OPTIONS=--dns-result-order=ipv4first
     ports:
       - "5000:5000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - mc-shop-network
-    # Wait for postgres to be ready and run migrations
+    # Enhanced migration and startup process (safe for production)
     command: >
       sh -c "
-        echo 'Waiting for postgres to be ready...' &&
+        echo 'Starting MC Shop application...' &&
+        echo 'Waiting for database to be ready...' &&
         until nc -z postgres 5432; do
-          echo 'Postgres is unavailable - sleeping'
-          sleep 1
+          echo 'Database is unavailable - waiting 2 seconds...'
+          sleep 2
         done &&
-        echo 'Postgres is up - running migrations' &&
+        echo 'Database is ready - generating Prisma client...' &&
+        npx prisma generate &&
+        echo 'Running database migrations (safe for production)...' &&
         npx prisma migrate deploy &&
-        echo 'Migrations completed - starting server' &&
-        node server.js
+        if [ $$? -eq 0 ]; then
+          echo 'Migrations completed successfully - starting server...' &&
+          node server.js
+        else
+          echo 'Migration failed!' &&
+          echo 'This usually means the database schema is out of sync.' &&
+          echo 'To fix this, you may need to manually apply missing migrations.' &&
+          echo 'Check the logs above for specific errors.' &&
+          exit 1
+        fi
       "
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
 volumes:
   postgres_data:
