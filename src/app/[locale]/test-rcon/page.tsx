@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { PageWrapper } from "~/components/ui/page-wrapper";
-import { sendMessageToPlayer } from "../../server/actions/rcon-actions";
-import { checkPlayerOnline } from "../../server/actions/rcon-actions";
+import { sendMessageToPlayer } from "~/server/actions/rcon-actions";
+import { checkPlayerOnline } from "~/server/actions/rcon-actions";
+import type { RconCommandResult } from "~/server/rcon";
 
 export default function TestRconPage() {
   const [playerName, setPlayerName] = useState("");
@@ -27,7 +28,7 @@ export default function TestRconPage() {
     setResult("");
 
     try {
-      const response = await sendMessageToPlayer({
+      const response: RconCommandResult = await sendMessageToPlayer({
         playerName: playerName.trim(),
         message: message.trim(),
       });
@@ -37,7 +38,9 @@ export default function TestRconPage() {
           `✅ Message sent successfully! Response: ${response.response ?? "No response"}`,
         );
       } else {
-        setResult(`❌ Failed to send message: ${response.error}`);
+        setResult(
+          `❌ Failed to send message: ${response.error ?? "Unknown error"}`,
+        );
       }
     } catch (error) {
       setResult(
@@ -60,9 +63,10 @@ export default function TestRconPage() {
     setCheckResult("");
 
     try {
-      const response = await checkPlayerOnline({
-        playerName: checkPlayerName.trim(),
-      });
+      const response: RconCommandResult & { isOnline?: boolean } =
+        await checkPlayerOnline({
+          playerName: checkPlayerName.trim(),
+        });
 
       if (response.success) {
         const onlineStatus = response.isOnline ? "🟢 ONLINE" : "🔴 OFFLINE";
@@ -70,7 +74,9 @@ export default function TestRconPage() {
           `${onlineStatus} - Player "${checkPlayerName}" is ${response.isOnline ? "online" : "offline"}\n\nServer response: ${response.response ?? "No response"}`,
         );
       } else {
-        setCheckResult(`❌ Failed to check player status: ${response.error}`);
+        setCheckResult(
+          `❌ Failed to check player status: ${response.error ?? "Unknown error"}`,
+        );
       }
     } catch (error) {
       setCheckResult(
@@ -205,7 +211,13 @@ export default function TestRconPage() {
             </p>
             <p>
               MINECRAFT_RCON_PASSWORD:{" "}
-              {process.env.NEXT_PUBLIC_RCON_PASSWORD ? "Set" : "Not set"}
+              {process.env.NEXT_PUBLIC_RCON_PASSWORD
+                ? "Set (hidden)"
+                : "Not set"}
+            </p>
+            <p className="mt-2 text-xs text-gray-400">
+              Note: If environment variables are not set, the server will use
+              default values or fail to connect.
             </p>
           </div>
         </div>

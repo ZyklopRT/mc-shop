@@ -6,85 +6,60 @@ import { routing } from "~/lib/i18n/routing";
 // Create the i18n middleware
 const intlMiddleware = createMiddleware(routing);
 
-// Helper function to extract locale from pathname
-function extractLocale(pathname: string): string {
-  const localeRegex = /^\/([a-z]{2})(?=\/|$)/;
-  const localeMatch = localeRegex.exec(pathname);
-  return localeMatch?.[1] ?? "en";
-}
-
-// Helper function to get pathname without locale prefix
-function getPathnameWithoutLocale(pathname: string): string {
-  return pathname.replace(/^\/[a-z]{2}(?=\/|$)/, "") || "/";
-}
-
-// Helper function to check if path matches any of the given routes
-function matchesRoutes(pathname: string, routes: string[]): boolean {
-  return routes.some((route) => pathname.startsWith(route));
-}
-
-// Helper function to create locale-aware redirect URL
-function createRedirectUrl(
-  pathname: string,
-  targetPath: string,
-  origin: string,
-  callbackUrl?: string,
-): URL {
-  const locale = extractLocale(pathname);
-  const url = new URL(`/${locale}${targetPath}`, origin);
-
-  if (callbackUrl) {
-    url.searchParams.set("callbackUrl", callbackUrl);
-  }
-
-  return url;
-}
-
 export default auth((req) => {
   const { nextUrl } = req;
   const pathname = nextUrl.pathname;
   const isLoggedIn = !!req.auth;
+
+  // Handle root path redirect to default locale
+  if (pathname === "/") {
+    const defaultLocaleUrl = new URL(
+      `/${routing.defaultLocale}`,
+      nextUrl.origin,
+    );
+    return NextResponse.redirect(defaultLocaleUrl);
+  }
 
   // Skip i18n middleware for API routes
   if (pathname.startsWith("/api")) {
     return NextResponse.next();
   }
 
-  // Handle i18n routing first
+  // Handle i18n routing first (this will redirect to default locale when needed)
   const intlResponse = intlMiddleware(req);
 
-  // If intl middleware wants to redirect, let it
+  // If intl middleware wants to redirect, let it handle locale routing
   if (intlResponse?.headers.get("location")) {
     return intlResponse;
   }
 
-  // Get pathname without locale for route checking
-  const pathnameWithoutLocale = getPathnameWithoutLocale(pathname);
+  // Extract locale from pathname for auth route checking
+  const localeRegex = /^\/([a-z]{2})(\/.*)?$/;
+  const localeMatch = localeRegex.exec(pathname);
+  const locale = localeMatch?.[1] ?? routing.defaultLocale;
+  const pathWithoutLocale = localeMatch?.[2] ?? pathname;
 
-  // Define route groups
-  const publicRoutes = ["/", "/auth/login", "/auth/register", "/auth/error"];
+  // Define protected and auth routes
   const protectedRoutes = ["/test-rcon", "/shops", "/admin"];
+  const authRoutes = ["/auth/login", "/auth/register", "/auth/error"];
 
-  const isPublicRoute = matchesRoutes(pathnameWithoutLocale, publicRoutes);
-  const isProtectedRoute = matchesRoutes(
-    pathnameWithoutLocale,
-    protectedRoutes,
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathWithoutLocale.startsWith(route),
+  );
+  const isAuthRoute = authRoutes.some((route) =>
+    pathWithoutLocale.startsWith(route),
   );
 
-  // Redirect unauthenticated users away from protected routes
+  // Redirect unauthenticated users from protected routes to login
   if (isProtectedRoute && !isLoggedIn) {
-    const loginUrl = createRedirectUrl(
-      pathname,
-      "/auth/login",
-      nextUrl.origin,
-      pathname,
-    );
+    const loginUrl = new URL(`/${locale}/auth/login`, nextUrl.origin);
+    loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Redirect authenticated users away from auth pages
-  if (isLoggedIn && pathnameWithoutLocale.startsWith("/auth/")) {
-    const homeUrl = createRedirectUrl(pathname, "/", nextUrl.origin);
+  // Redirect authenticated users away from auth pages to home
+  if (isLoggedIn && isAuthRoute) {
+    const homeUrl = new URL(`/${locale}/`, nextUrl.origin);
     return NextResponse.redirect(homeUrl);
   }
 

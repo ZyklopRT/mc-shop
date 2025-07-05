@@ -14,7 +14,7 @@ export async function generateSEOMetadata(
       title: t("title"),
       description: t("description"),
     };
-  } catch (error) {
+  } catch {
     // Fallback if translation doesn't exist
     return {
       title: fallbackTitle,

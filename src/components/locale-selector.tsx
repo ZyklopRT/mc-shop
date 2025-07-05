@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useRouter, usePathname } from "~/lib/i18n/routing";
+import { usePathname } from "~/lib/i18n/routing";
 import {
   Select,
   SelectTrigger,

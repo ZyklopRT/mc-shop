@@ -41,7 +41,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   setRequestLocale(locale);
 
   // Get messages for the locale
-  const messages = await getMessages();
+  const messages = await getMessages({ locale });
 
   const session = await auth();
 
