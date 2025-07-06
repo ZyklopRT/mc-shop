@@ -40,5 +40,22 @@
     "title": "MC Shop",
     "subtitle": "Suche nach Spielern und Gegenständen in Minecraft Shops",
     "heroAlt": "Minecraft Landschaftshintergrund"
+  },
+  "footer": {
+    "description": "Deine ultimative Minecraft Shop Verwaltungsplattform. Verwalte und entdecke Shops auf deinem Server mit Leichtigkeit.",
+    "quickLinks": "Schnelllinks",
+    "browseShops": "Shops durchsuchen",
+    "requestBoard": "Anfrage-Board",
+    "myShops": "Meine Shops",
+    "helpSupport": "Hilfe & Support",
+    "help": "Hilfe",
+    "contact": "Kontakt",
+    "privacy": "Datenschutz",
+    "settings": "Einstellungen",
+    "theme": "Theme",
+    "language": "Sprache",
+    "allRightsReserved": "Alle Rechte vorbehalten.",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutz"
   }
 }

@@ -40,5 +40,22 @@
     "title": "MC Shop",
     "subtitle": "Search for players and items across Minecraft shops",
     "heroAlt": "Minecraft landscape background"
+  },
+  "footer": {
+    "description": "Your ultimate Minecraft shop administration platform. Manage and discover shops across your server with ease.",
+    "quickLinks": "Quick Links",
+    "browseShops": "Browse Shops",
+    "requestBoard": "Request Board",
+    "myShops": "My Shops",
+    "helpSupport": "Help & Support",
+    "help": "Help",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "settings": "Settings",
+    "theme": "Theme",
+    "language": "Language",
+    "allRightsReserved": "All rights reserved.",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
   }
 }
