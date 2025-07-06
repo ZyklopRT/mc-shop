@@ -36,6 +36,18 @@
     "navigation": "Navigation",
     "navigationDescription": "Navigiere durch das MC Shop System"
   },
+  "component": {
+    "shop-card": {
+      "owner": "Besitzer:",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "item": "Item",
+      "items": "Items",
+      "available": "verfügbar",
+      "viewShop": "Shop ansehen",
+      "edit": "Bearbeiten"
+    }
+  },
   "page": {
     "homepage": {
       "title": "MC Shop",
