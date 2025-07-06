@@ -17,6 +17,7 @@ async function main() {
         mcUsername: mcUsername1,
         password,
         name: mcUsername1,
+        isAdmin: true,
       },
     });
     console.log("Dummy user Zyklop created.");
@@ -35,6 +36,7 @@ async function main() {
         mcUsername: mcUsername2,
         password,
         name: mcUsername2,
+        isAdmin: true,
       },
     });
     console.log("Dummy user TestUser created.");
