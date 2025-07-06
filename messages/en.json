@@ -46,6 +46,26 @@
       "available": "available",
       "viewShop": "View Shop",
       "edit": "Edit"
+    },
+    "request-form": {
+      "requestType": "Request Type",
+      "itemRequest": "Item Request",
+      "serviceRequest": "Service Request",
+      "title": "Title",
+      "titlePlaceholderItem": "e.g., Need 64 Iron Ore",
+      "titlePlaceholderService": "e.g., Help building a castle",
+      "description": "Description",
+      "descriptionPlaceholderItem": "Describe the specific item you need, its condition, enchantments, etc.",
+      "descriptionPlaceholderService": "Describe the service you need, requirements, timeline, etc.",
+      "itemDetails": "Item Details",
+      "itemSearchPlaceholder": "Search for a Minecraft item...",
+      "quantity": "Quantity",
+      "quantityPlaceholder": "How many items do you need?",
+      "rewardPayment": "Reward/Payment (Optional)",
+      "price": "Price",
+      "currency": "Currency",
+      "createRequest": "Create Request",
+      "updateRequest": "Update Request"
     }
   },
   "page": {
@@ -381,6 +401,15 @@
         "generalError": "An error occurred while loading requests. Please try again later.",
         "generalErrorYours": "An error occurred while loading your requests. Please try again later.",
         "authRequired": "Please log in to view your requests."
+      }
+    },
+    "requests-new": {
+      "title": "Create New Request",
+      "description": "Request items or services from other players",
+      "backToRequests": "Back to Requests",
+      "form": {
+        "cardTitle": "Request Details",
+        "cardDescription": "Fill out the form below to create your request. Be specific about what you need."
       }
     }
   },

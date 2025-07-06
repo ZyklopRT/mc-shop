@@ -46,6 +46,26 @@
       "available": "verfügbar",
       "viewShop": "Shop ansehen",
       "edit": "Bearbeiten"
+    },
+    "request-form": {
+      "requestType": "Anfrage-Typ",
+      "itemRequest": "Item-Anfrage",
+      "serviceRequest": "Dienstleistungs-Anfrage",
+      "title": "Titel",
+      "titlePlaceholderItem": "z.B. Benötige 64 Eisenerz",
+      "titlePlaceholderService": "z.B. Hilfe beim Burgbau",
+      "description": "Beschreibung",
+      "descriptionPlaceholderItem": "Beschreibe das spezifische Item, das du benötigst, seinen Zustand, Verzauberungen, usw.",
+      "descriptionPlaceholderService": "Beschreibe die Dienstleistung, die du benötigst, Anforderungen, Zeitplan, usw.",
+      "itemDetails": "Item Details",
+      "itemSearchPlaceholder": "Suche nach einem Minecraft Item...",
+      "quantity": "Menge",
+      "quantityPlaceholder": "Wie viele Items benötigst du?",
+      "rewardPayment": "Belohnung/Bezahlung (Optional)",
+      "price": "Preis",
+      "currency": "Währung",
+      "createRequest": "Anfrage erstellen",
+      "updateRequest": "Anfrage aktualisieren"
     }
   },
   "page": {
@@ -381,6 +401,15 @@
         "generalError": "Ein Fehler ist beim Laden der Anfragen aufgetreten. Bitte versuche es später erneut.",
         "generalErrorYours": "Ein Fehler ist beim Laden deiner Anfragen aufgetreten. Bitte versuche es später erneut.",
         "authRequired": "Bitte melde dich an, um deine Anfragen zu sehen."
+      }
+    },
+    "requests-new": {
+      "title": "Neue Anfrage erstellen",
+      "description": "Fordere Items oder Dienstleistungen von anderen Spielern an",
+      "backToRequests": "Zurück zu Anfragen",
+      "form": {
+        "cardTitle": "Anfrage Details",
+        "cardDescription": "Fülle das Formular unten aus, um deine Anfrage zu erstellen. Sei spezifisch über das, was du brauchst."
       }
     }
   },
