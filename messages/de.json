@@ -279,6 +279,49 @@
         "added": "Item erfolgreich zum Shop hinzugefügt!",
         "addFailed": "Fehler beim Hinzufügen des Items zum Shop"
       }
+    },
+    "shops-items-edit": {
+      "title": "Shop-Item bearbeiten",
+      "description": "Aktualisiere die Preise und Verfügbarkeit für dieses Item.",
+      "loading": "Lade Shop-Item...",
+      "checkingPermissions": "Prüfe Berechtigungen...",
+      "backToShop": "Zurück zu {shopName}",
+      "form": {
+        "cardTitle": "Item Details",
+        "cardDescription": "Aktualisiere den Preis, die Menge, die Währung und die Verfügbarkeit für dieses Item.",
+        "currentItem": "Aktuelles Item",
+        "price": "Preis *",
+        "pricePlaceholder": "Preis eingeben",
+        "amount": "Menge (Items pro Kauf) *",
+        "amountPlaceholder": "Menge eingeben",
+        "amountHelp": "Wie viele Items als Bündel verkauft werden (z.B. 32 für einen Stack Eisenerz)",
+        "currency": "Währung *",
+        "currencyPlaceholder": "Währung auswählen",
+        "isAvailable": "Item ist zum Kauf verfügbar",
+        "removeFromShop": "Aus Shop entfernen",
+        "saving": "Speichern...",
+        "saveChanges": "Änderungen speichern",
+        "cancel": "Abbrechen"
+      },
+      "deleteDialog": {
+        "title": "Item aus Shop entfernen",
+        "description": "Bist du sicher, dass du \"{itemName}\" aus deinem Shop entfernen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "cancel": "Abbrechen",
+        "removeItem": "Item entfernen"
+      },
+      "error": {
+        "shopItemNotFound": "Shop-Item nicht gefunden",
+        "failedToLoadShopItem": "Fehler beim Laden der Shop-Item Details"
+      },
+      "toast": {
+        "updated": "Shop-Item erfolgreich aktualisiert!",
+        "updateFailed": "Fehler beim Aktualisieren des Shop-Items",
+        "removed": "Item erfolgreich aus dem Shop entfernt!",
+        "removeFailed": "Fehler beim Entfernen des Items aus dem Shop",
+        "authRequired": "Authentifizierung erforderlich",
+        "permissionDenied": "Berechtigung verweigert. Weiterleitung zum Shop...",
+        "checkPermissions": "Du hast keine Berechtigung, dieses Shop-Item zu bearbeiten. Weiterleitung..."
+      }
     }
   },
   "footer": {

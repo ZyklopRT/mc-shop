@@ -279,6 +279,49 @@
         "added": "Item added to shop successfully!",
         "addFailed": "Failed to add item to shop"
       }
+    },
+    "shops-items-edit": {
+      "title": "Edit Shop Item",
+      "description": "Update the pricing and availability for this item.",
+      "loading": "Loading shop item...",
+      "checkingPermissions": "Checking permissions...",
+      "backToShop": "Back to {shopName}",
+      "form": {
+        "cardTitle": "Item Details",
+        "cardDescription": "Update the price, amount, currency, and availability for this item.",
+        "currentItem": "Current Item",
+        "price": "Price *",
+        "pricePlaceholder": "Enter price",
+        "amount": "Amount (items per purchase) *",
+        "amountPlaceholder": "Enter amount",
+        "amountHelp": "How many items are sold as a bundle (e.g., 32 for a stack of iron ore)",
+        "currency": "Currency *",
+        "currencyPlaceholder": "Select currency",
+        "isAvailable": "Item is available for purchase",
+        "removeFromShop": "Remove from Shop",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "cancel": "Cancel"
+      },
+      "deleteDialog": {
+        "title": "Remove Item from Shop",
+        "description": "Are you sure you want to remove \"{itemName}\" from your shop? This action cannot be undone.",
+        "cancel": "Cancel",
+        "removeItem": "Remove Item"
+      },
+      "error": {
+        "shopItemNotFound": "Shop item not found",
+        "failedToLoadShopItem": "Failed to load shop item details"
+      },
+      "toast": {
+        "updated": "Shop item updated successfully!",
+        "updateFailed": "Failed to update shop item",
+        "removed": "Item removed from shop successfully!",
+        "removeFailed": "Failed to remove item from shop",
+        "authRequired": "Authentication required",
+        "permissionDenied": "Permission denied. Redirecting to shop...",
+        "checkPermissions": "You don't have permission to edit this shop item. Redirecting..."
+      }
     }
   },
   "footer": {
