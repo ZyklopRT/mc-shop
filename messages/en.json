@@ -41,6 +41,18 @@
       "title": "MC Shop",
       "subtitle": "Search for players and items across Minecraft shops",
       "heroAlt": "Minecraft landscape background"
+    },
+    "sign-in": {
+      "title": "Sign In",
+      "description": "Enter your Minecraft username and password to access MC Shop",
+      "mcUsername": "Minecraft Username",
+      "mcUsernamePlaceholder": "Enter your Minecraft username",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "loading": "Signing in...",
+      "login": "Sign In",
+      "dontHaveAccount": "Don't have an account?",
+      "registerHere": "Register here"
     }
   },
   "footer": {

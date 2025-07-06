@@ -41,6 +41,18 @@
       "title": "MC Shop",
       "subtitle": "Suche nach Spielern und Gegenständen in Minecraft Shops",
       "heroAlt": "Minecraft Landschaftshintergrund"
+    },
+    "sign-in": {
+      "title": "Anmelden",
+      "description": "Gib deinen Minecraft Benutzernamen und dein Passwort ein, um auf MC Shop zuzugreifen",
+      "mcUsername": "Minecraft Benutzername",
+      "mcUsernamePlaceholder": "Gib deinen Minecraft Benutzernamen ein",
+      "password": "Passwort",
+      "passwordPlaceholder": "Gib dein Passwort ein",
+      "loading": "Anmelden...",
+      "login": "Anmelden",
+      "dontHaveAccount": "Noch kein Konto?",
+      "registerHere": "Hier registrieren"
     }
   },
   "footer": {
