@@ -12,6 +12,7 @@ import type {
   RequestOfferWithDetails,
 } from "~/lib/types/request";
 import type { RequestActions } from "~/lib/hooks/use-request-actions";
+import { useTranslations } from "next-intl";
 
 interface RequestDetailsProps {
   initialRequest: RequestWithFullDetails;
@@ -26,6 +27,7 @@ export function RequestDetails({
   actions,
   className = "",
 }: RequestDetailsProps) {
+  const t = useTranslations("component.request-details");
   const { request, isLoading, error, refreshRequest } = useRequestData({
     requestId: initialRequest.id,
     autoLoad: false,
@@ -67,7 +69,7 @@ export function RequestDetails({
             <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
             <div>
               <h3 className="text-foreground text-lg font-semibold">
-                Error Loading Request
+                {t("errorLoadingRequest")}
               </h3>
               <p className="text-muted-foreground mt-2">{error}</p>
             </div>
@@ -88,7 +90,7 @@ export function RequestDetails({
           <CardContent className="py-8">
             <div className="flex items-center justify-center space-x-2">
               <Loader2 className="h-5 w-5 animate-spin" />
-              <span className="text-muted-foreground">Refreshing...</span>
+              <span className="text-muted-foreground">{t("refreshing")}</span>
             </div>
           </CardContent>
         </Card>

@@ -16,6 +16,7 @@ import type {
   RequestOffer,
   User,
 } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 // Simplified types for the component props
 type NegotiationMessageWithSender = NegotiationMessage & {
@@ -57,6 +58,7 @@ export function NegotiationInterface({
   onNegotiationUpdated,
   className = "",
 }: NegotiationInterfaceProps) {
+  const t = useTranslations("component.negotiation-interface");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -176,8 +178,8 @@ export function NegotiationInterface({
 
   const handleCompleteRequest = async () => {
     if (negotiation.status !== "AGREED") {
-      toast.error("Cannot complete request", {
-        description: "Both parties must accept the terms first.",
+      toast.error(t("cannotCompleteRequest"), {
+        description: t("bothPartiesMustAccept"),
       });
       return;
     }
@@ -207,7 +209,7 @@ export function NegotiationInterface({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
-            Negotiation Chat
+            {t("negotiationChat")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -239,12 +241,9 @@ export function NegotiationInterface({
           <CardContent className="pt-6">
             <div className="space-y-4 text-center">
               <div className="font-medium text-green-600">
-                🎉 Negotiation Complete!
+                {t("negotiationComplete")}
               </div>
-              <p className="text-muted-foreground">
-                Both parties have agreed to the terms. You can now mark this
-                request as completed.
-              </p>
+              <p className="text-muted-foreground">{t("bothPartiesAgreed")}</p>
               <Button
                 onClick={handleCompleteRequest}
                 disabled={isLoading}
@@ -254,7 +253,7 @@ export function NegotiationInterface({
                 {isLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
-                Complete Request
+                {t("completeRequest")}
               </Button>
             </div>
           </CardContent>

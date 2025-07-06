@@ -74,6 +74,106 @@
       "offers": "Angebote",
       "active": "Aktiv",
       "viewDetails": "Details anzeigen"
+    },
+    "request-details": {
+      "errorLoadingRequest": "Fehler beim Laden der Anfrage",
+      "refreshing": "Aktualisiere..."
+    },
+    "request-header": {
+      "requestedBy": "Angefragt von",
+      "itemRequested": "Angefragtes Item",
+      "suggestedPrice": "Vorgeschlagener Preis",
+      "startingPriceForOffers": "Startpreis für Angebote"
+    },
+    "offer-form": {
+      "makeAnOffer": "Ein Angebot machen",
+      "currency": "Währung",
+      "selectCurrency": "Währung auswählen",
+      "offeredPrice": "Angebotener Preis",
+      "emeraldBlocks": "Smaragdblöcke",
+      "emeralds": "Smaragde",
+      "enterYourOffer": "Dein Angebot eingeben",
+      "suggested": "Vorgeschlagen",
+      "messageOptional": "Nachricht (Optional)",
+      "addMessageToOffer": "Eine Nachricht zu deinem Angebot hinzufügen...",
+      "submittingOffer": "Angebot wird gesendet...",
+      "submitOffer": "Angebot senden",
+      "offerSubmittedSuccessfully": "Dein Angebot wurde erfolgreich gesendet.",
+      "failedToSubmitOffer": "Angebot konnte nicht gesendet werden",
+      "failedToSubmitOfferTryAgain": "Angebot konnte nicht gesendet werden. Bitte versuche es erneut."
+    },
+    "offer-card": {
+      "offeredPrice": "Angebotener Preis",
+      "message": "Nachricht",
+      "accept": "Annehmen",
+      "reject": "Ablehnen",
+      "withdraw": "Zurückziehen",
+      "acceptThisOffer": "Dieses Angebot annehmen?",
+      "acceptOfferDescription": "Dies akzeptiert das Angebot von {username} und startet eine Verhandlung. Alle anderen ausstehenden Angebote werden automatisch abgelehnt.",
+      "cancel": "Abbrechen",
+      "acceptOffer": "Angebot annehmen",
+      "rejectThisOffer": "Dieses Angebot ablehnen?",
+      "rejectOfferDescription": "Dies lehnt das Angebot von {username} ab. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "rejectOffer": "Angebot ablehnen",
+      "withdrawYourOffer": "Dein Angebot zurückziehen?",
+      "withdrawOfferDescription": "Dies zieht dein Angebot zurück. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "withdrawOffer": "Angebot zurückziehen"
+    },
+    "offer-list": {
+      "offers": "Angebote",
+      "loadingOffers": "Lade Angebote...",
+      "errorLoadingOffers": "Fehler beim Laden der Angebote:",
+      "noOffersYet": "Noch keine Angebote.",
+      "beFirstToMakeOffer": "Sei der erste, der ein Angebot macht!"
+    },
+    "negotiation-form": {
+      "otherPartyAccepted": "Die andere Partei hat den aktuellen Bedingungen zugestimmt",
+      "otherPartyAcceptedDescription": "Du kannst diese Bedingungen nur annehmen oder die Verhandlung ablehnen. Gegenangebote sind nicht mehr verfügbar.",
+      "messageType": "Nachrichtentyp",
+      "selectMessageType": "Nachrichtentyp auswählen",
+      "regularMessage": "Reguläre Nachricht",
+      "counterOffer": "Gegenangebot",
+      "acceptTerms": "Bedingungen annehmen",
+      "rejectEndNegotiation": "Ablehnen & Verhandlung beenden",
+      "counterOfferPrice": "Gegenangebot Preis",
+      "enterCounterOffer": "Dein Gegenangebot eingeben...",
+      "currentOffer": "Aktuelles Angebot",
+      "currency": "Währung",
+      "counterOfferDetails": "Gegenangebot Details",
+      "acceptanceMessage": "Annahme-Nachricht",
+      "rejectionReason": "Ablehnungsgrund",
+      "message": "Nachricht",
+      "explainCounterOffer": "Erkläre dein Gegenangebot...",
+      "confirmAcceptance": "Bestätige deine Annahme...",
+      "explainRejection": "Erkläre, warum du ablehnst...",
+      "typeYourMessage": "Tippe deine Nachricht...",
+      "sendCounterOffer": "Gegenangebot senden",
+      "acceptTermsButton": "Bedingungen annehmen",
+      "rejectEnd": "Ablehnen & Beenden",
+      "sendMessage": "Nachricht senden"
+    },
+    "negotiation-message": {
+      "acceptingTerms": "Akzeptiere Bedingungen:",
+      "you": "Du",
+      "noMessagesYet": "Noch keine Nachrichten. Starte die Unterhaltung!"
+    },
+    "negotiation-interface": {
+      "negotiationChat": "Verhandlungs-Chat",
+      "cannotCompleteRequest": "Anfrage kann nicht abgeschlossen werden",
+      "bothPartiesMustAccept": "Beide Parteien müssen zuerst den Bedingungen zustimmen.",
+      "negotiationComplete": "🎉 Verhandlung abgeschlossen!",
+      "bothPartiesAgreed": "Beide Parteien haben den Bedingungen zugestimmt. Du kannst diese Anfrage nun als abgeschlossen markieren.",
+      "completeRequest": "Anfrage abschließen"
+    },
+    "negotiation-status": {
+      "negotiationStatus": "Verhandlungsstatus",
+      "inProgress": "In Bearbeitung",
+      "agreed": "Vereinbart",
+      "failed": "Fehlgeschlagen",
+      "currentTerms": "Aktuelle Bedingungen",
+      "accepted": "Akzeptiert",
+      "pending": "Ausstehend",
+      "offerer": "Anbieter"
     }
   },
   "page": {
@@ -442,6 +542,11 @@
         "deleted": "Anfrage erfolgreich gelöscht",
         "deleteFailed": "Löschen der Anfrage fehlgeschlagen"
       }
+    },
+    "requests-id": {
+      "backToRequests": "Zurück zu Anfragen",
+      "errorLoadingRequest": "Fehler beim Laden der Anfrage",
+      "failedToLoadRequest": "Fehler beim Laden der Anfrage-Details. Bitte versuche es später erneut."
     }
   },
   "footer": {

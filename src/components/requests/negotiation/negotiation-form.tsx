@@ -28,6 +28,7 @@ import {
   getMinimumInCurrency,
   formatCurrencyWithRate,
 } from "~/lib/utils/currency-conversion";
+import { useTranslations } from "next-intl";
 
 const messageFormSchema = z
   .object({
@@ -88,6 +89,7 @@ export function NegotiationForm({
   onSubmit,
   className = "",
 }: NegotiationFormProps) {
+  const t = useTranslations("component.negotiation-form");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<MessageFormData>({
@@ -170,11 +172,10 @@ export function NegotiationForm({
             <div className="mt-2 h-2 w-2 rounded-full bg-blue-500"></div>
             <div className="text-sm">
               <p className="font-medium text-blue-800">
-                The other party has accepted the current terms
+                {t("otherPartyAccepted")}
               </p>
               <p className="text-blue-600">
-                You can only accept these terms or reject the negotiation.
-                Counter-offers are no longer available.
+                {t("otherPartyAcceptedDescription")}
               </p>
             </div>
           </div>
@@ -189,28 +190,30 @@ export function NegotiationForm({
             name="messageType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Message Type</FormLabel>
+                <FormLabel>{t("messageType")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select message type" />
+                      <SelectValue placeholder={t("selectMessageType")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="MESSAGE">Regular Message</SelectItem>
+                    <SelectItem value="MESSAGE">
+                      {t("regularMessage")}
+                    </SelectItem>
                     {!otherPartyAccepted && (
                       <SelectItem value="COUNTER_OFFER">
-                        Counter Offer
+                        {t("counterOffer")}
                       </SelectItem>
                     )}
                     {!currentUserAccepted && (
-                      <SelectItem value="ACCEPT">Accept Terms</SelectItem>
+                      <SelectItem value="ACCEPT">{t("acceptTerms")}</SelectItem>
                     )}
                     <SelectItem value="REJECT">
-                      Reject & End Negotiation
+                      {t("rejectEndNegotiation")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -227,13 +230,13 @@ export function NegotiationForm({
                 name="priceOffer"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Counter Offer Price</FormLabel>
+                    <FormLabel>{t("counterOfferPrice")}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.01"
                         max="999999"
-                        placeholder="Enter your counter offer..."
+                        placeholder={t("enterCounterOffer")}
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => {
@@ -254,7 +257,7 @@ export function NegotiationForm({
                             effectiveSelectedCurrency !==
                               currentOfferCurrency ? (
                               <>
-                                Current offer:{" "}
+                                {t("currentOffer")}:{" "}
                                 {formatCurrencyWithRate(
                                   currentOfferPrice,
                                   currentOfferCurrency,
@@ -266,7 +269,7 @@ export function NegotiationForm({
                               </>
                             ) : (
                               <>
-                                Current offer:{" "}
+                                {t("currentOffer")}:{" "}
                                 {formatCurrencyWithRate(
                                   currentOfferPrice,
                                   currentOfferCurrency ?? "emeralds",
@@ -287,7 +290,7 @@ export function NegotiationForm({
                 name="currency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Currency</FormLabel>
+                    <FormLabel>{t("currency")}</FormLabel>
                     <FormControl>
                       <CurrencySelector
                         value={field.value ?? "emeralds"}
@@ -309,23 +312,23 @@ export function NegotiationForm({
               <FormItem>
                 <FormLabel>
                   {messageType === "COUNTER_OFFER"
-                    ? "Counter Offer Details"
+                    ? t("counterOfferDetails")
                     : messageType === "ACCEPT"
-                      ? "Acceptance Message"
+                      ? t("acceptanceMessage")
                       : messageType === "REJECT"
-                        ? "Rejection Reason"
-                        : "Message"}
+                        ? t("rejectionReason")
+                        : t("message")}
                 </FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder={
                       messageType === "COUNTER_OFFER"
-                        ? "Explain your counter offer..."
+                        ? t("explainCounterOffer")
                         : messageType === "ACCEPT"
-                          ? "Confirm your acceptance..."
+                          ? t("confirmAcceptance")
                           : messageType === "REJECT"
-                            ? "Explain why you're rejecting..."
-                            : "Type your message..."
+                            ? t("explainRejection")
+                            : t("typeYourMessage")
                     }
                     className="min-h-[80px]"
                     {...field}
@@ -348,12 +351,12 @@ export function NegotiationForm({
               <Send className="mr-2 h-4 w-4" />
             )}
             {messageType === "COUNTER_OFFER"
-              ? "Send Counter Offer"
+              ? t("sendCounterOffer")
               : messageType === "ACCEPT"
-                ? "Accept Terms"
+                ? t("acceptTermsButton")
                 : messageType === "REJECT"
-                  ? "Reject & End"
-                  : "Send Message"}
+                  ? t("rejectEnd")
+                  : t("sendMessage")}
           </Button>
         </form>
       </Form>

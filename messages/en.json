@@ -74,6 +74,106 @@
       "offers": "offers",
       "active": "Active",
       "viewDetails": "View Details"
+    },
+    "request-details": {
+      "errorLoadingRequest": "Error Loading Request",
+      "refreshing": "Refreshing..."
+    },
+    "request-header": {
+      "requestedBy": "Requested by",
+      "itemRequested": "Item Requested",
+      "suggestedPrice": "Suggested Price",
+      "startingPriceForOffers": "Starting price for offers"
+    },
+    "offer-form": {
+      "makeAnOffer": "Make an Offer",
+      "currency": "Currency",
+      "selectCurrency": "Select currency",
+      "offeredPrice": "Offered Price",
+      "emeraldBlocks": "Emerald Blocks",
+      "emeralds": "Emeralds",
+      "enterYourOffer": "Enter your offer",
+      "suggested": "Suggested",
+      "messageOptional": "Message (Optional)",
+      "addMessageToOffer": "Add a message to your offer...",
+      "submittingOffer": "Submitting Offer...",
+      "submitOffer": "Submit Offer",
+      "offerSubmittedSuccessfully": "Your offer has been submitted successfully.",
+      "failedToSubmitOffer": "Failed to submit offer",
+      "failedToSubmitOfferTryAgain": "Failed to submit offer. Please try again."
+    },
+    "offer-card": {
+      "offeredPrice": "Offered Price",
+      "message": "Message",
+      "accept": "Accept",
+      "reject": "Reject",
+      "withdraw": "Withdraw",
+      "acceptThisOffer": "Accept this offer?",
+      "acceptOfferDescription": "This will accept the offer from {username} and start a negotiation. All other pending offers will be automatically rejected.",
+      "cancel": "Cancel",
+      "acceptOffer": "Accept Offer",
+      "rejectThisOffer": "Reject this offer?",
+      "rejectOfferDescription": "This will reject the offer from {username}. This action cannot be undone.",
+      "rejectOffer": "Reject Offer",
+      "withdrawYourOffer": "Withdraw your offer?",
+      "withdrawOfferDescription": "This will withdraw your offer. This action cannot be undone.",
+      "withdrawOffer": "Withdraw Offer"
+    },
+    "offer-list": {
+      "offers": "Offers",
+      "loadingOffers": "Loading offers...",
+      "errorLoadingOffers": "Error loading offers:",
+      "noOffersYet": "No offers yet.",
+      "beFirstToMakeOffer": "Be the first to make an offer!"
+    },
+    "negotiation-form": {
+      "otherPartyAccepted": "The other party has accepted the current terms",
+      "otherPartyAcceptedDescription": "You can only accept these terms or reject the negotiation. Counter-offers are no longer available.",
+      "messageType": "Message Type",
+      "selectMessageType": "Select message type",
+      "regularMessage": "Regular Message",
+      "counterOffer": "Counter Offer",
+      "acceptTerms": "Accept Terms",
+      "rejectEndNegotiation": "Reject & End Negotiation",
+      "counterOfferPrice": "Counter Offer Price",
+      "enterCounterOffer": "Enter your counter offer...",
+      "currentOffer": "Current offer",
+      "currency": "Currency",
+      "counterOfferDetails": "Counter Offer Details",
+      "acceptanceMessage": "Acceptance Message",
+      "rejectionReason": "Rejection Reason",
+      "message": "Message",
+      "explainCounterOffer": "Explain your counter offer...",
+      "confirmAcceptance": "Confirm your acceptance...",
+      "explainRejection": "Explain why you're rejecting...",
+      "typeYourMessage": "Type your message...",
+      "sendCounterOffer": "Send Counter Offer",
+      "acceptTermsButton": "Accept Terms",
+      "rejectEnd": "Reject & End",
+      "sendMessage": "Send Message"
+    },
+    "negotiation-message": {
+      "acceptingTerms": "Accepting terms:",
+      "you": "You",
+      "noMessagesYet": "No messages yet. Start the conversation!"
+    },
+    "negotiation-interface": {
+      "negotiationChat": "Negotiation Chat",
+      "cannotCompleteRequest": "Cannot complete request",
+      "bothPartiesMustAccept": "Both parties must accept the terms first.",
+      "negotiationComplete": "🎉 Negotiation Complete!",
+      "bothPartiesAgreed": "Both parties have agreed to the terms. You can now mark this request as completed.",
+      "completeRequest": "Complete Request"
+    },
+    "negotiation-status": {
+      "negotiationStatus": "Negotiation Status",
+      "inProgress": "In Progress",
+      "agreed": "Agreed",
+      "failed": "Failed",
+      "currentTerms": "Current Terms",
+      "accepted": "Accepted",
+      "pending": "Pending",
+      "offerer": "Offerer"
     }
   },
   "page": {
@@ -442,6 +542,11 @@
         "deleted": "Request deleted successfully",
         "deleteFailed": "Failed to delete request"
       }
+    },
+    "requests-id": {
+      "backToRequests": "Back to Requests",
+      "errorLoadingRequest": "Error Loading Request",
+      "failedToLoadRequest": "Failed to load request details. Please try again later."
     }
   },
   "footer": {
