@@ -225,6 +225,33 @@
         "deleteFailed": "Delete Failed",
         "unexpectedError": "An unexpected error occurred"
       }
+    },
+    "shops-details": {
+      "loading": "Loading shop details...",
+      "backToShops": "Back to Shops",
+      "active": "Active",
+      "inactive": "Inactive",
+      "owner": "Owner:",
+      "editShop": "Edit Shop",
+      "addItems": "Add Items",
+      "shopInformation": "Shop Information",
+      "description": "Description",
+      "location": "Location",
+      "loginToGetTeleportCommands": "Login to get teleport commands",
+      "statistics": "Statistics",
+      "itemsAvailable": "items available",
+      "created": "Created",
+      "itemsForSale": "Items for Sale",
+      "addMore": "Add More",
+      "noItemsYet": "No items yet",
+      "startAddingItems": "Start adding items to your shop to attract customers.",
+      "noItemsForSale": "This shop doesn't have any items for sale yet.",
+      "addYourFirstItem": "Add Your First Item",
+      "error": {
+        "title": "Error",
+        "shopNotFound": "Shop not found",
+        "failedToLoadShop": "Failed to load shop"
+      }
     }
   },
   "footer": {

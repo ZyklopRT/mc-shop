@@ -225,6 +225,33 @@
         "deleteFailed": "Löschen fehlgeschlagen",
         "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten"
       }
+    },
+    "shops-details": {
+      "loading": "Lade Shop-Details...",
+      "backToShops": "Zurück zu Shops",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "owner": "Besitzer:",
+      "editShop": "Shop bearbeiten",
+      "addItems": "Items hinzufügen",
+      "shopInformation": "Shop-Informationen",
+      "description": "Beschreibung",
+      "location": "Standort",
+      "loginToGetTeleportCommands": "Anmelden, um Teleport-Befehle zu erhalten",
+      "statistics": "Statistiken",
+      "itemsAvailable": "Items verfügbar",
+      "created": "Erstellt",
+      "itemsForSale": "Items zum Verkauf",
+      "addMore": "Mehr hinzufügen",
+      "noItemsYet": "Noch keine Items",
+      "startAddingItems": "Beginne damit, Items zu deinem Shop hinzuzufügen, um Kunden anzuziehen.",
+      "noItemsForSale": "Dieser Shop hat noch keine Items zum Verkauf.",
+      "addYourFirstItem": "Füge dein erstes Item hinzu",
+      "error": {
+        "title": "Fehler",
+        "shopNotFound": "Shop nicht gefunden",
+        "failedToLoadShop": "Laden des Shops fehlgeschlagen"
+      }
     }
   },
   "footer": {
