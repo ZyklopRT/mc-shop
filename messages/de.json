@@ -419,6 +419,29 @@
         "cardTitle": "Anfrage Details",
         "cardDescription": "Fülle das Formular unten aus, um deine Anfrage zu erstellen. Sei spezifisch über das, was du brauchst."
       }
+    },
+    "requests-edit": {
+      "title": "Anfrage bearbeiten",
+      "description": "Aktualisiere deine Anfrage-Details unten",
+      "loading": "Lade...",
+      "backToRequests": "Zurück zu Anfragen",
+      "backToRequest": "Zurück zur Anfrage",
+      "deleteRequest": "Anfrage löschen",
+      "form": {
+        "cardTitle": "Anfrage-Details bearbeiten",
+        "cardDescription": "Nimm Änderungen an deiner Anfrage vor. Nur bestimmte Felder können bearbeitet werden."
+      },
+      "deleteDialog": {
+        "title": "Anfrage löschen",
+        "description": "Bist du sicher, dass du diese Anfrage löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden. Alle zugehörigen Angebote und Verhandlungen werden ebenfalls gelöscht.",
+        "cancel": "Abbrechen",
+        "deleteRequest": "Anfrage löschen"
+      },
+      "toast": {
+        "loadFailed": "Laden der Anfrage-Daten fehlgeschlagen",
+        "deleted": "Anfrage erfolgreich gelöscht",
+        "deleteFailed": "Löschen der Anfrage fehlgeschlagen"
+      }
     }
   },
   "footer": {

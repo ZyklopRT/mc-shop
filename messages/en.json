@@ -419,6 +419,29 @@
         "cardTitle": "Request Details",
         "cardDescription": "Fill out the form below to create your request. Be specific about what you need."
       }
+    },
+    "requests-edit": {
+      "title": "Edit Request",
+      "description": "Update your request details below",
+      "loading": "Loading...",
+      "backToRequests": "Back to Requests",
+      "backToRequest": "Back to Request",
+      "deleteRequest": "Delete Request",
+      "form": {
+        "cardTitle": "Edit Request Details",
+        "cardDescription": "Make changes to your request. Only certain fields can be edited."
+      },
+      "deleteDialog": {
+        "title": "Delete Request",
+        "description": "Are you sure you want to delete this request? This action cannot be undone. All associated offers and negotiations will also be deleted.",
+        "cancel": "Cancel",
+        "deleteRequest": "Delete Request"
+      },
+      "toast": {
+        "loadFailed": "Failed to load request data",
+        "deleted": "Request deleted successfully",
+        "deleteFailed": "Failed to delete request"
+      }
     }
   },
   "footer": {

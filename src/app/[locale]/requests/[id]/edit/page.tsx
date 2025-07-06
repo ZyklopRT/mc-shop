@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "~/lib/i18n/routing";
 import { notFound } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -51,6 +52,7 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
     null,
   );
   const router = useRouter();
+  const t = useTranslations("page.requests-edit");
 
   useEffect(() => {
     const loadParams = async () => {
@@ -88,7 +90,7 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
         setIsLoading(false);
       } catch (error) {
         console.error("Error loading request:", error);
-        toast.error("Failed to load request data");
+        toast.error(t("toast.loadFailed"));
         router.push("/requests");
       }
     },
@@ -108,14 +110,14 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
     try {
       const result = await deleteRequest(requestId);
       if (result.success) {
-        toast.success("Request deleted successfully");
+        toast.success(t("toast.deleted"));
         router.push("/requests");
       } else {
-        toast.error(result.error || "Failed to delete request");
+        toast.error(result.error || t("toast.deleteFailed"));
       }
     } catch (error) {
       console.error("Delete error:", error);
-      toast.error("Failed to delete request");
+      toast.error(t("toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -128,10 +130,10 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
           <Button variant="outline" asChild className="mb-4">
             <Link href="/requests">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Requests
+              {t("backToRequests")}
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold">Loading...</h1>
+          <h1 className="text-3xl font-bold">{t("loading")}</h1>
         </div>
         <Card>
           <CardContent className="p-6">
@@ -152,13 +154,11 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
             <Button variant="outline" asChild className="mb-4">
               <Link href={`/requests/${requestId}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Request
+                {t("backToRequest")}
               </Link>
             </Button>
-            <h1 className="text-3xl font-bold">Edit Request</h1>
-            <p className="text-muted-foreground">
-              Update your request details below
-            </p>
+            <h1 className="text-3xl font-bold">{t("title")}</h1>
+            <p className="text-muted-foreground">{t("description")}</p>
           </div>
 
           {/* Delete Request Button */}
@@ -176,25 +176,25 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
                   ) : (
                     <Trash2 className="h-4 w-4" />
                   )}
-                  Delete Request
+                  {t("deleteRequest")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Request</AlertDialogTitle>
+                  <AlertDialogTitle>{t("deleteDialog.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete this request? This action
-                    cannot be undone. All associated offers and negotiations
-                    will also be deleted.
+                    {t("deleteDialog.description")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>
+                    {t("deleteDialog.cancel")}
+                  </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleDeleteRequest}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    Delete Request
+                    {t("deleteDialog.deleteRequest")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -205,10 +205,8 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Edit Request Details</CardTitle>
-          <CardDescription>
-            Make changes to your request. Only certain fields can be edited.
-          </CardDescription>
+          <CardTitle>{t("form.cardTitle")}</CardTitle>
+          <CardDescription>{t("form.cardDescription")}</CardDescription>
         </CardHeader>
 
         <CardContent>
