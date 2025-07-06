@@ -11,6 +11,7 @@ import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { Coins, Pencil } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { RequestStatusBadge, RequestTypeBadge } from "./ui";
 import { Link } from "~/lib/i18n/routing";
 import { UserAvatar } from "~/components/ui/user-avatar";
@@ -55,6 +56,8 @@ export function RequestCard({
   itemQuantity,
   isOwner,
 }: RequestCardProps) {
+  const t = useTranslations("component.request-card");
+
   const getCurrencyIcon = (currencyType: string) => {
     switch (currencyType) {
       case CURRENCY_TYPES.EMERALD_BLOCKS:
@@ -93,7 +96,7 @@ export function RequestCard({
           {type === "ITEM" && item && (
             <div className="bg-muted/50 rounded-lg border p-3">
               <div className="mb-2">
-                <span className="text-sm font-medium">Requesting:</span>
+                <span className="text-sm font-medium">{t("requesting")}</span>
               </div>
               <ItemPreview
                 item={item}
@@ -110,11 +113,11 @@ export function RequestCard({
             <div className="rounded-lg border bg-green-50 p-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-green-600">
-                  Offered Reward:
+                  {t("offeredReward")}
                 </span>
                 <div className="flex items-center gap-2">
                   {getCurrencyIcon(currency)}
-                  <span className="text-lg font-bold text-green-600">
+                  <span className="text-sm font-bold text-green-600">
                     {price.toFixed(2)}{" "}
                     {currencyDisplayNames[currency] ?? currency}
                   </span>
@@ -134,16 +137,16 @@ export function RequestCard({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground text-sm">
-                {offerCount} {offerCount === 1 ? "offer" : "offers"}
+                {offerCount} {offerCount === 1 ? t("offer") : t("offers")}
               </span>
               {offerCount > 0 && (
                 <Badge variant="secondary" className="text-xs">
-                  Active
+                  {t("active")}
                 </Badge>
               )}
             </div>
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/requests/${id}`}>View Details</Link>
+              <Link href={`/requests/${id}`}>{t("viewDetails")}</Link>
             </Button>
           </div>
         </div>

@@ -66,6 +66,14 @@
       "currency": "Währung",
       "createRequest": "Anfrage erstellen",
       "updateRequest": "Anfrage aktualisieren"
+    },
+    "request-card": {
+      "requesting": "Anfrage:",
+      "offeredReward": "Angebotene Belohnung:",
+      "offer": "Angebot",
+      "offers": "Angebote",
+      "active": "Aktiv",
+      "viewDetails": "Details anzeigen"
     }
   },
   "page": {
