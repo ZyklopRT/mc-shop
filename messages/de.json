@@ -322,6 +322,20 @@
         "permissionDenied": "Berechtigung verweigert. Weiterleitung zum Shop...",
         "checkPermissions": "Du hast keine Berechtigung, dieses Shop-Item zu bearbeiten. Weiterleitung..."
       }
+    },
+    "shops": {
+      "title": "Meine Shops",
+      "description": "Verwalte deine Minecraft Shops",
+      "loading": "Lade Shops...",
+      "authRequired": "Authentifizierung erforderlich",
+      "authRequiredDescription": "Bitte melde dich an, um deine Shops zu verwalten.",
+      "login": "Anmelden",
+      "error": "Fehler",
+      "tryAgain": "Erneut versuchen",
+      "createShop": "Shop erstellen",
+      "noShopsYet": "Noch keine Shops",
+      "noShopsYetDescription": "Erstelle deinen ersten Shop, um Items an andere Spieler zu verkaufen.",
+      "createYourFirstShop": "Erstelle deinen ersten Shop"
     }
   },
   "footer": {

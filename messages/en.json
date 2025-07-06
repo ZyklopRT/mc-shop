@@ -322,6 +322,20 @@
         "permissionDenied": "Permission denied. Redirecting to shop...",
         "checkPermissions": "You don't have permission to edit this shop item. Redirecting..."
       }
+    },
+    "shops": {
+      "title": "My Shops",
+      "description": "Manage your Minecraft shops",
+      "loading": "Loading shops...",
+      "authRequired": "Authentication Required",
+      "authRequiredDescription": "Please login to manage your shops.",
+      "login": "Login",
+      "error": "Error",
+      "tryAgain": "Try Again",
+      "createShop": "Create Shop",
+      "noShopsYet": "No shops yet",
+      "noShopsYetDescription": "Create your first shop to start selling items to other players.",
+      "createYourFirstShop": "Create Your First Shop"
     }
   },
   "footer": {

@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { PageHeader } from "~/components/ui/page-header";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 import { getMyShopsWithItems } from "~/server/actions/shops";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { Plus, Package, User } from "lucide-react";
 
 import { ShopCard } from "~/components/shops/shop-card";
@@ -18,6 +19,7 @@ interface Shop extends ShopWithDetails {
 }
 
 export default function ShopsPage() {
+  const t = useTranslations("page.shops");
   const { data: session, status } = useSession();
   const [shops, setShops] = useState<Shop[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +30,7 @@ export default function ShopsPage() {
       void loadShops();
     } else if (status === "unauthenticated") {
       setIsLoading(false);
-      setError("Please login to view your shops");
+      setError(t("authRequiredDescription"));
     }
   }, [status]);
 
@@ -41,7 +43,7 @@ export default function ShopsPage() {
         setError(result.error);
       }
     } catch {
-      setError("Failed to load shops");
+      setError(t("error"));
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +53,7 @@ export default function ShopsPage() {
     return (
       <PageWrapper>
         <div className="flex items-center justify-center">
-          <p>Loading shops...</p>
+          <p>{t("loading")}</p>
         </div>
       </PageWrapper>
     );
@@ -61,12 +63,12 @@ export default function ShopsPage() {
     return (
       <PageWrapper>
         <Card className="p-6 text-center">
-          <h1 className="mb-4 text-2xl font-bold">Authentication Required</h1>
+          <h1 className="mb-4 text-2xl font-bold">{t("authRequired")}</h1>
           <p className="text-muted-foreground mb-4">
-            Please login to manage your shops.
+            {t("authRequiredDescription")}
           </p>
           <Button asChild>
-            <Link href="/auth/login">Login</Link>
+            <Link href="/auth/login">{t("login")}</Link>
           </Button>
         </Card>
       </PageWrapper>
@@ -77,9 +79,9 @@ export default function ShopsPage() {
     return (
       <PageWrapper>
         <Card className="p-6 text-center">
-          <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
+          <h1 className="mb-4 text-2xl font-bold text-red-600">{t("error")}</h1>
           <p className="text-muted-foreground mb-4">{error}</p>
-          <Button onClick={loadShops}>Try Again</Button>
+          <Button onClick={loadShops}>{t("tryAgain")}</Button>
         </Card>
       </PageWrapper>
     );
@@ -89,13 +91,13 @@ export default function ShopsPage() {
     <PageWrapper>
       <PageHeader
         icon={<User className="h-8 w-8" />}
-        title="My Shops"
-        description="Manage your Minecraft shops"
+        title={t("title")}
+        description={t("description")}
         actions={
           <Button asChild>
             <Link href="/shops/new">
               <Plus className="mr-2 h-4 w-4" />
-              Create Shop
+              {t("createShop")}
             </Link>
           </Button>
         }
@@ -104,12 +106,12 @@ export default function ShopsPage() {
       {shops.length === 0 ? (
         <Card className="p-8 text-center">
           <Package className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-          <h2 className="mb-2 text-xl font-semibold">No shops yet</h2>
+          <h2 className="mb-2 text-xl font-semibold">{t("noShopsYet")}</h2>
           <p className="text-muted-foreground mb-4">
-            Create your first shop to start selling items to other players.
+            {t("noShopsYetDescription")}
           </p>
           <Button asChild>
-            <Link href="/shops/new">Create Your First Shop</Link>
+            <Link href="/shops/new">{t("createYourFirstShop")}</Link>
           </Button>
         </Card>
       ) : (
