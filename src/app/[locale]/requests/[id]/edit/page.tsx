@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "~/lib/i18n/routing";
 import { notFound } from "next/navigation";
 import {
   Card,

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "~/lib/i18n/routing";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Search, Loader2, X } from "lucide-react";
