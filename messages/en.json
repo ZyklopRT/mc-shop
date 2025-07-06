@@ -53,6 +53,50 @@
       "login": "Sign In",
       "dontHaveAccount": "Don't have an account?",
       "registerHere": "Register here"
+    },
+    "sign-up": {
+      "title": "Sign Up",
+      "description": "Create your account to get started",
+      "progress": "Registration progress",
+      "step": "Step",
+      "of": "of",
+      "complete": "complete",
+      "stepOne": {
+        "title": "Enter Minecraft username",
+        "description": "Enter your Minecraft usernameto start",
+        "mcUsername": "Minecraft Username",
+        "mcUsernamePlaceholder": "Enter your Minecraft username",
+        "loading": "Loading...",
+        "continue": "Continue"
+      },
+      "stepTwo": {
+        "title": "Verify Account",
+        "description": "Check your Minecraft chat for verification code",
+        "verificationCode": "Verification Code",
+        "verificationCodePlaceholder": "Enter your verification code",
+        "resendCode": "Resend Code",
+        "helpDescription": "Enter the 6-digit code sent to {mcUsername} in Minecraft chat.",
+        "loading": "Loading...",
+        "continue": "Continue",
+        "back": "Back"
+      },
+      "stepThree": {
+        "title": "Set Password",
+        "description": "Create a secure password for your account",
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "confirmPassword": "Confirm Password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "loading": "Loading...",
+        "continue": "Create Account"
+      },
+      "stepFour": {
+        "title": "Registration Completed!",
+        "description": "Your account has been created successfully.",
+        "greeting": "Welcome, {mcUsername}! You will be redirected to the login page in a few seconds...",
+        "loading": "Loading...",
+        "backToLogin": "Go to Login"
+      }
     }
   },
   "footer": {

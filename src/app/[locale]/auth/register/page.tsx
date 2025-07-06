@@ -7,9 +7,12 @@ import { RegistrationStepThree } from "~/components/auth/registration-step-three
 import { RegistrationStepFour } from "~/components/auth/registration-step-four";
 import { Progress } from "~/components/ui/progress";
 import { PageWrapper } from "~/components/ui/page-wrapper";
-import { REGISTRATION_STEPS } from "~/lib/constants/registration-steps";
+import { useTranslations } from "next-intl";
+import type { StepConfig } from "~/lib/types/auth";
 
 export default function RegisterPage() {
+  const t = useTranslations("page.sign-up");
+
   const {
     currentStep,
     isLoading,
@@ -22,6 +25,29 @@ export default function RegisterPage() {
     goBack,
     goToLogin,
   } = useRegistration();
+
+  const REGISTRATION_STEPS: readonly StepConfig[] = [
+    {
+      id: 1,
+      title: t("stepOne.title"),
+      description: t("stepOne.description"),
+    },
+    {
+      id: 2,
+      title: t("stepTwo.title"),
+      description: t("stepTwo.description"),
+    },
+    {
+      id: 3,
+      title: t("stepThree.title"),
+      description: t("stepThree.description"),
+    },
+    {
+      id: 4,
+      title: t("stepFour.title"),
+      description: t("stepFour.description"),
+    },
+  ] as const;
 
   const currentStepData = REGISTRATION_STEPS[currentStep - 1];
   const progressValue = (currentStep / REGISTRATION_STEPS.length) * 100;
@@ -76,11 +102,9 @@ export default function RegisterPage() {
       <PageWrapper className="flex items-center justify-center">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <h1 className="text-foreground text-3xl font-bold">
-              MC <span className="text-primary">Shop</span>
-            </h1>
+            <h1 className="text-foreground text-3xl font-bold">{t("title")}</h1>
             <p className="text-muted-foreground mt-2 text-sm">
-              Create your account to get started
+              {t("description")}
             </p>
           </div>
 
@@ -90,13 +114,16 @@ export default function RegisterPage() {
                 <Progress
                   value={progressValue}
                   className="h-2"
-                  aria-label={`Registration progress: ${Math.round(progressValue)}%`}
+                  aria-label={`${t("progress")}: ${Math.round(progressValue)}%`}
                 />
                 <div className="text-muted-foreground flex justify-between text-xs">
                   <span>
-                    Step {currentStep} of {REGISTRATION_STEPS.length}
+                    {t("step")} {currentStep} {t("of")}{" "}
+                    {REGISTRATION_STEPS.length}
                   </span>
-                  <span>{Math.round(progressValue)}% complete</span>
+                  <span>
+                    {Math.round(progressValue)}% {t("complete")}
+                  </span>
                 </div>
               </div>
 

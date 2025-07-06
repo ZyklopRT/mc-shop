@@ -53,6 +53,50 @@
       "login": "Anmelden",
       "dontHaveAccount": "Noch kein Konto?",
       "registerHere": "Hier registrieren"
+    },
+    "sign-up": {
+      "title": "Registrieren",
+      "description": "Erstelle deinen Account, um loszulegen",
+      "progress": "Registrierungsfortschritt",
+      "step": "Schritt",
+      "of": "von",
+      "complete": "abgeschlossen",
+      "stepOne": {
+        "title": "Minecraft-Benutzernamen eingeben",
+        "description": "Gib deinen Minecraft-Benutzernamen ein, um zu starten",
+        "mcUsername": "Minecraft-Benutzername",
+        "mcUsernamePlaceholder": "Gib deinen Minecraft-Benutzernamen ein",
+        "loading": "Lade...",
+        "continue": "Weiter"
+      },
+      "stepTwo": {
+        "title": "Konto verifizieren",
+        "description": "Prüfe deinen Minecraft-Chat auf den Verifizierungscode",
+        "verificationCode": "Verifizierungscode",
+        "verificationCodePlaceholder": "Gib deinen Verifizierungscode ein",
+        "resendCode": "Code erneut senden",
+        "helpDescription": "Gib den 6-stelligen Code ein, der an {mcUsername} im Minecraft-Chat gesendet wurde.",
+        "loading": "Lade...",
+        "continue": "Weiter",
+        "back": "Zurück"
+      },
+      "stepThree": {
+        "title": "Passwort festlegen",
+        "description": "Erstelle ein sicheres Passwort für deinen Account",
+        "password": "Passwort",
+        "passwordPlaceholder": "Gib dein Passwort ein",
+        "confirmPassword": "Passwort bestätigen",
+        "confirmPasswordPlaceholder": "Bestätige dein Passwort",
+        "loading": "Lade...",
+        "continue": "Account erstellen"
+      },
+      "stepFour": {
+        "title": "Registrierung abgeschlossen!",
+        "description": "Dein Account wurde erfolgreich erstellt.",
+        "greeting": "Willkommen, {mcUsername}! Du wirst in wenigen Sekunden zur Login-Seite weitergeleitet...",
+        "loading": "Lade...",
+        "backToLogin": "Zum Login"
+      }
     }
   },
   "footer": {
