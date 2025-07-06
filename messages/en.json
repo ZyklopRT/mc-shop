@@ -115,6 +115,46 @@
       "noResults": "No shops match your search criteria. Try different keywords or browse all shops.",
       "browseAllShops": "Browse All Shops",
       "showingShops": "Showing {count} active shop{count === 1 ? '' : 's'}"
+    },
+    "shops-new": {
+      "title": "Create New Shop",
+      "description": "Set up your new Minecraft shop",
+      "loading": "Loading...",
+      "authRequired": "Authentication Required",
+      "authRequiredDescription": "Please login to create a shop.",
+      "login": "Login",
+      "backToShops": "Back to Shops",
+      "form": {
+        "shopName": "Shop Name",
+        "shopNamePlaceholder": "Enter shop name",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe your shop (optional)",
+        "location": "Location (Optional)",
+        "xCoordinate": "X Coordinate",
+        "yCoordinate": "Y Coordinate",
+        "zCoordinate": "Z Coordinate",
+        "xPlaceholder": "X",
+        "yPlaceholder": "Y",
+        "zPlaceholder": "Z",
+        "locationHelp": "Enter the coordinates where your shop is located in Minecraft. This helps other players find your shop.",
+        "isActive": "Shop is active and visible to other players",
+        "creating": "Creating Shop...",
+        "createShop": "Create Shop",
+        "cancel": "Cancel"
+      },
+      "help": {
+        "title": "Tips for creating a good shop:",
+        "tip1": "Choose a clear, descriptive name that tells players what you sell",
+        "tip2": "Add a helpful description explaining your shop's specialty",
+        "tip3": "Include coordinates so players can easily find your shop",
+        "tip4": "You can always edit these details later"
+      },
+      "toast": {
+        "created": "Shop Created",
+        "createdDescription": "Your shop has been created successfully",
+        "creationFailed": "Creation Failed",
+        "unexpectedError": "An unexpected error occurred"
+      }
     }
   },
   "footer": {

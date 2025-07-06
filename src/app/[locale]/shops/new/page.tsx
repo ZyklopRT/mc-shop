@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "~/lib/i18n/routing";
+import { useRouter, Link } from "~/lib/i18n/routing";
 import { useSession } from "next-auth/react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,9 +14,9 @@ import { Switch } from "~/components/ui/switch";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 import { createShop } from "~/server/actions/shops";
 import { createShopSchema } from "~/lib/validations/shop";
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
+import { useTranslations } from "next-intl";
 
 // Form schema with required isActive field
 const createShopFormSchema = createShopSchema.extend({
@@ -30,6 +30,7 @@ export default function NewShopPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("page.shops-new");
 
   const {
     register,
@@ -62,18 +63,15 @@ export default function NewShopPage() {
       const result = await createShop(formData);
 
       if (result.success) {
-        toast.success(
-          "Shop Created",
-          "Your shop has been created successfully",
-        );
+        toast.success(t("toast.created"), t("toast.createdDescription"));
         router.push(`/shops/${result.data.id}`);
       } else {
         setError(result.error);
-        toast.error("Creation Failed", result.error);
+        toast.error(t("toast.creationFailed"), result.error);
       }
     } catch {
-      setError("An unexpected error occurred");
-      toast.error("Creation Failed", "An unexpected error occurred");
+      setError(t("toast.unexpectedError"));
+      toast.error(t("toast.creationFailed"), t("toast.unexpectedError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -83,7 +81,7 @@ export default function NewShopPage() {
     return (
       <PageWrapper>
         <div className="flex items-center justify-center">
-          <p>Loading...</p>
+          <p>{t("loading")}</p>
         </div>
       </PageWrapper>
     );
@@ -93,12 +91,12 @@ export default function NewShopPage() {
     return (
       <PageWrapper>
         <Card className="p-6 text-center">
-          <h1 className="mb-4 text-2xl font-bold">Authentication Required</h1>
+          <h1 className="mb-4 text-2xl font-bold">{t("authRequired")}</h1>
           <p className="text-muted-foreground mb-4">
-            Please login to create a shop.
+            {t("authRequiredDescription")}
           </p>
           <Button asChild>
-            <Link href="/auth/login">Login</Link>
+            <Link href="/auth/login">{t("login")}</Link>
           </Button>
         </Card>
       </PageWrapper>
@@ -112,24 +110,22 @@ export default function NewShopPage() {
           <Button variant="outline" asChild className="mb-4">
             <Link href="/shops">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Shops
+              {t("backToShops")}
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold">Create New Shop</h1>
-          <p className="text-muted-foreground">
-            Set up your new Minecraft shop
-          </p>
+          <h1 className="text-3xl font-bold">{t("title")}</h1>
+          <p className="text-muted-foreground">{t("description")}</p>
         </div>
 
         <Card className="p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Shop Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">Shop Name *</Label>
+              <Label htmlFor="name">{t("form.shopName")} *</Label>
               <Input
                 id="name"
                 {...register("name")}
-                placeholder="Enter shop name"
+                placeholder={t("form.shopNamePlaceholder")}
                 className={errors.name ? "border-red-500" : ""}
               />
               {errors.name && (
@@ -139,11 +135,11 @@ export default function NewShopPage() {
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t("form.description")}</Label>
               <textarea
                 id="description"
                 {...register("description")}
-                placeholder="Describe your shop (optional)"
+                placeholder={t("form.descriptionPlaceholder")}
                 className={`border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[80px] w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
                   errors.description ? "border-red-500" : ""
                 }`}
@@ -158,20 +154,20 @@ export default function NewShopPage() {
 
             {/* Location */}
             <div className="space-y-4">
-              <Label>Location (Optional)</Label>
+              <Label>{t("form.location")}</Label>
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label
                     htmlFor="locationX"
                     className="text-muted-foreground text-sm"
                   >
-                    X Coordinate
+                    {t("form.xCoordinate")}
                   </Label>
                   <Input
                     id="locationX"
                     type="number"
                     {...register("locationX", { valueAsNumber: true })}
-                    placeholder="X"
+                    placeholder={t("form.xPlaceholder")}
                     className={errors.locationX ? "border-red-500" : ""}
                   />
                   {errors.locationX && (
@@ -185,13 +181,13 @@ export default function NewShopPage() {
                     htmlFor="locationY"
                     className="text-muted-foreground text-sm"
                   >
-                    Y Coordinate
+                    {t("form.yCoordinate")}
                   </Label>
                   <Input
                     id="locationY"
                     type="number"
                     {...register("locationY", { valueAsNumber: true })}
-                    placeholder="Y"
+                    placeholder={t("form.yPlaceholder")}
                     className={errors.locationY ? "border-red-500" : ""}
                   />
                   {errors.locationY && (
@@ -205,13 +201,13 @@ export default function NewShopPage() {
                     htmlFor="locationZ"
                     className="text-muted-foreground text-sm"
                   >
-                    Z Coordinate
+                    {t("form.zCoordinate")}
                   </Label>
                   <Input
                     id="locationZ"
                     type="number"
                     {...register("locationZ", { valueAsNumber: true })}
-                    placeholder="Z"
+                    placeholder={t("form.zPlaceholder")}
                     className={errors.locationZ ? "border-red-500" : ""}
                   />
                   {errors.locationZ && (
@@ -222,8 +218,7 @@ export default function NewShopPage() {
                 </div>
               </div>
               <p className="text-muted-foreground text-sm">
-                Enter the coordinates where your shop is located in Minecraft.
-                This helps other players find your shop.
+                {t("form.locationHelp")}
               </p>
             </div>
 
@@ -241,7 +236,7 @@ export default function NewShopPage() {
                 )}
               />
               <Label htmlFor="isActive" className="text-sm font-medium">
-                Shop is active and visible to other players
+                {t("form.isActive")}
               </Label>
             </div>
 
@@ -255,10 +250,10 @@ export default function NewShopPage() {
             {/* Submit Button */}
             <div className="flex gap-4">
               <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? "Creating Shop..." : "Create Shop"}
+                {isSubmitting ? t("form.creating") : t("form.createShop")}
               </Button>
               <Button variant="outline" asChild>
-                <Link href="/shops">Cancel</Link>
+                <Link href="/shops">{t("form.cancel")}</Link>
               </Button>
             </div>
           </form>
@@ -266,17 +261,12 @@ export default function NewShopPage() {
 
         {/* Help Text */}
         <Card className="mt-6 p-4">
-          <h3 className="mb-2 font-semibold">Tips for creating a good shop:</h3>
+          <h3 className="mb-2 font-semibold">{t("help.title")}</h3>
           <ul className="text-muted-foreground space-y-1 text-sm">
-            <li>
-              • Choose a clear, descriptive name that tells players what you
-              sell
-            </li>
-            <li>
-              • Add a helpful description explaining your shop&apos;s specialty
-            </li>
-            <li>• Include coordinates so players can easily find your shop</li>
-            <li>• You can always edit these details later</li>
+            <li>• {t("help.tip1")}</li>
+            <li>• {t("help.tip2")}</li>
+            <li>• {t("help.tip3")}</li>
+            <li>• {t("help.tip4")}</li>
           </ul>
         </Card>
       </div>

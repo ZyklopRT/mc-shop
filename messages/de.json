@@ -115,6 +115,46 @@
       "noResults": "Keine Shops entsprechen deinen Suchkriterien. Probiere andere Begriffe oder durchschaue alle Shops.",
       "browseAllShops": "Alle Shops durchsuchen",
       "showingShops": "Zeige {count} aktive Shop{count === 1 ? '' : 's'}"
+    },
+    "shops-new": {
+      "title": "Neuen Shop erstellen",
+      "description": "Richte deinen neuen Minecraft Shop ein",
+      "loading": "Lade...",
+      "authRequired": "Authentifizierung erforderlich",
+      "authRequiredDescription": "Bitte melde dich an, um einen Shop zu erstellen.",
+      "login": "Anmelden",
+      "backToShops": "Zurück zu Shops",
+      "form": {
+        "shopName": "Shop Name",
+        "shopNamePlaceholder": "Shop Namen eingeben",
+        "description": "Beschreibung",
+        "descriptionPlaceholder": "Beschreibe deinen Shop (optional)",
+        "location": "Standort (Optional)",
+        "xCoordinate": "X Koordinate",
+        "yCoordinate": "Y Koordinate",
+        "zCoordinate": "Z Koordinate",
+        "xPlaceholder": "X",
+        "yPlaceholder": "Y",
+        "zPlaceholder": "Z",
+        "locationHelp": "Gib die Koordinaten ein, wo sich dein Shop in Minecraft befindet. Dies hilft anderen Spielern, deinen Shop zu finden.",
+        "isActive": "Shop ist aktiv und für andere Spieler sichtbar",
+        "creating": "Shop wird erstellt...",
+        "createShop": "Shop erstellen",
+        "cancel": "Abbrechen"
+      },
+      "help": {
+        "title": "Tipps für einen guten Shop:",
+        "tip1": "Wähle einen klaren, beschreibenden Namen, der Spielern sagt, was du verkaufst",
+        "tip2": "Füge eine hilfreiche Beschreibung hinzu, die die Spezialität deines Shops erklärt",
+        "tip3": "Gib Koordinaten an, damit Spieler deinen Shop leicht finden können",
+        "tip4": "Du kannst diese Details jederzeit später bearbeiten"
+      },
+      "toast": {
+        "created": "Shop erstellt",
+        "createdDescription": "Dein Shop wurde erfolgreich erstellt",
+        "creationFailed": "Erstellung fehlgeschlagen",
+        "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten"
+      }
     }
   },
   "footer": {
