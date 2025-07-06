@@ -19,6 +19,7 @@ import { Store, User, X } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
 import { ShopCard } from "~/components/shops/shop-card";
 import { GlobalSearchBar } from "~/components/search/global-search-bar";
+import { useTranslations } from "next-intl";
 
 export default function BrowseShopsPage() {
   const searchParams = useSearchParams();
@@ -33,6 +34,7 @@ export default function BrowseShopsPage() {
     itemName?: string;
   }>({});
 
+  const t = useTranslations("page.shops-browse");
   // Initialize from URL parameters
   useEffect(() => {
     const initialSearch = searchParams.get("search");
@@ -182,14 +184,14 @@ export default function BrowseShopsPage() {
       <div className="mb-8">
         <PageHeader
           icon={<Store className="h-8 w-8" />}
-          title="Browse Shops"
-          description="Discover shops from players around the server"
+          title={t("title")}
+          description={t("description")}
         />
 
         {/* Reusable Search Bar */}
         <GlobalSearchBar
           mode="callback"
-          placeholder="Search shops by player name, item, or keywords..."
+          placeholder={t("searchPlaceholder")}
           searchCallbacks={searchCallbacks}
           onSearchExecuted={() => setIsLoading(true)}
           className="mb-4"
@@ -200,13 +202,13 @@ export default function BrowseShopsPage() {
           <Card className="p-3">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-muted-foreground text-sm">
-                Active filters:
+                {t("activeFilters")}
               </span>
 
               {activeFilters.playerName && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <User className="h-3 w-3" />
-                  Player: {activeFilters.playerName}
+                  {t("player")}: {activeFilters.playerName}
                   <Button
                     size="sm"
                     variant="ghost"
@@ -221,7 +223,7 @@ export default function BrowseShopsPage() {
               {activeFilters.itemName && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Store className="h-3 w-3" />
-                  Item: {activeFilters.itemName}
+                  {t("item")}: {activeFilters.itemName}
                   <Button
                     size="sm"
                     variant="ghost"
@@ -236,7 +238,7 @@ export default function BrowseShopsPage() {
               {activeFilters.searchQuery && !activeFilters.itemName && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Store className="h-3 w-3" />
-                  Search: {activeFilters.searchQuery}
+                  {t("search")}: {activeFilters.searchQuery}
                   <Button
                     size="sm"
                     variant="ghost"
@@ -249,7 +251,7 @@ export default function BrowseShopsPage() {
               )}
 
               <Button variant="outline" size="sm" onClick={clearAllFilters}>
-                Clear all
+                {t("clearAll")}
               </Button>
             </div>
           </Card>
@@ -266,8 +268,8 @@ export default function BrowseShopsPage() {
         <div className="mb-4">
           <p className="text-muted-foreground text-sm">
             {!hasResults
-              ? "No shops found matching your search criteria"
-              : `Found ${shops.length} shop${shops.length === 1 ? "" : "s"} matching your search`}
+              ? t("noShopsFound")
+              : t("foundShops", { count: shops.length })}
           </p>
         </div>
       )}
@@ -275,23 +277,20 @@ export default function BrowseShopsPage() {
       {!hasResults && !hasActiveFilters ? (
         <Card className="p-8 text-center">
           <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-          <h2 className="mb-2 text-xl font-semibold">No Active Shops</h2>
-          <p className="text-muted-foreground mb-4">
-            There are currently no active shops on the server.
-          </p>
+          <h2 className="mb-2 text-xl font-semibold">
+            {t("noActiveShopsTitle")}
+          </h2>
+          <p className="text-muted-foreground mb-4">{t("noActiveShops")}</p>
           <Button asChild>
-            <Link href="/shops/new">Create the First Shop</Link>
+            <Link href="/shops/new">{t("createFirstShop")}</Link>
           </Button>
         </Card>
       ) : !hasResults && hasActiveFilters ? (
         <Card className="p-8 text-center">
           <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-          <h2 className="mb-2 text-xl font-semibold">No Results</h2>
-          <p className="text-muted-foreground mb-4">
-            No shops match your search criteria. Try different keywords or
-            browse all shops.
-          </p>
-          <Button onClick={clearAllFilters}>Browse All Shops</Button>
+          <h2 className="mb-2 text-xl font-semibold">{t("noResults")}</h2>
+          <p className="text-muted-foreground mb-4">{t("noResults")}</p>
+          <Button onClick={clearAllFilters}>{t("browseAllShops")}</Button>
         </Card>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -304,7 +303,7 @@ export default function BrowseShopsPage() {
       {!hasActiveFilters && hasResults && (
         <div className="mt-8 text-center">
           <p className="text-muted-foreground text-sm">
-            Showing {shops.length} active shop{shops.length === 1 ? "" : "s"}
+            {t("showingShops", { count: shops.length })}
           </p>
         </div>
       )}

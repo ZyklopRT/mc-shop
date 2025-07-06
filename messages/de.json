@@ -97,6 +97,24 @@
         "loading": "Lade...",
         "backToLogin": "Zum Login"
       }
+    },
+    "shops-browse": {
+      "title": "Shops durchsuchen",
+      "description": "Entdecke Shops von Spielern auf dem Server",
+      "loading": "Lade Shops...",
+      "searchFailed": "Suche fehlgeschlagen",
+      "loadingFailed": "Laden fehlgeschlagen",
+      "searchPlaceholder": "Shops nach Spielername, Item oder Stichwort suchen...",
+      "activeFilters": "Aktive Filter:",
+      "player": "Spieler",
+      "noShopsFound": "Keine Shops entsprechen deinen Suchkriterien",
+      "foundShops": "{count} Shop{count === 1 ? '' : 's'} passend zu deiner Suche gefunden",
+      "noActiveShops": "Derzeit sind keine aktiven Shops auf dem Server vorhanden.",
+      "noActiveShopsTitle": "Keine aktiven Shops",
+      "createFirstShop": "Erstelle den ersten Shop",
+      "noResults": "Keine Shops entsprechen deinen Suchkriterien. Probiere andere Begriffe oder durchschaue alle Shops.",
+      "browseAllShops": "Alle Shops durchsuchen",
+      "showingShops": "Zeige {count} aktive Shop{count === 1 ? '' : 's'}"
     }
   },
   "footer": {
