@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { usePathname } from "~/lib/i18n/routing";
+import { usePathname, useRouter } from "~/lib/i18n/routing";
 import {
   Select,
   SelectTrigger,
@@ -10,6 +10,7 @@ import {
   SelectItem,
 } from "~/components/ui/select";
 import { Languages } from "lucide-react";
+import { useTransition } from "react";
 
 const locales = [
   { code: "en", name: "English" },
@@ -17,22 +18,25 @@ const locales = [
 ] as const;
 
 export function LocaleSelector() {
-  const pathname = usePathname(); // provided by next-intl, strips locale prefix
+  const pathname = usePathname();
   const currentLocale = useLocale();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const handleLocaleChange = (nextLocale: string) => {
     if (nextLocale === currentLocale) return;
 
-    const segments = pathname.split("/").filter(Boolean);
-    segments[0] = nextLocale;
-    const newPath = `/${segments.join("/")}`;
-
-    // Force full reload to re-trigger Next.js layout + message loading
-    window.location.href = newPath;
+    startTransition(() => {
+      router.replace(pathname, { locale: nextLocale });
+    });
   };
 
   return (
-    <Select value={currentLocale} onValueChange={handleLocaleChange}>
+    <Select
+      value={currentLocale}
+      onValueChange={handleLocaleChange}
+      disabled={isPending}
+    >
       <SelectTrigger className="h-9 w-[120px]">
         <Languages className="mr-2 h-4 w-4" />
         <SelectValue placeholder="Language" />
