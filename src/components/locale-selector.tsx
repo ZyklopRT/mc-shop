@@ -37,8 +37,8 @@ export function LocaleSelector() {
       onValueChange={handleLocaleChange}
       disabled={isPending}
     >
-      <SelectTrigger className="h-9 w-[120px]">
-        <Languages className="mr-2 h-4 w-4" />
+      <SelectTrigger>
+        <Languages />
         <SelectValue placeholder="Language" />
       </SelectTrigger>
       <SelectContent>

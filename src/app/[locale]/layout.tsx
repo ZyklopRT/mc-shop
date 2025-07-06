@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 
 import { auth } from "~/server/auth";
 import { Navigation } from "~/components/navigation";
+import { Footer } from "~/components/footer";
 import { Toaster } from "~/components/ui/sonner";
 import { ThemeProvider } from "~/components/theme-provider";
 import { routing } from "~/lib/i18n/routing";
@@ -48,7 +49,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       className={`${geist.variable}`}
       suppressHydrationWarning
     >
-      <body>
+      <body className="flex min-h-screen flex-col">
         <NextIntlClientProvider>
           <ThemeProvider
             attribute="class"
@@ -58,7 +59,8 @@ export default async function LocaleLayout({ children, params }: Props) {
           >
             <SessionProvider session={session}>
               <Navigation />
-              <main className="min-h-screen">{children}</main>
+              <main className="flex-1">{children}</main>
+              <Footer />
               <Toaster />
             </SessionProvider>
           </ThemeProvider>
