@@ -164,6 +164,67 @@
         "creationFailed": "Erstellung fehlgeschlagen",
         "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten"
       }
+    },
+    "shops-edit": {
+      "title": "Shop bearbeiten",
+      "description": "Aktualisiere die Informationen deines Shops",
+      "loading": "Lade Shop-Details...",
+      "authRequired": "Authentifizierung erforderlich",
+      "authRequiredDescription": "Bitte melde dich an, um Shops zu bearbeiten.",
+      "login": "Anmelden",
+      "backToShop": "Zurück zum Shop",
+      "backToShops": "Zurück zu Shops",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "viewShop": "Shop ansehen",
+      "tryAgain": "Erneut versuchen",
+      "form": {
+        "shopName": "Shop Name *",
+        "shopNamePlaceholder": "Shop Namen eingeben",
+        "description": "Beschreibung",
+        "descriptionPlaceholder": "Beschreibe deinen Shop (optional)",
+        "location": "Standort (Optional)",
+        "xCoordinate": "X Koordinate",
+        "yCoordinate": "Y Koordinate",
+        "zCoordinate": "Z Koordinate",
+        "xPlaceholder": "X",
+        "yPlaceholder": "Y",
+        "zPlaceholder": "Z",
+        "isActive": "Shop ist aktiv und für andere Spieler sichtbar",
+        "saving": "Speichern...",
+        "saveChanges": "Änderungen speichern",
+        "reset": "Zurücksetzen",
+        "deleteShop": "Shop löschen",
+        "deleting": "Löschen...",
+        "cancel": "Abbrechen"
+      },
+      "statistics": {
+        "title": "Shop-Statistiken",
+        "totalItems": "Gesamtanzahl Items",
+        "created": "Erstellt",
+        "lastUpdated": "Zuletzt aktualisiert",
+        "owner": "Besitzer"
+      },
+      "deleteDialog": {
+        "title": "Shop löschen",
+        "description": "Bist du sicher, dass du \"{shopName}\" löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden. Alle Shop-Items und Daten werden dauerhaft entfernt."
+      },
+      "error": {
+        "title": "Fehler",
+        "notFound": "Shop nicht gefunden",
+        "notFoundDescription": "Der Shop, den du suchst, existiert nicht.",
+        "accessDenied": "Zugriff verweigert",
+        "accessDeniedDescription": "Du hast keine Berechtigung, diesen Shop zu bearbeiten."
+      },
+      "toast": {
+        "updated": "Shop aktualisiert",
+        "updatedDescription": "Dein Shop wurde erfolgreich aktualisiert",
+        "updateFailed": "Aktualisierung fehlgeschlagen",
+        "deleted": "Shop gelöscht",
+        "deletedDescription": "Dein Shop wurde erfolgreich gelöscht",
+        "deleteFailed": "Löschen fehlgeschlagen",
+        "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten"
+      }
     }
   },
   "footer": {

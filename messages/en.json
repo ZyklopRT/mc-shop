@@ -164,6 +164,67 @@
         "creationFailed": "Creation Failed",
         "unexpectedError": "An unexpected error occurred"
       }
+    },
+    "shops-edit": {
+      "title": "Edit Shop",
+      "description": "Update your shop's information",
+      "loading": "Loading shop details...",
+      "authRequired": "Authentication Required",
+      "authRequiredDescription": "Please login to edit shops.",
+      "login": "Login",
+      "backToShop": "Back to Shop",
+      "backToShops": "Back to Shops",
+      "active": "Active",
+      "inactive": "Inactive",
+      "viewShop": "View Shop",
+      "tryAgain": "Try Again",
+      "form": {
+        "shopName": "Shop Name *",
+        "shopNamePlaceholder": "Enter shop name",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe your shop (optional)",
+        "location": "Location (Optional)",
+        "xCoordinate": "X Coordinate",
+        "yCoordinate": "Y Coordinate",
+        "zCoordinate": "Z Coordinate",
+        "xPlaceholder": "X",
+        "yPlaceholder": "Y",
+        "zPlaceholder": "Z",
+        "isActive": "Shop is active and visible to other players",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "reset": "Reset",
+        "deleteShop": "Delete Shop",
+        "deleting": "Deleting...",
+        "cancel": "Cancel"
+      },
+      "statistics": {
+        "title": "Shop Statistics",
+        "totalItems": "Total Items",
+        "created": "Created",
+        "lastUpdated": "Last Updated",
+        "owner": "Owner"
+      },
+      "deleteDialog": {
+        "title": "Delete Shop",
+        "description": "Are you sure you want to delete \"{shopName}\"? This action cannot be undone. All shop items and data will be permanently removed."
+      },
+      "error": {
+        "title": "Error",
+        "notFound": "Shop Not Found",
+        "notFoundDescription": "The shop you're looking for doesn't exist.",
+        "accessDenied": "Access Denied",
+        "accessDeniedDescription": "You don't have permission to edit this shop."
+      },
+      "toast": {
+        "updated": "Shop Updated",
+        "updatedDescription": "Your shop has been updated successfully",
+        "updateFailed": "Update Failed",
+        "deleted": "Shop Deleted",
+        "deletedDescription": "Your shop has been deleted successfully",
+        "deleteFailed": "Delete Failed",
+        "unexpectedError": "An unexpected error occurred"
+      }
     }
   },
   "footer": {

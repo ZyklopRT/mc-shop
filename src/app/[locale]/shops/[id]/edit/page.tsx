@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -34,6 +35,7 @@ import { toast } from "~/lib/utils/toast";
 type EditShopForm = Omit<UpdateShopData, "shopId">;
 
 export default function EditShopPage() {
+  const t = useTranslations("page.shops-edit");
   const { data: session, status } = useSession();
   const router = useRouter();
   const params = useParams();
@@ -118,18 +120,15 @@ export default function EditShopPage() {
         });
 
         // Show success message
-        toast.success(
-          "Shop Updated",
-          "Your shop has been updated successfully",
-        );
+        toast.success(t("toast.updated"), t("toast.updatedDescription"));
         router.push(`/shops/${shop.id}`);
       } else {
         setError(result.error);
-        toast.error("Update Failed", result.error);
+        toast.error(t("toast.updateFailed"), result.error);
       }
     } catch {
-      setError("An unexpected error occurred");
-      toast.error("Update Failed", "An unexpected error occurred");
+      setError(t("toast.unexpectedError"));
+      toast.error(t("toast.updateFailed"), t("toast.unexpectedError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -145,18 +144,15 @@ export default function EditShopPage() {
       const result = await deleteShop({ shopId: shop.id });
 
       if (result.success) {
-        toast.success(
-          "Shop Deleted",
-          "Your shop has been deleted successfully",
-        );
+        toast.success(t("toast.deleted"), t("toast.deletedDescription"));
         router.push("/shops");
       } else {
         setError(result.error);
-        toast.error("Delete Failed", result.error);
+        toast.error(t("toast.deleteFailed"), result.error);
       }
     } catch {
-      setError("Failed to delete shop");
-      toast.error("Delete Failed", "Failed to delete shop");
+      setError(t("toast.deleteFailed"));
+      toast.error(t("toast.deleteFailed"), t("toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -166,7 +162,7 @@ export default function EditShopPage() {
     return (
       <PageWrapper>
         <div className="flex items-center justify-center">
-          <p>Loading shop details...</p>
+          <p>{t("loading")}</p>
         </div>
       </PageWrapper>
     );
@@ -176,12 +172,12 @@ export default function EditShopPage() {
     return (
       <PageWrapper>
         <Card className="p-6 text-center">
-          <h1 className="mb-4 text-2xl font-bold">Authentication Required</h1>
+          <h1 className="mb-4 text-2xl font-bold">{t("authRequired")}</h1>
           <p className="text-muted-foreground mb-4">
-            Please login to edit shops.
+            {t("authRequiredDescription")}
           </p>
           <Button asChild>
-            <Link href="/auth/login">Login</Link>
+            <Link href="/auth/login">{t("login")}</Link>
           </Button>
         </Card>
       </PageWrapper>
@@ -192,12 +188,14 @@ export default function EditShopPage() {
     return (
       <PageWrapper>
         <Card className="p-6 text-center">
-          <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
+          <h1 className="mb-4 text-2xl font-bold text-red-600">
+            {t("error.title")}
+          </h1>
           <p className="text-muted-foreground mb-4">{error}</p>
           <div className="flex justify-center gap-2">
-            <Button onClick={loadShop}>Try Again</Button>
+            <Button onClick={loadShop}>{t("tryAgain")}</Button>
             <Button asChild variant="outline">
-              <Link href="/shops">Back to Shops</Link>
+              <Link href="/shops">{t("backToShops")}</Link>
             </Button>
           </div>
         </Card>
@@ -209,12 +207,12 @@ export default function EditShopPage() {
     return (
       <PageWrapper>
         <Card className="p-6 text-center">
-          <h1 className="mb-4 text-2xl font-bold">Shop Not Found</h1>
+          <h1 className="mb-4 text-2xl font-bold">{t("error.notFound")}</h1>
           <p className="text-muted-foreground mb-4">
-            The shop you&apos;re looking for doesn&apos;t exist.
+            {t("error.notFoundDescription")}
           </p>
           <Button asChild>
-            <Link href="/shops">Back to Shops</Link>
+            <Link href="/shops">{t("backToShops")}</Link>
           </Button>
         </Card>
       </PageWrapper>
@@ -228,12 +226,12 @@ export default function EditShopPage() {
     return (
       <PageWrapper>
         <Card className="p-6 text-center">
-          <h1 className="mb-4 text-2xl font-bold">Access Denied</h1>
+          <h1 className="mb-4 text-2xl font-bold">{t("error.accessDenied")}</h1>
           <p className="text-muted-foreground mb-4">
-            You don&apos;t have permission to edit this shop.
+            {t("error.accessDeniedDescription")}
           </p>
           <Button asChild>
-            <Link href={`/shops/${shop.id}`}>View Shop</Link>
+            <Link href={`/shops/${shop.id}`}>{t("viewShop")}</Link>
           </Button>
         </Card>
       </PageWrapper>
@@ -246,22 +244,20 @@ export default function EditShopPage() {
         <Button variant="outline" asChild className="mb-4">
           <Link href={`/shops/${shop.id}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Shop
+            {t("backToShop")}
           </Link>
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Edit Shop</h1>
-            <p className="text-muted-foreground">
-              Update your shop&apos;s information
-            </p>
+            <h1 className="text-3xl font-bold">{t("title")}</h1>
+            <p className="text-muted-foreground">{t("description")}</p>
           </div>
           <div className="flex items-center gap-2">
             <div
               className={`h-3 w-3 rounded-full ${shop.isActive ? "bg-green-500" : "bg-gray-400"}`}
             />
             <span className="text-muted-foreground text-sm">
-              {shop.isActive ? "Active" : "Inactive"}
+              {shop.isActive ? t("active") : t("inactive")}
             </span>
           </div>
         </div>
@@ -277,11 +273,11 @@ export default function EditShopPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Shop Name */}
           <div className="space-y-2">
-            <Label htmlFor="name">Shop Name *</Label>
+            <Label htmlFor="name">{t("form.shopName")}</Label>
             <Input
               id="name"
               {...register("name")}
-              placeholder="Enter shop name"
+              placeholder={t("form.shopNamePlaceholder")}
               className={errors.name ? "border-red-500" : ""}
             />
             {errors.name && (
@@ -291,11 +287,11 @@ export default function EditShopPage() {
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("form.description")}</Label>
             <Textarea
               id="description"
               {...register("description")}
-              placeholder="Describe your shop (optional)"
+              placeholder={t("form.descriptionPlaceholder")}
               className={errors.description ? "border-red-500" : ""}
               rows={3}
             />
@@ -308,20 +304,20 @@ export default function EditShopPage() {
 
           {/* Location */}
           <div className="space-y-4">
-            <Label>Location (Optional)</Label>
+            <Label>{t("form.location")}</Label>
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label
                   htmlFor="locationX"
                   className="text-muted-foreground text-sm"
                 >
-                  X Coordinate
+                  {t("form.xCoordinate")}
                 </Label>
                 <Input
                   id="locationX"
                   type="number"
                   {...register("locationX", { valueAsNumber: true })}
-                  placeholder="X"
+                  placeholder={t("form.xPlaceholder")}
                   className={errors.locationX ? "border-red-500" : ""}
                 />
                 {errors.locationX && (
@@ -335,13 +331,13 @@ export default function EditShopPage() {
                   htmlFor="locationY"
                   className="text-muted-foreground text-sm"
                 >
-                  Y Coordinate
+                  {t("form.yCoordinate")}
                 </Label>
                 <Input
                   id="locationY"
                   type="number"
                   {...register("locationY", { valueAsNumber: true })}
-                  placeholder="Y"
+                  placeholder={t("form.yPlaceholder")}
                   className={errors.locationY ? "border-red-500" : ""}
                 />
                 {errors.locationY && (
@@ -355,13 +351,13 @@ export default function EditShopPage() {
                   htmlFor="locationZ"
                   className="text-muted-foreground text-sm"
                 >
-                  Z Coordinate
+                  {t("form.zCoordinate")}
                 </Label>
                 <Input
                   id="locationZ"
                   type="number"
                   {...register("locationZ", { valueAsNumber: true })}
-                  placeholder="Z"
+                  placeholder={t("form.zPlaceholder")}
                   className={errors.locationZ ? "border-red-500" : ""}
                 />
                 {errors.locationZ && (
@@ -387,7 +383,7 @@ export default function EditShopPage() {
               )}
             />
             <Label htmlFor="isActive" className="text-sm font-medium">
-              Shop is active and visible to other players
+              {t("form.isActive")}
             </Label>
           </div>
 
@@ -400,7 +396,7 @@ export default function EditShopPage() {
                 className="flex items-center gap-2"
               >
                 <Save className="h-4 w-4" />
-                {isSubmitting ? "Saving..." : "Save Changes"}
+                {isSubmitting ? t("form.saving") : t("form.saveChanges")}
               </Button>
               <Button
                 type="button"
@@ -408,7 +404,7 @@ export default function EditShopPage() {
                 onClick={() => reset()}
                 disabled={isSubmitting || !isDirty}
               >
-                Reset
+                {t("form.reset")}
               </Button>
             </div>
 
@@ -420,28 +416,26 @@ export default function EditShopPage() {
                   disabled={isSubmitting || isDeleting}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Shop
+                  {t("form.deleteShop")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Shop</AlertDialogTitle>
+                  <AlertDialogTitle>{t("deleteDialog.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete &ldquo;{shop.name}&rdquo;?
-                    This action cannot be undone. All shop items and data will
-                    be permanently removed.
+                    {t("deleteDialog.description", { shopName: shop.name })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel disabled={isDeleting}>
-                    Cancel
+                    {t("form.cancel")}
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleDelete}
                     disabled={isDeleting}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    {isDeleting ? "Deleting..." : "Delete Shop"}
+                    {isDeleting ? t("form.deleting") : t("form.deleteShop")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -452,26 +446,30 @@ export default function EditShopPage() {
 
       {/* Shop Stats */}
       <Card className="mt-6 p-6">
-        <h2 className="mb-4 text-lg font-semibold">Shop Statistics</h2>
+        <h2 className="mb-4 text-lg font-semibold">{t("statistics.title")}</h2>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-muted-foreground">Total Items</p>
+            <p className="text-muted-foreground">
+              {t("statistics.totalItems")}
+            </p>
             <p className="font-semibold">{shop.shopItems.length}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Created</p>
+            <p className="text-muted-foreground">{t("statistics.created")}</p>
             <p className="font-semibold">
               {new Date(shop.createdAt).toLocaleDateString()}
             </p>
           </div>
           <div>
-            <p className="text-muted-foreground">Last Updated</p>
+            <p className="text-muted-foreground">
+              {t("statistics.lastUpdated")}
+            </p>
             <p className="font-semibold">
               {new Date(shop.updatedAt).toLocaleDateString()}
             </p>
           </div>
           <div>
-            <p className="text-muted-foreground">Owner</p>
+            <p className="text-muted-foreground">{t("statistics.owner")}</p>
             <p className="font-semibold">{shop.owner.mcUsername}</p>
           </div>
         </div>
