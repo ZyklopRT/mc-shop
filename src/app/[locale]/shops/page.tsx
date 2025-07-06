@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Button } from "~/components/ui/button";
@@ -25,16 +25,7 @@ export default function ShopsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      void loadShops();
-    } else if (status === "unauthenticated") {
-      setIsLoading(false);
-      setError(t("authRequiredDescription"));
-    }
-  }, [status]);
-
-  const loadShops = async () => {
+  const loadShops = useCallback(async () => {
     try {
       const result = await getMyShopsWithItems();
       if (result.success) {
@@ -47,7 +38,16 @@ export default function ShopsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      void loadShops();
+    } else if (status === "unauthenticated") {
+      setIsLoading(false);
+      setError(t("authRequiredDescription"));
+    }
+  }, [status, loadShops, t]);
 
   if (status === "loading" || isLoading) {
     return (

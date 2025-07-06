@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
@@ -36,76 +36,66 @@ export default function BrowseShopsPage() {
 
   const t = useTranslations("page.shops-browse");
 
-  // Initialize from URL parameters
-  useEffect(() => {
-    const initialSearch = searchParams.get("search");
-    const initialPlayer = searchParams.get("player");
+  const loadPlayerShops = useCallback(
+    async (playerName: string) => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-    if (initialPlayer) {
-      setActiveFilters({ playerName: initialPlayer });
-      void loadPlayerShops(initialPlayer);
-    } else if (initialSearch) {
-      setActiveFilters({ searchQuery: initialSearch });
-      void performTextSearch(initialSearch);
-    } else {
-      void loadAllShops();
-    }
-  }, [searchParams, loadAllShops, loadPlayerShops, performTextSearch]);
-
-  const loadPlayerShops = async (playerName: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const result = await getShopsByPlayerName(playerName);
-      if (result.success) {
-        // The shops from getShopsByPlayerName already include owner and _count
-        // We just need to add empty shopItems array for consistency
-        const shopsWithItems = result.data.shops.map((shop) => ({
-          ...shop,
-          shopItems: [] as ShopItemWithItem[], // We'll load items separately if needed
-        }));
-        setShops(shopsWithItems);
-      } else {
-        setError(result.error);
-        toast.error(t("toast.loadingFailed"), result.error);
+        const result = await getShopsByPlayerName(playerName);
+        if (result.success) {
+          // The shops from getShopsByPlayerName already include owner and _count
+          // We just need to add empty shopItems array for consistency
+          const shopsWithItems = result.data.shops.map((shop) => ({
+            ...shop,
+            shopItems: [] as ShopItemWithItem[], // We'll load items separately if needed
+          }));
+          setShops(shopsWithItems);
+        } else {
+          setError(result.error);
+          toast.error(t("toast.loadingFailed"), result.error);
+        }
+      } catch {
+        const errorMessage = t("toast.failedToLoadPlayerShops");
+        setError(errorMessage);
+        toast.error(t("toast.loadingFailed"), errorMessage);
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      const errorMessage = t("toast.failedToLoadPlayerShops");
-      setError(errorMessage);
-      toast.error(t("toast.loadingFailed"), errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [t],
+  );
 
-  const performTextSearch = async (query: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const performTextSearch = useCallback(
+    async (query: string) => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      const result = await searchShopsForBrowse({
-        query: query.trim(),
-        limit: 50,
-        offset: 0,
-      });
+        const result = await searchShopsForBrowse({
+          query: query.trim(),
+          limit: 50,
+          offset: 0,
+        });
 
-      if (result.success) {
-        setShops(result.data.shops);
-      } else {
-        setError(result.error);
-        toast.error(t("toast.searchFailed"), result.error);
+        if (result.success) {
+          setShops(result.data.shops);
+        } else {
+          setError(result.error);
+          toast.error(t("toast.searchFailed"), result.error);
+        }
+      } catch {
+        const errorMessage = t("toast.failedToSearchShops");
+        setError(errorMessage);
+        toast.error(t("toast.searchFailed"), errorMessage);
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      const errorMessage = t("toast.failedToSearchShops");
-      setError(errorMessage);
-      toast.error(t("toast.searchFailed"), errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [t],
+  );
 
-  const loadAllShops = async () => {
+  const loadAllShops = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -124,7 +114,23 @@ export default function BrowseShopsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [t]);
+
+  // Initialize from URL parameters
+  useEffect(() => {
+    const initialSearch = searchParams.get("search");
+    const initialPlayer = searchParams.get("player");
+
+    if (initialPlayer) {
+      setActiveFilters({ playerName: initialPlayer });
+      void loadPlayerShops(initialPlayer);
+    } else if (initialSearch) {
+      setActiveFilters({ searchQuery: initialSearch });
+      void performTextSearch(initialSearch);
+    } else {
+      void loadAllShops();
+    }
+  }, [searchParams, loadAllShops, loadPlayerShops, performTextSearch]);
 
   // Search callbacks for the GlobalSearchBar
   const searchCallbacks: SearchCallbacks = {
