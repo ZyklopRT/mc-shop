@@ -114,7 +114,8 @@
       "createFirstShop": "Erstelle den ersten Shop",
       "noResults": "Keine Shops entsprechen deinen Suchkriterien. Probiere andere Begriffe oder durchschaue alle Shops.",
       "browseAllShops": "Alle Shops durchsuchen",
-      "showingShops": "Zeige {count} aktive Shop{count === 1 ? '' : 's'}"
+      "showingShops": "Zeige {count} aktive Shop{count === 1 ? '' : 's'}",
+      "clearAll": "Zurücksetzen"
     },
     "shops-new": {
       "title": "Neuen Shop erstellen",
