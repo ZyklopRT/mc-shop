@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function HomePage() {
-  const t = useTranslations("homepage");
+  const t = useTranslations("page.homepage");
 
   return (
     <main className="bg-background relative flex min-h-screen flex-col items-center">

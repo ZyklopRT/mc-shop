@@ -36,10 +36,12 @@
     "navigation": "Navigation",
     "navigationDescription": "Navigiere durch das MC Shop System"
   },
-  "homepage": {
-    "title": "MC Shop",
-    "subtitle": "Suche nach Spielern und Gegenständen in Minecraft Shops",
-    "heroAlt": "Minecraft Landschaftshintergrund"
+  "page": {
+    "homepage": {
+      "title": "MC Shop",
+      "subtitle": "Suche nach Spielern und Gegenständen in Minecraft Shops",
+      "heroAlt": "Minecraft Landschaftshintergrund"
+    }
   },
   "footer": {
     "description": "Deine ultimative Minecraft Shop Verwaltungsplattform. Verwalte und entdecke Shops auf deinem Server mit Leichtigkeit.",
