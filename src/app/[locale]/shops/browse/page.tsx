@@ -35,6 +35,7 @@ export default function BrowseShopsPage() {
   }>({});
 
   const t = useTranslations("page.shops-browse");
+
   // Initialize from URL parameters
   useEffect(() => {
     const initialSearch = searchParams.get("search");
@@ -67,11 +68,12 @@ export default function BrowseShopsPage() {
         setShops(shopsWithItems);
       } else {
         setError(result.error);
-        toast.error("Loading Failed", result.error);
+        toast.error(t("toast.loadingFailed"), result.error);
       }
     } catch {
-      setError("Failed to load player shops");
-      toast.error("Loading Failed", "Failed to load player shops");
+      const errorMessage = t("toast.failedToLoadPlayerShops");
+      setError(errorMessage);
+      toast.error(t("toast.loadingFailed"), errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -92,11 +94,12 @@ export default function BrowseShopsPage() {
         setShops(result.data.shops);
       } else {
         setError(result.error);
-        toast.error("Search Failed", result.error);
+        toast.error(t("toast.searchFailed"), result.error);
       }
     } catch {
-      setError("Search failed");
-      toast.error("Search Failed", "Failed to search shops");
+      const errorMessage = t("toast.failedToSearchShops");
+      setError(errorMessage);
+      toast.error(t("toast.searchFailed"), errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -112,11 +115,12 @@ export default function BrowseShopsPage() {
         setShops(result.data.shops);
       } else {
         setError(result.error);
-        toast.error("Loading Failed", result.error);
+        toast.error(t("toast.loadingFailed"), result.error);
       }
     } catch {
-      setError("Failed to load shops");
-      toast.error("Loading Failed", "Failed to load shops");
+      const errorMessage = t("toast.failedToLoadShops");
+      setError(errorMessage);
+      toast.error(t("toast.loadingFailed"), errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -173,7 +177,7 @@ export default function BrowseShopsPage() {
     return (
       <PageWrapper>
         <div className="flex items-center justify-center">
-          <p>Loading shops...</p>
+          <p className="text-muted-foreground">{t("loading")}</p>
         </div>
       </PageWrapper>
     );
@@ -259,8 +263,8 @@ export default function BrowseShopsPage() {
       </div>
 
       {error && (
-        <Card className="mb-6 border-red-200 bg-red-50 p-4">
-          <p className="text-red-600">{error}</p>
+        <Card className="border-destructive/50 bg-destructive/10 mb-6 p-4">
+          <p className="text-destructive">{error}</p>
         </Card>
       )}
 
@@ -276,8 +280,8 @@ export default function BrowseShopsPage() {
 
       {!hasResults && !hasActiveFilters ? (
         <Card className="p-8 text-center">
-          <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-          <h2 className="mb-2 text-xl font-semibold">
+          <Store className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+          <h2 className="text-foreground mb-2 text-xl font-semibold">
             {t("noActiveShopsTitle")}
           </h2>
           <p className="text-muted-foreground mb-4">{t("noActiveShops")}</p>
@@ -287,9 +291,13 @@ export default function BrowseShopsPage() {
         </Card>
       ) : !hasResults && hasActiveFilters ? (
         <Card className="p-8 text-center">
-          <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-          <h2 className="mb-2 text-xl font-semibold">{t("noResults")}</h2>
-          <p className="text-muted-foreground mb-4">{t("noResults")}</p>
+          <Store className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+          <h2 className="text-foreground mb-2 text-xl font-semibold">
+            {t("noResultsTitle")}
+          </h2>
+          <p className="text-muted-foreground mb-4">
+            {t("noResultsDescription")}
+          </p>
           <Button onClick={clearAllFilters}>{t("browseAllShops")}</Button>
         </Card>
       ) : (
