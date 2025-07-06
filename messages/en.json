@@ -348,6 +348,40 @@
       "noShopsYet": "No shops yet",
       "noShopsYetDescription": "Create your first shop to start selling items to other players.",
       "createYourFirstShop": "Create Your First Shop"
+    },
+    "requests": {
+      "title": "Request Board",
+      "description": "Request items or services from other players",
+      "newRequest": "New Request",
+      "tabs": {
+        "open": "Open",
+        "negotiation": "In Negotiation",
+        "accepted": "Accepted",
+        "completed": "Completed",
+        "myRequests": "My Requests"
+      },
+      "empty": {
+        "openTitle": "No open requests",
+        "openDescription": "Be the first to create a request and start trading!",
+        "negotiationTitle": "No negotiations active",
+        "negotiationDescription": "Requests in negotiation will appear here once offers are accepted.",
+        "acceptedTitle": "No accepted requests",
+        "acceptedDescription": "Requests that have been agreed upon and are awaiting completion will appear here.",
+        "completedTitle": "No completed requests",
+        "completedDescription": "Completed requests and transactions will appear here.",
+        "myRequestsTitle": "No requests yet",
+        "myRequestsDescription": "Create your first request to start trading!"
+      },
+      "actions": {
+        "createFirstRequest": "Create First Request"
+      },
+      "error": {
+        "failedToLoad": "Failed to load requests:",
+        "failedToLoadYours": "Failed to load your requests:",
+        "generalError": "An error occurred while loading requests. Please try again later.",
+        "generalErrorYours": "An error occurred while loading your requests. Please try again later.",
+        "authRequired": "Please log in to view your requests."
+      }
     }
   },
   "footer": {

@@ -348,6 +348,40 @@
       "noShopsYet": "Noch keine Shops",
       "noShopsYetDescription": "Erstelle deinen ersten Shop, um Items an andere Spieler zu verkaufen.",
       "createYourFirstShop": "Erstelle deinen ersten Shop"
+    },
+    "requests": {
+      "title": "Anfrage-Board",
+      "description": "Fordere Items oder Dienstleistungen von anderen Spielern an",
+      "newRequest": "Neue Anfrage",
+      "tabs": {
+        "open": "Offen",
+        "negotiation": "In Verhandlung",
+        "accepted": "Akzeptiert",
+        "completed": "Abgeschlossen",
+        "myRequests": "Meine Anfragen"
+      },
+      "empty": {
+        "openTitle": "Keine offenen Anfragen",
+        "openDescription": "Sei der erste, der eine Anfrage erstellt und mit dem Handel beginnt!",
+        "negotiationTitle": "Keine aktiven Verhandlungen",
+        "negotiationDescription": "Anfragen in Verhandlung erscheinen hier, sobald Angebote akzeptiert werden.",
+        "acceptedTitle": "Keine akzeptierten Anfragen",
+        "acceptedDescription": "Anfragen, die vereinbart wurden und auf Abschluss warten, erscheinen hier.",
+        "completedTitle": "Keine abgeschlossenen Anfragen",
+        "completedDescription": "Abgeschlossene Anfragen und Transaktionen erscheinen hier.",
+        "myRequestsTitle": "Noch keine Anfragen",
+        "myRequestsDescription": "Erstelle deine erste Anfrage, um mit dem Handel zu beginnen!"
+      },
+      "actions": {
+        "createFirstRequest": "Erste Anfrage erstellen"
+      },
+      "error": {
+        "failedToLoad": "Fehler beim Laden der Anfragen:",
+        "failedToLoadYours": "Fehler beim Laden deiner Anfragen:",
+        "generalError": "Ein Fehler ist beim Laden der Anfragen aufgetreten. Bitte versuche es später erneut.",
+        "generalErrorYours": "Ein Fehler ist beim Laden deiner Anfragen aufgetreten. Bitte versuche es später erneut.",
+        "authRequired": "Bitte melde dich an, um deine Anfragen zu sehen."
+      }
     }
   },
   "footer": {
