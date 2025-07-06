@@ -252,6 +252,33 @@
         "shopNotFound": "Shop nicht gefunden",
         "failedToLoadShop": "Laden des Shops fehlgeschlagen"
       }
+    },
+    "shops-items-add": {
+      "title": "Item zum Shop hinzufügen",
+      "description": "Füge ein neues Item zu deinem Shop mit Preisen und Währungsoptionen hinzu.",
+      "loading": "Lade...",
+      "backToShop": "Zurück zum Shop",
+      "form": {
+        "cardTitle": "Item Details",
+        "cardDescription": "Wähle ein Minecraft Item aus und setze den Preis und die Währung.",
+        "itemSearchPlaceholder": "Suche nach einem Minecraft Item...",
+        "amount": "Menge",
+        "amountDescription": "Wie viele Items als Bündel verkauft werden (z.B. 32 Eisenerz)",
+        "price": "Preis",
+        "priceDescription": "Preis pro Item",
+        "currency": "Währung",
+        "currencyDescription": "Wähle die Währung für die Preisgestaltung",
+        "preview": "Vorschau",
+        "adding": "Hinzufügen...",
+        "addItem": "Item hinzufügen",
+        "cancel": "Abbrechen"
+      },
+      "toast": {
+        "selectItem": "Bitte wähle ein Item aus",
+        "authRequired": "Authentifizierung erforderlich",
+        "added": "Item erfolgreich zum Shop hinzugefügt!",
+        "addFailed": "Fehler beim Hinzufügen des Items zum Shop"
+      }
     }
   },
   "footer": {

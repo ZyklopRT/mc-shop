@@ -252,6 +252,33 @@
         "shopNotFound": "Shop not found",
         "failedToLoadShop": "Failed to load shop"
       }
+    },
+    "shops-items-add": {
+      "title": "Add Item to Shop",
+      "description": "Add a new item to your shop with pricing and currency options.",
+      "loading": "Loading...",
+      "backToShop": "Back to Shop",
+      "form": {
+        "cardTitle": "Item Details",
+        "cardDescription": "Select a Minecraft item and set its price and currency type.",
+        "itemSearchPlaceholder": "Search for a Minecraft item...",
+        "amount": "Amount",
+        "amountDescription": "How many items are sold as a bundle (e.g., 32 iron ore)",
+        "price": "Price",
+        "priceDescription": "Price per item",
+        "currency": "Currency",
+        "currencyDescription": "Choose the currency for pricing",
+        "preview": "Preview",
+        "adding": "Adding...",
+        "addItem": "Add Item",
+        "cancel": "Cancel"
+      },
+      "toast": {
+        "selectItem": "Please select an item",
+        "authRequired": "Authentication required",
+        "added": "Item added to shop successfully!",
+        "addFailed": "Failed to add item to shop"
+      }
     }
   },
   "footer": {
