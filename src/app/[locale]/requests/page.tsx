@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { PageHeader } from "~/components/ui/page-header";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 import { Plus, Sparkles, MessageSquare } from "lucide-react";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { getRequests } from "~/server/actions/requests/get-requests";
 import { auth } from "~/server/auth";
 import type { RequestWithDetails } from "~/lib/types/request";

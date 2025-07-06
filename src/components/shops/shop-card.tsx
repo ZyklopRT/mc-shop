@@ -3,7 +3,7 @@
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { MapPin, Edit, ExternalLink } from "lucide-react";
 import { StackedShopItems } from "./stacked-shop-items";
 import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";

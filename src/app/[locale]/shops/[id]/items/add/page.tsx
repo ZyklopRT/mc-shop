@@ -35,7 +35,7 @@ import { z } from "zod";
 import { addItemToShop } from "~/server/actions/shop-items";
 
 import { toast } from "sonner";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { ArrowLeft, Plus, DollarSign, Package } from "lucide-react";
 import type { MinecraftItem } from "@prisma/client";
 import { ItemPreviewLarge } from "~/components/items/item-preview";

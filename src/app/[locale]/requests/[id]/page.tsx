@@ -3,7 +3,7 @@ import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { auth } from "~/server/auth";
 import {
   getRequestDetails,

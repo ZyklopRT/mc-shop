@@ -10,7 +10,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { useRouter } from "~/lib/i18n/routing";
 import { createRequest } from "~/server/actions/requests";
 import { RequestForm } from "~/components/requests";

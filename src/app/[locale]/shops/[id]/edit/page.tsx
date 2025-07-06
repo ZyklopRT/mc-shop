@@ -28,7 +28,7 @@ import {
 import { getShopDetails, updateShop, deleteShop } from "~/server/actions/shops";
 import { updateShopSchema, type UpdateShopData } from "~/lib/validations/shop";
 import type { ShopWithItems } from "~/lib/types/shop";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { ArrowLeft, Trash2, Save } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
 

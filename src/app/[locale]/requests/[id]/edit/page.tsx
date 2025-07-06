@@ -24,7 +24,7 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { toast } from "sonner";
 import {
   getRequestDetails,

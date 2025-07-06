@@ -10,7 +10,7 @@ import { PageWrapper } from "~/components/ui/page-wrapper";
 import { getShopDetails } from "~/server/actions/shops";
 
 import type { ShopWithItems } from "~/lib/types/shop";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { ArrowLeft, MapPin, Package, Plus, Edit } from "lucide-react";
 
 import { ItemPreview } from "~/components/items/item-preview";

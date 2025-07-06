@@ -14,7 +14,7 @@ import {
 import { getShopsByPlayerName } from "~/server/actions/search-actions";
 import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
 import type { SearchCriteria, SearchCallbacks } from "~/lib/types/search";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { Store, User, X } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
 import { ShopCard } from "~/components/shops/shop-card";
@@ -50,7 +50,7 @@ export default function BrowseShopsPage() {
     } else {
       void loadAllShops();
     }
-  }, [searchParams]);
+  }, [searchParams, loadAllShops, loadPlayerShops, performTextSearch]);
 
   const loadPlayerShops = async (playerName: string) => {
     try {

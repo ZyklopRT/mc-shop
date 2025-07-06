@@ -2,7 +2,7 @@
 
 import { Button } from "~/components/ui/button";
 import { Pencil } from "lucide-react";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { RequestStatusBadge, RequestTypeBadge, CurrencyDisplay } from "../ui";
 import { ItemPreview } from "~/components/items/item-preview";
 import { UserAvatar } from "~/components/ui/user-avatar";

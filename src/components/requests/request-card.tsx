@@ -12,7 +12,7 @@ import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { Coins, Pencil } from "lucide-react";
 import { RequestStatusBadge, RequestTypeBadge } from "./ui";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { UserAvatar } from "~/components/ui/user-avatar";
 import { ItemPreview } from "~/components/items/item-preview";
 import { CURRENCY_TYPES, currencyDisplayNames } from "~/lib/validations/shop";
