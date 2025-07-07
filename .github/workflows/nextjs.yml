@@ -5,13 +5,13 @@
 name: Build Validation
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting any branch
   push:
-    branches: ["main"]
+    branches: ["**"]
 
-  # Runs on pull requests targeting the default branch
+  # Runs on pull requests targeting any branch
   pull_request:
-    branches: ["main"]
+    branches: ["**"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
