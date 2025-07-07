@@ -49,3 +49,8 @@ jobs:
 
       - name: Run type checking and linting
         run: pnpm check
+
+      - name: Run i18n translation validation
+        run: |
+          echo "🌐 Validating translation files..."
+          pnpm i18n:check --locales messages --source en --format next-intl --unused src
