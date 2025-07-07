@@ -94,7 +94,7 @@ export default function EditRequestPage({ params }: EditRequestPageProps) {
         router.push("/requests");
       }
     },
-    [router],
+    [router, t],
   );
 
   useEffect(() => {
