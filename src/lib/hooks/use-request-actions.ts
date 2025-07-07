@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter } from "~/lib/i18n/routing";
 import type { RequestActionResult } from "~/lib/types/request";
 
 // Server action types

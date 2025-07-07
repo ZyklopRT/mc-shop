@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "~/lib/i18n/routing";
+import { Link } from "~/lib/i18n/routing";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { useTranslations } from "next-intl";
 
 const loginSchema = z.object({
   mcUsername: z.string().min(1, "Minecraft username is required"),
@@ -38,6 +39,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const t = useTranslations("page.sign-in");
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -78,10 +80,10 @@ export default function LoginPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <CardTitle className="text-center text-2xl font-bold">
-              Sign In
+              {t("title")}
             </CardTitle>
             <CardDescription className="text-center">
-              Enter your Minecraft username and password to access MC Shop
+              {t("description")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -101,10 +103,10 @@ export default function LoginPage() {
                   name="mcUsername"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Minecraft Username</FormLabel>
+                      <FormLabel>{t("mcUsername")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter your Minecraft username"
+                          placeholder={t("mcUsernamePlaceholder")}
                           {...field}
                           disabled={isLoading}
                         />
@@ -119,11 +121,11 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>{t("password")}</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
-                          placeholder="Enter your password"
+                          placeholder={t("passwordPlaceholder")}
                           {...field}
                           disabled={isLoading}
                         />
@@ -134,19 +136,19 @@ export default function LoginPage() {
                 />
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Signing in..." : "Sign In"}
+                  {isLoading ? t("loading") : t("login")}
                 </Button>
               </form>
             </Form>
 
             <div className="mt-6 text-center">
               <p className="text-muted-foreground text-sm">
-                Don&apos;t have an account?{" "}
+                {t("dontHaveAccount")}{" "}
                 <Link
                   href="/auth/register"
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
-                  Register here
+                  {t("registerHere")}
                 </Link>
               </p>
             </div>

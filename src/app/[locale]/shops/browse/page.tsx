@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
@@ -14,11 +14,12 @@ import {
 import { getShopsByPlayerName } from "~/server/actions/search-actions";
 import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
 import type { SearchCriteria, SearchCallbacks } from "~/lib/types/search";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { Store, User, X } from "lucide-react";
 import { toast } from "~/lib/utils/toast";
 import { ShopCard } from "~/components/shops/shop-card";
 import { GlobalSearchBar } from "~/components/search/global-search-bar";
+import { useTranslations } from "next-intl";
 
 export default function BrowseShopsPage() {
   const searchParams = useSearchParams();
@@ -32,6 +33,88 @@ export default function BrowseShopsPage() {
     playerName?: string;
     itemName?: string;
   }>({});
+
+  const t = useTranslations("page.shops-browse");
+
+  const loadPlayerShops = useCallback(
+    async (playerName: string) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const result = await getShopsByPlayerName(playerName);
+        if (result.success) {
+          // The shops from getShopsByPlayerName already include owner and _count
+          // We just need to add empty shopItems array for consistency
+          const shopsWithItems = result.data.shops.map((shop) => ({
+            ...shop,
+            shopItems: [] as ShopItemWithItem[], // We'll load items separately if needed
+          }));
+          setShops(shopsWithItems);
+        } else {
+          setError(result.error);
+          toast.error(t("toast.loadingFailed"), result.error);
+        }
+      } catch {
+        const errorMessage = t("toast.failedToLoadPlayerShops");
+        setError(errorMessage);
+        toast.error(t("toast.loadingFailed"), errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [t],
+  );
+
+  const performTextSearch = useCallback(
+    async (query: string) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const result = await searchShopsForBrowse({
+          query: query.trim(),
+          limit: 50,
+          offset: 0,
+        });
+
+        if (result.success) {
+          setShops(result.data.shops);
+        } else {
+          setError(result.error);
+          toast.error(t("toast.searchFailed"), result.error);
+        }
+      } catch {
+        const errorMessage = t("toast.failedToSearchShops");
+        setError(errorMessage);
+        toast.error(t("toast.searchFailed"), errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [t],
+  );
+
+  const loadAllShops = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const result = await getShopsForBrowse({ limit: 50, offset: 0 });
+      if (result.success) {
+        setShops(result.data.shops);
+      } else {
+        setError(result.error);
+        toast.error(t("toast.loadingFailed"), result.error);
+      }
+    } catch {
+      const errorMessage = t("toast.failedToLoadShops");
+      setError(errorMessage);
+      toast.error(t("toast.loadingFailed"), errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [t]);
 
   // Initialize from URL parameters
   useEffect(() => {
@@ -47,78 +130,7 @@ export default function BrowseShopsPage() {
     } else {
       void loadAllShops();
     }
-  }, [searchParams]);
-
-  const loadPlayerShops = async (playerName: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const result = await getShopsByPlayerName(playerName);
-      if (result.success) {
-        // The shops from getShopsByPlayerName already include owner and _count
-        // We just need to add empty shopItems array for consistency
-        const shopsWithItems = result.data.shops.map((shop) => ({
-          ...shop,
-          shopItems: [] as ShopItemWithItem[], // We'll load items separately if needed
-        }));
-        setShops(shopsWithItems);
-      } else {
-        setError(result.error);
-        toast.error("Loading Failed", result.error);
-      }
-    } catch {
-      setError("Failed to load player shops");
-      toast.error("Loading Failed", "Failed to load player shops");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const performTextSearch = async (query: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const result = await searchShopsForBrowse({
-        query: query.trim(),
-        limit: 50,
-        offset: 0,
-      });
-
-      if (result.success) {
-        setShops(result.data.shops);
-      } else {
-        setError(result.error);
-        toast.error("Search Failed", result.error);
-      }
-    } catch {
-      setError("Search failed");
-      toast.error("Search Failed", "Failed to search shops");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadAllShops = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const result = await getShopsForBrowse({ limit: 50, offset: 0 });
-      if (result.success) {
-        setShops(result.data.shops);
-      } else {
-        setError(result.error);
-        toast.error("Loading Failed", result.error);
-      }
-    } catch {
-      setError("Failed to load shops");
-      toast.error("Loading Failed", "Failed to load shops");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [searchParams, loadAllShops, loadPlayerShops, performTextSearch]);
 
   // Search callbacks for the GlobalSearchBar
   const searchCallbacks: SearchCallbacks = {
@@ -171,7 +183,7 @@ export default function BrowseShopsPage() {
     return (
       <PageWrapper>
         <div className="flex items-center justify-center">
-          <p>Loading shops...</p>
+          <p className="text-muted-foreground">{t("loading")}</p>
         </div>
       </PageWrapper>
     );
@@ -182,14 +194,14 @@ export default function BrowseShopsPage() {
       <div className="mb-8">
         <PageHeader
           icon={<Store className="h-8 w-8" />}
-          title="Browse Shops"
-          description="Discover shops from players around the server"
+          title={t("title")}
+          description={t("description")}
         />
 
         {/* Reusable Search Bar */}
         <GlobalSearchBar
           mode="callback"
-          placeholder="Search shops by player name, item, or keywords..."
+          placeholder={t("searchPlaceholder")}
           searchCallbacks={searchCallbacks}
           onSearchExecuted={() => setIsLoading(true)}
           className="mb-4"
@@ -200,13 +212,13 @@ export default function BrowseShopsPage() {
           <Card className="p-3">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-muted-foreground text-sm">
-                Active filters:
+                {t("activeFilters")}
               </span>
 
               {activeFilters.playerName && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <User className="h-3 w-3" />
-                  Player: {activeFilters.playerName}
+                  {t("player")}: {activeFilters.playerName}
                   <Button
                     size="sm"
                     variant="ghost"
@@ -221,7 +233,7 @@ export default function BrowseShopsPage() {
               {activeFilters.itemName && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Store className="h-3 w-3" />
-                  Item: {activeFilters.itemName}
+                  {t("item")}: {activeFilters.itemName}
                   <Button
                     size="sm"
                     variant="ghost"
@@ -236,7 +248,7 @@ export default function BrowseShopsPage() {
               {activeFilters.searchQuery && !activeFilters.itemName && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Store className="h-3 w-3" />
-                  Search: {activeFilters.searchQuery}
+                  {t("search")}: {activeFilters.searchQuery}
                   <Button
                     size="sm"
                     variant="ghost"
@@ -249,7 +261,7 @@ export default function BrowseShopsPage() {
               )}
 
               <Button variant="outline" size="sm" onClick={clearAllFilters}>
-                Clear all
+                {t("clearAll")}
               </Button>
             </div>
           </Card>
@@ -257,8 +269,8 @@ export default function BrowseShopsPage() {
       </div>
 
       {error && (
-        <Card className="mb-6 border-red-200 bg-red-50 p-4">
-          <p className="text-red-600">{error}</p>
+        <Card className="border-destructive/50 bg-destructive/10 mb-6 p-4">
+          <p className="text-destructive">{error}</p>
         </Card>
       )}
 
@@ -266,32 +278,33 @@ export default function BrowseShopsPage() {
         <div className="mb-4">
           <p className="text-muted-foreground text-sm">
             {!hasResults
-              ? "No shops found matching your search criteria"
-              : `Found ${shops.length} shop${shops.length === 1 ? "" : "s"} matching your search`}
+              ? t("noShopsFound")
+              : t("foundShops", { count: shops.length })}
           </p>
         </div>
       )}
 
       {!hasResults && !hasActiveFilters ? (
         <Card className="p-8 text-center">
-          <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-          <h2 className="mb-2 text-xl font-semibold">No Active Shops</h2>
-          <p className="text-muted-foreground mb-4">
-            There are currently no active shops on the server.
-          </p>
+          <Store className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+          <h2 className="text-foreground mb-2 text-xl font-semibold">
+            {t("noActiveShopsTitle")}
+          </h2>
+          <p className="text-muted-foreground mb-4">{t("noActiveShops")}</p>
           <Button asChild>
-            <Link href="/shops/new">Create the First Shop</Link>
+            <Link href="/shops/new">{t("createFirstShop")}</Link>
           </Button>
         </Card>
       ) : !hasResults && hasActiveFilters ? (
         <Card className="p-8 text-center">
-          <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-          <h2 className="mb-2 text-xl font-semibold">No Results</h2>
+          <Store className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+          <h2 className="text-foreground mb-2 text-xl font-semibold">
+            {t("noResultsTitle")}
+          </h2>
           <p className="text-muted-foreground mb-4">
-            No shops match your search criteria. Try different keywords or
-            browse all shops.
+            {t("noResultsDescription")}
           </p>
-          <Button onClick={clearAllFilters}>Browse All Shops</Button>
+          <Button onClick={clearAllFilters}>{t("browseAllShops")}</Button>
         </Card>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -304,7 +317,7 @@ export default function BrowseShopsPage() {
       {!hasActiveFilters && hasResults && (
         <div className="mt-8 text-center">
           <p className="text-muted-foreground text-sm">
-            Showing {shops.length} active shop{shops.length === 1 ? "" : "s"}
+            {t("showingShops", { count: shops.length })}
           </p>
         </div>
       )}

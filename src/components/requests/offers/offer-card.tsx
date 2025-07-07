@@ -19,6 +19,7 @@ import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { OfferStatusBadge, CurrencyDisplay } from "../ui";
 import { formatDate, canUpdateOffer } from "~/lib/utils/request-status";
 import type { RequestOfferWithDetails } from "~/lib/types/request";
+import { useTranslations } from "next-intl";
 
 interface OfferCardProps {
   offer: RequestOfferWithDetails;
@@ -38,6 +39,7 @@ export function OfferCard({
   onOfferAction,
   className = "",
 }: OfferCardProps) {
+  const t = useTranslations("component.offer-card");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const handleOfferAction = async (
@@ -90,7 +92,9 @@ export function OfferCard({
           {/* Price */}
           {offer.offeredPrice !== null && (
             <div>
-              <div className="text-muted-foreground text-sm">Offered Price</div>
+              <div className="text-muted-foreground text-sm">
+                {t("offeredPrice")}
+              </div>
               <CurrencyDisplay
                 amount={offer.offeredPrice}
                 currency={offer.currency}
@@ -103,7 +107,9 @@ export function OfferCard({
           {/* Message */}
           {offer.message && (
             <div>
-              <div className="text-muted-foreground text-sm">Message</div>
+              <div className="text-muted-foreground text-sm">
+                {t("message")}
+              </div>
               <p className="bg-muted text-foreground rounded-lg p-3 text-sm">
                 {offer.message}
               </p>
@@ -130,24 +136,26 @@ export function OfferCard({
                       ) : (
                         <CheckCircle className="mr-2 h-4 w-4" />
                       )}
-                      Accept
+                      {t("accept")}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Accept this offer?</AlertDialogTitle>
+                      <AlertDialogTitle>
+                        {t("acceptThisOffer")}
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
-                        This will accept the offer from{" "}
-                        {offer.offerer.mcUsername} and start a negotiation. All
-                        other pending offers will be automatically rejected.
+                        {t("acceptOfferDescription", {
+                          username: offer.offerer.mcUsername,
+                        })}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleOfferAction("ACCEPTED")}
                       >
-                        Accept Offer
+                        {t("acceptOffer")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -167,25 +175,27 @@ export function OfferCard({
                       ) : (
                         <XCircle className="mr-2 h-4 w-4" />
                       )}
-                      Reject
+                      {t("reject")}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Reject this offer?</AlertDialogTitle>
+                      <AlertDialogTitle>
+                        {t("rejectThisOffer")}
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
-                        This will reject the offer from{" "}
-                        {offer.offerer.mcUsername}. This action cannot be
-                        undone.
+                        {t("rejectOfferDescription", {
+                          username: offer.offerer.mcUsername,
+                        })}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleOfferAction("REJECTED")}
                         className="bg-red-600 hover:bg-red-700"
                       >
-                        Reject Offer
+                        {t("rejectOffer")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -208,24 +218,25 @@ export function OfferCard({
                     ) : (
                       <XCircle className="mr-2 h-4 w-4" />
                     )}
-                    Withdraw
+                    {t("withdraw")}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Withdraw your offer?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {t("withdrawYourOffer")}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will withdraw your offer. This action cannot be
-                      undone.
+                      {t("withdrawOfferDescription")}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => handleOfferAction("WITHDRAWN")}
                       className="bg-red-600 hover:bg-red-700"
                     >
-                      Withdraw Offer
+                      {t("withdrawOffer")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, Link } from "~/lib/i18n/routing";
+import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import { ArrowLeft, Trash2, Save, Pencil } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -51,12 +53,12 @@ import {
 } from "~/server/actions/shop-items";
 import { toast } from "~/lib/utils/toast";
 import type { ShopItemWithItem } from "~/lib/types/shop";
-import Link from "next/link";
 
 const editShopItemFormSchema = updateShopItemSchema.omit({ shopItemId: true });
 type EditShopItemForm = z.infer<typeof editShopItemFormSchema>;
 
 export default function EditShopItemPage() {
+  const t = useTranslations("page.shops-items-edit");
   const { data: session, status } = useSession();
   const router = useRouter();
   const params = useParams();
@@ -98,12 +100,12 @@ export default function EditShopItemPage() {
         toast.error(result.error);
       }
     } catch {
-      setError("Failed to load shop item details");
-      toast.error("Failed to load shop item details");
+      setError(t("error.failedToLoadShopItem"));
+      toast.error(t("error.failedToLoadShopItem"));
     } finally {
       setIsLoading(false);
     }
-  }, [shopItemId, reset]);
+  }, [shopItemId, reset, t]);
 
   useEffect(() => {
     if (shopItemId) {
@@ -114,17 +116,15 @@ export default function EditShopItemPage() {
     if (shopItem?.shop && "ownerId" in shopItem.shop && session?.user?.id) {
       const isOwner = session.user.id === shopItem.shop.ownerId;
       if (!isOwner) {
-        toast.error(
-          "You don't have permission to edit this shop item. Redirecting...",
-        );
+        toast.error(t("toast.checkPermissions"));
         router.push(`/shops/${shopId}`);
       }
     }
-  }, [shopItem, session?.user?.id, shopId, router]);
+  }, [shopItem, session?.user?.id, shopId, router, t]);
 
   const onSubmit = async (data: EditShopItemForm) => {
     if (!session?.user?.id) {
-      toast.error("Authentication required");
+      toast.error(t("toast.authRequired"));
       return;
     }
 
@@ -137,21 +137,21 @@ export default function EditShopItemPage() {
       });
 
       if (result.success) {
-        toast.success("Shop item updated successfully!");
+        toast.success(t("toast.updated"));
         router.push(`/shops/${shopId}`);
       } else {
         if (
           result.error.includes("permission") ||
           result.error.includes("access denied")
         ) {
-          toast.error("Permission denied. Redirecting to shop...");
+          toast.error(t("toast.permissionDenied"));
           router.push(`/shops/${shopId}`);
         } else {
           toast.error(result.error);
         }
       }
     } catch {
-      toast.error("Failed to update shop item");
+      toast.error(t("toast.updateFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -159,7 +159,7 @@ export default function EditShopItemPage() {
 
   const handleDelete = async () => {
     if (!session?.user?.id) {
-      toast.error("Authentication required");
+      toast.error(t("toast.authRequired"));
       return;
     }
 
@@ -169,13 +169,13 @@ export default function EditShopItemPage() {
       const result = await removeItemFromShop({ shopItemId });
 
       if (result.success) {
-        toast.success("Item removed from shop successfully!");
+        toast.success(t("toast.removed"));
         router.push(`/shops/${shopId}`);
       } else {
         toast.error(result.error);
       }
     } catch {
-      toast.error("Failed to remove item from shop");
+      toast.error(t("toast.removeFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -200,7 +200,7 @@ export default function EditShopItemPage() {
     return (
       <PageWrapper className="max-w-4xl">
         <div className="flex h-64 items-center justify-center">
-          <div className="text-lg">Loading shop item...</div>
+          <div className="text-lg">{t("loading")}</div>
         </div>
       </PageWrapper>
     );
@@ -217,7 +217,9 @@ export default function EditShopItemPage() {
         </div>
         <Card>
           <CardContent className="p-6">
-            <p className="text-destructive">{error ?? "Shop item not found"}</p>
+            <p className="text-destructive">
+              {error ?? t("error.shopItemNotFound")}
+            </p>
           </CardContent>
         </Card>
       </PageWrapper>
@@ -233,7 +235,7 @@ export default function EditShopItemPage() {
     return (
       <PageWrapper className="max-w-2xl">
         <div className="flex h-64 items-center justify-center">
-          <div className="text-lg">Checking permissions...</div>
+          <div className="text-lg">{t("checkingPermissions")}</div>
         </div>
       </PageWrapper>
     );
@@ -245,29 +247,27 @@ export default function EditShopItemPage() {
         <Button variant="outline" asChild className="mb-4">
           <Link href={`/shops/${shopId}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to {shopItem.shop?.name}
+            {t("backToShop", { shopName: shopItem.shop?.name ?? "Shop" })}
           </Link>
         </Button>
 
         <div className="mb-2 flex items-center gap-3">
           <Pencil className="text-primary h-8 w-8" />
-          <h1 className="text-3xl font-bold">Edit Shop Item</h1>
+          <h1 className="text-3xl font-bold">{t("title")}</h1>
         </div>
-        <p className="text-muted-foreground">
-          Update the pricing and availability for this item.
-        </p>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Item Details</CardTitle>
-          <CardDescription>
-            Update the price, amount, currency, and availability for this item.
-          </CardDescription>
+          <CardTitle>{t("form.cardTitle")}</CardTitle>
+          <CardDescription>{t("form.cardDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-6">
-            <h3 className="mb-4 text-lg font-semibold">Current Item</h3>
+            <h3 className="mb-4 text-lg font-semibold">
+              {t("form.currentItem")}
+            </h3>
             <ItemPreview
               item={shopItem.item}
               price={watch("price") ?? shopItem.price}
@@ -281,14 +281,14 @@ export default function EditShopItemPage() {
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="price">Price *</Label>
+              <Label htmlFor="price">{t("form.price")}</Label>
               <Input
                 id="price"
                 type="number"
                 step="0.01"
                 min="0.01"
                 {...register("price", { valueAsNumber: true })}
-                placeholder="Enter price"
+                placeholder={t("form.pricePlaceholder")}
               />
               {errors.price && (
                 <p className="text-destructive text-sm">
@@ -298,13 +298,13 @@ export default function EditShopItemPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount (items per purchase) *</Label>
+              <Label htmlFor="amount">{t("form.amount")}</Label>
               <Input
                 id="amount"
                 type="number"
                 min="1"
                 {...register("amount", { valueAsNumber: true })}
-                placeholder="Enter amount"
+                placeholder={t("form.amountPlaceholder")}
               />
               {errors.amount && (
                 <p className="text-destructive text-sm">
@@ -312,13 +312,12 @@ export default function EditShopItemPage() {
                 </p>
               )}
               <p className="text-muted-foreground text-sm">
-                How many items are sold as a bundle (e.g., 32 for a stack of
-                iron ore)
+                {t("form.amountHelp")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="currency">Currency *</Label>
+              <Label htmlFor="currency">{t("form.currency")}</Label>
               <Select
                 value={watch("currency")}
                 onValueChange={(value) =>
@@ -330,7 +329,7 @@ export default function EditShopItemPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select currency" />
+                  <SelectValue placeholder={t("form.currencyPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(CURRENCY_TYPES).map(([_key, value]) => (
@@ -359,9 +358,7 @@ export default function EditShopItemPage() {
                   })
                 }
               />
-              <Label htmlFor="isAvailable">
-                Item is available for purchase
-              </Label>
+              <Label htmlFor="isAvailable">{t("form.isAvailable")}</Label>
             </div>
 
             <div className="flex items-center justify-between pt-4">
@@ -373,25 +370,32 @@ export default function EditShopItemPage() {
                     disabled={isDeleting}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    Remove from Shop
+                    {t("form.removeFromShop")}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Remove Item from Shop</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {t("deleteDialog.title")}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to remove &quot;
-                      {shopItem.item.nameEn}&quot; from your shop? This action
-                      cannot be undone.
+                      {t("deleteDialog.description", {
+                        itemName:
+                          shopItem.item.nameEn ??
+                          shopItem.item.id ??
+                          "Unknown Item",
+                      })}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>
+                      {t("deleteDialog.cancel")}
+                    </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDelete}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                      Remove Item
+                      {t("deleteDialog.removeItem")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -403,11 +407,11 @@ export default function EditShopItemPage() {
                   variant="outline"
                   onClick={() => router.back()}
                 >
-                  Cancel
+                  {t("form.cancel")}
                 </Button>
                 <Button type="submit" disabled={isSubmitting || !isDirty}>
                   <Save className="mr-2 h-4 w-4" />
-                  {isSubmitting ? "Saving..." : "Save Changes"}
+                  {isSubmitting ? t("form.saving") : t("form.saveChanges")}
                 </Button>
               </div>
             </div>

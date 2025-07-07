@@ -1,13 +1,15 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: false
 ---
+
 # MC Shop Application Architecture
 
 ## Core Architecture Principles
 
 ### Backend: Server Actions First
+
 - **No API Routes**: All backend logic uses Next.js server actions located in [src/server/actions/](mdc:src/server/actions)
 - **Server Action Pattern**: Actions are async functions that handle form submissions and data mutations
 - **"use server" Directive**: All server actions must include `"use server";` at the top to enable client component integration
@@ -16,23 +18,28 @@ alwaysApply: false
 - **RCON Integration**: Minecraft server communication via [src/server/rcon.ts](mdc:src/server/rcon.ts)
 
 ### Frontend: Type-Safe React with ShadCN
+
 - **Component Library**: Exclusively use ShadCN UI components from [src/components/ui/](mdc:src/components/ui)
 - **Component Installation**: `npx shadcn@latest add [component-name]` for new components
 - **Layout Structure**: Root layout in [src/app/layout.tsx](mdc:src/app/layout.tsx) with nested layouts
 - **Navigation**: Centralized navigation component at [src/components/navigation.tsx](mdc:src/components/navigation.tsx)
 - **Toast Notifications**: Using Sonner for user feedback
 - **Form Handling**: React Hook Form with Zod validation throughout
+- **Internationalization**: Next-intl for multi-language support with translation files in [messages/](mdc:messages)
 
 ### Theming & Dark Mode System
+
 - **Dark Mode Support**: Full dark mode implementation using CSS custom properties and `.dark` class toggle
 - **Color System**: All colors use semantic CSS variables defined in [src/styles/globals.css](mdc:src/styles/globals.css)
 - **Theme Colors**: Use semantic color classes instead of hardcoded colors for dark mode compatibility
 - **Primary Color**: Tailwind CSS blue-600 (`oklch(0.546 0.245 262.881)`) used as primary brand color
 
 #### Required Color Classes
+
 All components MUST use these semantic color classes for proper dark mode support:
 
 **Text Colors:**
+
 ```typescript
 // Primary text and content
 <h1 className="text-foreground">Main heading</h1>
@@ -48,6 +55,7 @@ All components MUST use these semantic color classes for proper dark mode suppor
 ```
 
 **Background Colors:**
+
 ```typescript
 // Main backgrounds
 <div className="bg-background">Page background</div>
@@ -61,6 +69,7 @@ All components MUST use these semantic color classes for proper dark mode suppor
 ```
 
 **Border Colors:**
+
 ```typescript
 // Standard borders
 <div className="border border-border">Standard border</div>
@@ -71,6 +80,7 @@ All components MUST use these semantic color classes for proper dark mode suppor
 ```
 
 #### Color Usage Examples
+
 ```typescript
 // ✅ CORRECT: Semantic color usage
 export function ExampleCard({ title, description, isActive }: Props) {
@@ -80,8 +90,8 @@ export function ExampleCard({ title, description, isActive }: Props) {
       <p className="text-muted-foreground text-sm mt-2">{description}</p>
       <button className={cn(
         "mt-4 px-4 py-2 rounded-md",
-        isActive 
-          ? "bg-primary text-primary-foreground" 
+        isActive
+          ? "bg-primary text-primary-foreground"
           : "bg-secondary text-secondary-foreground"
       )}>
         {isActive ? "Active" : "Inactive"}
@@ -103,6 +113,7 @@ export function BadExample() {
 ```
 
 #### Available Color Variables
+
 ```css
 /* From src/styles/globals.css */
 --color-background         /* Page/app background */
@@ -129,6 +140,7 @@ export function BadExample() {
 ## Application Features
 
 ### Core Systems
+
 1. **Shop Management**: Create, edit, browse shops with item inventory
 2. **Request System**: Users can create requests for items they need
 3. **Offer System**: Users can make offers on requests with negotiation flow
@@ -138,6 +150,7 @@ export function BadExample() {
 7. **Admin Tools**: Item import, testing utilities
 
 ### Request & Offer Workflow
+
 1. **Request Creation**: Users create requests for items they need
 2. **Offer Submission**: Other users can make offers with price and message
 3. **Offer Management**: Accept/reject/withdraw offers with status tracking
@@ -147,6 +160,7 @@ export function BadExample() {
 ## File Structure Patterns
 
 ### Server Actions (`src/server/actions/`)
+
 ```
 actions/
 ├── item-actions.ts              # Item search and management
@@ -167,6 +181,7 @@ actions/
 ```
 
 ### Component Structure (`src/components/`)
+
 ```
 components/
 ├── ui/                         # ShadCN UI components
@@ -186,6 +201,7 @@ components/
 ```
 
 ### Validation Schemas (`src/lib/validations/`)
+
 ```
 validations/
 ├── auth.ts      # Authentication and registration schemas
@@ -195,6 +211,7 @@ validations/
 ```
 
 ### Types (`src/lib/types/`)
+
 ```
 types/
 ├── auth.ts      # Authentication-related types
@@ -204,6 +221,7 @@ types/
 ```
 
 ### Hooks (`src/hooks/` & `src/lib/hooks/`)
+
 ```
 hooks/
 ├── use-registration.ts         # Multi-step registration flow
@@ -217,6 +235,7 @@ hooks/
 ```
 
 ### Pages (`src/app/`)
+
 ```
 app/
 ├── page.tsx                    # Home page
@@ -244,6 +263,7 @@ app/
 ## Server Action Patterns
 
 ### Standard Action Structure with "use server"
+
 ```typescript
 "use server";
 
@@ -254,32 +274,33 @@ import { actionSchema } from "~/lib/validations/example";
 export async function exampleAction(formData: FormData) {
   // 1. Validate input
   const validatedFields = actionSchema.safeParse({
-    field: formData.get('field')
+    field: formData.get("field"),
   });
-  
+
   if (!validatedFields.success) {
-    return { success: false, error: 'Invalid input' };
+    return { success: false, error: "Invalid input" };
   }
-  
+
   // 2. Check authentication
   const session = await auth();
   if (!session?.user) {
-    return { success: false, error: 'Unauthorized' };
+    return { success: false, error: "Unauthorized" };
   }
-  
+
   // 3. Database operation
   try {
     const result = await db.example.create({
-      data: validatedFields.data
+      data: validatedFields.data,
     });
     return { success: true, data: result };
   } catch (error) {
-    return { success: false, error: 'Database error' };
+    return { success: false, error: "Database error" };
   }
 }
 ```
 
 ### Client-Server Component Integration
+
 ```typescript
 // Server Component (Page)
 import { exampleAction } from "~/server/actions/example";
@@ -303,6 +324,7 @@ export function ClientComponent({ exampleAction }: Props) {
 ## Database Schema Patterns
 
 ### Core Models
+
 - **User**: Authentication with Minecraft UUID integration
 - **Shop**: User-owned shops with location and description
 - **ShopItem**: Items available in shops with pricing
@@ -312,6 +334,7 @@ export function ClientComponent({ exampleAction }: Props) {
 - **RequestNegotiation**: Accepted offers in negotiation phase
 
 ### Relationship Patterns
+
 ```prisma
 // User owns multiple shops and requests
 User {
@@ -337,6 +360,7 @@ Request {
 ## Search System Architecture
 
 ### Global Search Features
+
 - **Unified Search**: Single interface for shops, items, and players
 - **Keyboard Navigation**: Arrow keys and enter for navigation
 - **Real-time Results**: Debounced search with instant feedback
@@ -344,11 +368,12 @@ Request {
 - **Navigation Integration**: Search results link to relevant pages
 
 ### Search Implementation
+
 ```typescript
 // Search hook with debouncing
 const { results, isLoading } = useGlobalSearch(query, {
   debounceMs: 300,
-  minQueryLength: 2
+  minQueryLength: 2,
 });
 
 // Search action with multiple result types
@@ -356,9 +381,9 @@ export async function unifiedSearch(query: string) {
   const [shops, items, players] = await Promise.all([
     searchShops(query),
     searchItems(query),
-    searchPlayers(query)
+    searchPlayers(query),
   ]);
-  
+
   return { shops, items, players };
 }
 ```
@@ -366,12 +391,14 @@ export async function unifiedSearch(query: string) {
 ## Request & Offer System Patterns
 
 ### Request Lifecycle
+
 1. **OPEN**: Accepting offers
 2. **IN_NEGOTIATION**: Offer accepted, negotiating details
 3. **COMPLETED**: Transaction finished
 4. **CANCELLED**: Request cancelled by owner
 
 ### Offer Management
+
 ```typescript
 // Offer creation with validation
 export async function createOffer(formData: FormData) {
@@ -393,30 +420,314 @@ export async function updateOffer(formData: FormData) {
 ## Image Management System
 
 ### Item Images
+
 - **Multiple Resource Packs**: Default and Sphax texture support
 - **Fallback System**: Graceful degradation to default images
 - **Dynamic Loading**: Images loaded based on user preference
 - **Path Structure**: `public/items/{pack}/{namespace}__{item}.png`
 
 ### Image Utilities
+
 ```typescript
 // Image path resolution with fallbacks
 export function getItemImagePath(
   itemId: string,
-  resourcePack: 'default' | 'sphax' = 'default'
+  resourcePack: "default" | "sphax" = "default",
 ): string {
   // Handle namespace and item ID parsing
   // Return appropriate image path with fallbacks
 }
 ```
 
+## Internationalization (i18n) System
+
+### Translation Architecture
+
+- **Next-intl Integration**: Full internationalization using next-intl library
+- **Translation Files**: JSON files in [messages/](mdc:messages) directory for each locale
+- **Supported Languages**: English (`en.json`) and German (`de.json`)
+- **Route-based Locales**: URLs include locale prefix (e.g., `/en/shops`, `/de/shops`)
+- **Component Integration**: Use `useTranslations` hook in client components
+
+### Translation File Structure
+
+Translation files follow a hierarchical namespace pattern:
+
+```json
+{
+  "seo": {
+    "homepage": { "title": "...", "description": "..." },
+    "shops": { "title": "...", "description": "..." }
+  },
+  "navigation": {
+    "browseShops": "Browse Shops",
+    "myShops": "My Shops",
+    "signIn": "Sign In"
+  },
+  "page": {
+    "homepage": {
+      "title": "MC Shop",
+      "subtitle": "Search for players and items..."
+    },
+    "shops-new": {
+      "title": "Create New Shop",
+      "form": {
+        /* form-specific translations */
+      },
+      "toast": {
+        /* toast messages */
+      },
+      "help": {
+        /* help text */
+      }
+    }
+  }
+}
+```
+
+### Common Translation Key Patterns
+
+#### Page-Level Structure
+
+```json
+{
+  "page": {
+    "feature-action": {
+      "title": "Page Title",
+      "description": "Page description",
+      "loading": "Loading...",
+      "form": {
+        /* form translations */
+      },
+      "toast": {
+        /* notification messages */
+      },
+      "help": {
+        /* help/guidance text */
+      },
+      "error": {
+        /* error messages */
+      }
+    }
+  }
+}
+```
+
+#### Form Translation Patterns
+
+```json
+{
+  "form": {
+    "fieldName": "Field Label",
+    "fieldNamePlaceholder": "Enter field value",
+    "fieldNameHelp": "Help text for field",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "creating": "Creating...",
+    "updating": "Updating...",
+    "deleting": "Deleting..."
+  }
+}
+```
+
+#### Toast Message Patterns
+
+```json
+{
+  "toast": {
+    "created": "Item Created",
+    "createdDescription": "Your item has been created successfully",
+    "updated": "Item Updated",
+    "updatedDescription": "Your item has been updated successfully",
+    "deleted": "Item Deleted",
+    "deletedDescription": "Your item has been deleted successfully",
+    "creationFailed": "Creation Failed",
+    "updateFailed": "Update Failed",
+    "deletionFailed": "Deletion Failed",
+    "unexpectedError": "An unexpected error occurred"
+  }
+}
+```
+
+#### Authentication & Authorization
+
+```json
+{
+  "auth": {
+    "required": "Authentication Required",
+    "requiredDescription": "Please login to access this feature",
+    "unauthorized": "Unauthorized",
+    "unauthorizedDescription": "You don't have permission to access this resource",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register"
+  }
+}
+```
+
+### Component Translation Integration
+
+#### Client Component Pattern
+
+```typescript
+"use client";
+
+import { useTranslations } from "next-intl";
+
+export function ExampleComponent() {
+  const t = useTranslations("page.feature-name");
+
+  return (
+    <div>
+      <h1>{t("title")}</h1>
+      <p>{t("description")}</p>
+      <button>{t("form.submit")}</button>
+    </div>
+  );
+}
+```
+
+#### Server Component Pattern
+
+```typescript
+import { getTranslations } from "next-intl/server";
+
+export default async function ExamplePage() {
+  const t = await getTranslations("page.feature-name");
+
+  return (
+    <div>
+      <h1>{t("title")}</h1>
+      <p>{t("description")}</p>
+    </div>
+  );
+}
+```
+
+#### Form with Translations
+
+```typescript
+"use client";
+
+import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+
+export function ExampleForm() {
+  const t = useTranslations("page.feature-name");
+  const form = useForm<FormData>();
+
+  const onSubmit = async (data: FormData) => {
+    const result = await serverAction(data);
+
+    if (result.success) {
+      toast.success(t("toast.created"), t("toast.createdDescription"));
+    } else {
+      toast.error(t("toast.creationFailed"), result.error);
+    }
+  };
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <label>{t("form.fieldName")}</label>
+      <input placeholder={t("form.fieldNamePlaceholder")} />
+      <button type="submit">
+        {isSubmitting ? t("form.creating") : t("form.submit")}
+      </button>
+    </form>
+  );
+}
+```
+
+### Translation Best Practices
+
+#### Namespace Organization
+
+1. **Page-based**: Use `page.feature-action` for page-specific content
+2. **Component-based**: Use `component.component-name` for reusable components
+3. **System-wide**: Use `navigation`, `footer`, `seo` for global elements
+4. **Feature-based**: Group related functionality under feature namespaces
+
+#### Key Naming Conventions
+
+```typescript
+// ✅ CORRECT: Descriptive, hierarchical keys
+"form.shopName"; // Clear field identifier
+"form.shopNamePlaceholder"; // Placeholder text
+"form.shopNameHelp"; // Help/description text
+"toast.created"; // Success message title
+"toast.createdDescription"; // Success message detail
+"help.tip1"; // Numbered help items
+
+// ❌ INCORRECT: Vague or flat keys
+"name"; // Too generic
+"placeholder"; // Not specific enough
+"success"; // Unclear context
+"text1"; // Non-descriptive
+```
+
+#### Dynamic Content & Interpolation
+
+```typescript
+// Translation with interpolation
+const t = useTranslations("page.shops-browse");
+const message = t("foundShops", { count: shopCount });
+
+// JSON structure
+{
+  "foundShops": "Found {count} shop{count === 1 ? '' : 's'} matching your search"
+}
+```
+
+#### Error Handling
+
+```typescript
+// Always provide fallback for missing translations
+const t = useTranslations("page.feature");
+
+// Use try-catch for dynamic keys
+try {
+  const message = t(`status.${dynamicStatus}`);
+} catch {
+  const fallback = t("status.unknown");
+}
+```
+
+### Routing & Navigation with i18n
+
+#### Link Component Usage
+
+```typescript
+import { Link } from "~/lib/i18n/routing";
+
+// Automatically handles locale prefixes
+<Link href="/shops/new">{t("navigation.createShop")}</Link>
+```
+
+#### Router Navigation
+
+```typescript
+import { useRouter } from "~/lib/i18n/routing";
+
+const router = useRouter();
+
+const handleSubmit = async () => {
+  const result = await createShop(data);
+  if (result.success) {
+    router.push(`/shops/${result.data.id}`);
+  }
+};
+```
+
 ## Form Patterns with React Hook Form
 
 ### Standard Form Setup
+
 ```typescript
 const form = useForm<SchemaType>({
   resolver: zodResolver(validationSchema),
-  defaultValues: { /* defaults */ }
+  defaultValues: {
+    /* defaults */
+  },
 });
 
 const onSubmit = async (data: SchemaType) => {
@@ -424,9 +735,9 @@ const onSubmit = async (data: SchemaType) => {
   Object.entries(data).forEach(([key, value]) => {
     formData.append(key, value.toString());
   });
-  
+
   const result = await serverAction(formData);
-  
+
   if (result.success) {
     toast.success("Success message");
   } else {
@@ -438,6 +749,7 @@ const onSubmit = async (data: SchemaType) => {
 ## Development Best Practices
 
 ### Code Organization
+
 1. **Server Actions**: Always include `"use server"` directive
 2. **Component Props**: Pass server actions as props to client components
 3. **Type Safety**: Full TypeScript coverage with proper type definitions
@@ -446,12 +758,14 @@ const onSubmit = async (data: SchemaType) => {
 6. **Loading States**: Proper loading feedback in all interactions
 
 ### Database Best Practices
+
 1. **Transactions**: Use Prisma transactions for complex operations
 2. **Relations**: Leverage Prisma's relation system for data fetching
 3. **Migrations**: Always test migrations in development first
 4. **Indexing**: Proper database indexes for search performance
 
 ### UI/UX Patterns
+
 1. **Toast Notifications**: Consistent feedback using Sonner
 2. **Loading States**: Skeleton loaders and disabled states
 3. **Form Validation**: Real-time validation with helpful error messages
@@ -464,17 +778,21 @@ const onSubmit = async (data: SchemaType) => {
 ## Adding New Features
 
 ### Feature Development Checklist
+
 1. **Database Schema**: Update [prisma/schema.prisma](mdc:prisma/schema.prisma) if needed
 2. **Types**: Create TypeScript interfaces in [src/lib/types/](mdc:src/lib/types)
 3. **Validation**: Add Zod schemas in [src/lib/validations/](mdc:src/lib/validations)
 4. **Server Actions**: Implement with `"use server"` in [src/server/actions/](mdc:src/server/actions)
-5. **Components**: Build UI using ShadCN components with semantic color classes
-6. **Dark Mode Testing**: Verify components work in both light and dark themes
-7. **Pages**: Create routes in [src/app/](mdc:src/app)
-8. **Hooks**: Custom hooks for complex state management
-9. **Testing**: Ensure proper error handling and edge cases
+5. **Translations**: Add text to [messages/en.json](mdc:messages/en.json) and [messages/de.json](mdc:messages/de.json)
+6. **Components**: Build UI using ShadCN components with semantic color classes and `useTranslations`
+7. **Dark Mode Testing**: Verify components work in both light and dark themes
+8. **i18n Testing**: Test component text displays correctly in both English and German
+9. **Pages**: Create routes in [src/app/](mdc:src/app) with proper translation integration
+10. **Hooks**: Custom hooks for complex state management
+11. **Testing**: Ensure proper error handling and edge cases
 
 ### Integration Patterns
+
 - **Authentication**: Always check user sessions in server actions
 - **Permissions**: Validate user permissions for data access
 - **Error Boundaries**: Implement proper error handling at component level

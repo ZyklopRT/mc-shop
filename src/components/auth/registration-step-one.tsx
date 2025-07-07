@@ -13,6 +13,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { stepOneSchema, type StepOneData } from "~/lib/validations/auth";
+import { useTranslations } from "next-intl";
 
 interface RegistrationStepOneProps {
   onSubmit: (mcUsername: string) => void;
@@ -25,6 +26,8 @@ export function RegistrationStepOne({
   isLoading,
   defaultValue = "",
 }: RegistrationStepOneProps) {
+  const t = useTranslations("page.sign-up.stepOne");
+
   const form = useForm<StepOneData>({
     resolver: zodResolver(stepOneSchema),
     defaultValues: { mcUsername: defaultValue },
@@ -46,10 +49,10 @@ export function RegistrationStepOne({
             name="mcUsername"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Minecraft Username</FormLabel>
+                <FormLabel>{t("mcUsername")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter your Minecraft username"
+                    placeholder={t("mcUsernamePlaceholder")}
                     {...field}
                     disabled={isLoading}
                   />
@@ -59,7 +62,7 @@ export function RegistrationStepOne({
             )}
           />
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Checking..." : "Continue"}
+            {isLoading ? t("loading") : t("continue")}
           </Button>
         </form>
       </Form>

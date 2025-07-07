@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { SimpleItemSelector } from "~/components/shops/simple-item-selector";
 import { CurrencySelector } from "~/components/shops/currency-selector";
 import { Package, MessageCircle, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   useRequestForm,
   type UseRequestFormOptions,
@@ -20,13 +21,14 @@ interface RequestFormProps extends UseRequestFormOptions {
 export function RequestForm({ className, ...options }: RequestFormProps) {
   const { formData, errors, isSubmitting, handleInputChange, handleSubmit } =
     useRequestForm(options);
+  const t = useTranslations("component.request-form");
 
   return (
     <form onSubmit={handleSubmit} className={`space-y-6 ${className ?? ""}`}>
       {/* Request Type - Only show for create mode */}
       {options.mode === "create" && (
         <div className="space-y-2">
-          <Label>Request Type</Label>
+          <Label>{t("requestType")}</Label>
           <RadioGroup
             value={formData.requestType}
             onValueChange={(value: "ITEM" | "GENERAL") =>
@@ -41,7 +43,7 @@ export function RequestForm({ className, ...options }: RequestFormProps) {
                 className="flex cursor-pointer items-center"
               >
                 <Package className="mr-2 h-4 w-4" />
-                Item Request
+                {t("itemRequest")}
               </Label>
             </div>
             <div className="flex items-center space-x-2">
@@ -51,7 +53,7 @@ export function RequestForm({ className, ...options }: RequestFormProps) {
                 className="flex cursor-pointer items-center"
               >
                 <MessageCircle className="mr-2 h-4 w-4" />
-                Service Request
+                {t("serviceRequest")}
               </Label>
             </div>
           </RadioGroup>
@@ -63,13 +65,13 @@ export function RequestForm({ className, ...options }: RequestFormProps) {
 
       {/* Title */}
       <div className="space-y-2">
-        <Label htmlFor="title">Title</Label>
+        <Label htmlFor="title">{t("title")}</Label>
         <Input
           id="title"
           placeholder={
             formData.requestType === "ITEM"
-              ? "e.g., Need 64 Iron Ore"
-              : "e.g., Help building a castle"
+              ? t("titlePlaceholderItem")
+              : t("titlePlaceholderService")
           }
           value={formData.title}
           onChange={(e) => handleInputChange("title", e.target.value)}
@@ -79,13 +81,13 @@ export function RequestForm({ className, ...options }: RequestFormProps) {
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">{t("description")}</Label>
         <Textarea
           id="description"
           placeholder={
             formData.requestType === "ITEM"
-              ? "Describe the specific item you need, its condition, enchantments, etc."
-              : "Describe the service you need, requirements, timeline, etc."
+              ? t("descriptionPlaceholderItem")
+              : t("descriptionPlaceholderService")
           }
           className="min-h-[100px]"
           value={formData.description}
@@ -99,13 +101,13 @@ export function RequestForm({ className, ...options }: RequestFormProps) {
       {/* Item-specific fields - Only show for item requests and create mode */}
       {formData.requestType === "ITEM" && options.mode === "create" && (
         <div className="space-y-4 rounded-lg border p-4">
-          <h3 className="font-medium">Item Details</h3>
+          <h3 className="font-medium">{t("itemDetails")}</h3>
 
           <div className="space-y-2">
             <SimpleItemSelector
               selectedItem={formData.selectedItem ?? null}
               onItemSelect={(item) => handleInputChange("selectedItem", item)}
-              placeholder="Search for a Minecraft item..."
+              placeholder={t("itemSearchPlaceholder")}
             />
             {errors.selectedItem && (
               <p className="text-sm text-red-500">{errors.selectedItem}</p>
@@ -113,13 +115,13 @@ export function RequestForm({ className, ...options }: RequestFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="itemQuantity">Quantity</Label>
+            <Label htmlFor="itemQuantity">{t("quantity")}</Label>
             <Input
               id="itemQuantity"
               type="number"
               min="1"
               max="999999"
-              placeholder="How many items do you need?"
+              placeholder={t("quantityPlaceholder")}
               value={formData.itemQuantity ?? ""}
               onChange={(e) =>
                 handleInputChange(
@@ -137,11 +139,11 @@ export function RequestForm({ className, ...options }: RequestFormProps) {
 
       {/* Pricing Section */}
       <div className="space-y-4 rounded-lg border p-4">
-        <h3 className="font-medium">Reward/Payment (Optional)</h3>
+        <h3 className="font-medium">{t("rewardPayment")}</h3>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="suggestedPrice">Price</Label>
+            <Label htmlFor="suggestedPrice">{t("price")}</Label>
             <Input
               id="suggestedPrice"
               type="number"
@@ -162,7 +164,7 @@ export function RequestForm({ className, ...options }: RequestFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>Currency</Label>
+            <Label>{t("currency")}</Label>
             <CurrencySelector
               value={formData.currency}
               onValueChange={(currency) =>
@@ -176,7 +178,7 @@ export function RequestForm({ className, ...options }: RequestFormProps) {
       {/* Submit Button */}
       <Button type="submit" disabled={isSubmitting} className="w-full">
         {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {options.mode === "create" ? "Create Request" : "Update Request"}
+        {options.mode === "create" ? t("createRequest") : t("updateRequest")}
       </Button>
     </form>
   );

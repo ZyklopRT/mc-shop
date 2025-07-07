@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "~/components/ui/button";
 import {
   InputOTP,
@@ -26,11 +27,13 @@ export function RegistrationStepTwo({
   onGoBack,
   isLoading,
 }: RegistrationStepTwoProps) {
+  const t = useTranslations("page.sign-up.stepTwo");
+
   return (
     <div className="flex flex-col items-center space-y-6">
       <div className="flex flex-col items-center space-y-4 text-center">
         <label className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-          Verification Code
+          {t("verificationCode")}
         </label>
         <InputOTP
           maxLength={6}
@@ -51,7 +54,7 @@ export function RegistrationStepTwo({
           </InputOTPGroup>
         </InputOTP>
         <p className="text-muted-foreground max-w-sm text-sm">
-          Enter the 6-digit code sent to {mcUsername} in Minecraft chat.
+          {t("helpDescription", { mcUsername })}
         </p>
       </div>
       <div className="w-full space-y-2">
@@ -62,7 +65,7 @@ export function RegistrationStepTwo({
           onClick={onResendCode}
           disabled={isLoading}
         >
-          {isLoading ? "Sending..." : "Resend Code"}
+          {isLoading ? t("loading") : t("resendCode")}
         </Button>
         <Button
           type="button"
@@ -71,7 +74,7 @@ export function RegistrationStepTwo({
           onClick={onGoBack}
           disabled={isLoading}
         >
-          Back
+          {t("back")}
         </Button>
       </div>
     </div>

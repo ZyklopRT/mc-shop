@@ -9,6 +9,7 @@ import type {
   RequestOffer,
   User,
 } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 // Simplified types for the component props
 type NegotiationMessageWithSender = NegotiationMessage & {
@@ -44,6 +45,8 @@ export function NegotiationStatus({
   requesterUsername,
   className = "",
 }: NegotiationStatusProps) {
+  const t = useTranslations("component.negotiation-status");
+
   // Calculate acceptance status
   const getAcceptanceStatus = () => {
     // Find the latest counter-offer
@@ -116,7 +119,9 @@ export function NegotiationStatus({
       {/* Current negotiation status */}
       <div className="flex items-center justify-between rounded-lg border bg-gray-50 p-4">
         <div>
-          <h3 className="font-semibold text-gray-900">Negotiation Status</h3>
+          <h3 className="font-semibold text-gray-900">
+            {t("negotiationStatus")}
+          </h3>
           <div className="mt-1 flex items-center gap-2">
             {negotiation.status === "IN_PROGRESS" && (
               <>
@@ -125,7 +130,7 @@ export function NegotiationStatus({
                   variant="outline"
                   className="border-yellow-300 text-yellow-600"
                 >
-                  In Progress
+                  {t("inProgress")}
                 </Badge>
               </>
             )}
@@ -136,7 +141,7 @@ export function NegotiationStatus({
                   variant="outline"
                   className="border-green-300 text-green-600"
                 >
-                  Agreed
+                  {t("agreed")}
                 </Badge>
               </>
             )}
@@ -147,7 +152,7 @@ export function NegotiationStatus({
                   variant="outline"
                   className="border-red-300 text-red-600"
                 >
-                  Failed
+                  {t("failed")}
                 </Badge>
               </>
             )}
@@ -156,12 +161,14 @@ export function NegotiationStatus({
 
         {/* Current offer price */}
         <div className="text-right">
-          <div className="text-muted-foreground text-sm">Current Terms</div>
+          <div className="text-muted-foreground text-sm">
+            {t("currentTerms")}
+          </div>
           <CurrencyDisplay
             amount={currentOffer.price}
             currency={currentOffer.currency}
             size="lg"
-            className="font-semibold"
+            className="text-muted-foreground font-semibold"
           />
         </div>
       </div>
@@ -179,7 +186,7 @@ export function NegotiationStatus({
             <div className="flex-1">
               <div className="text-sm font-medium">{requesterUsername}</div>
               <div className="text-xs text-gray-500">
-                {requesterAccepted ? "Accepted" : "Pending"}
+                {requesterAccepted ? t("accepted") : t("pending")}
               </div>
             </div>
           </div>
@@ -193,10 +200,10 @@ export function NegotiationStatus({
             )}
             <div className="flex-1">
               <div className="text-sm font-medium">
-                {acceptedOffer?.offerer?.mcUsername ?? "Offerer"}
+                {acceptedOffer?.offerer?.mcUsername ?? t("offerer")}
               </div>
               <div className="text-xs text-gray-500">
-                {offererAccepted ? "Accepted" : "Pending"}
+                {offererAccepted ? t("accepted") : t("pending")}
               </div>
             </div>
           </div>

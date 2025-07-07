@@ -10,13 +10,15 @@ import {
 import { Button } from "~/components/ui/button";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "~/lib/i18n/routing";
+import { useRouter } from "~/lib/i18n/routing";
+import { useTranslations } from "next-intl";
 import { createRequest } from "~/server/actions/requests";
 import { RequestForm } from "~/components/requests";
 
 export default function NewRequestPage() {
   const router = useRouter();
+  const t = useTranslations("page.requests-new");
 
   return (
     <PageWrapper className="max-w-2xl">
@@ -24,22 +26,17 @@ export default function NewRequestPage() {
         <Button variant="outline" asChild className="mb-4">
           <Link href="/requests">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Requests
+            {t("backToRequests")}
           </Link>
         </Button>
-        <h1 className="text-3xl font-bold">Create New Request</h1>
-        <p className="text-muted-foreground">
-          Request items or services from other players
-        </p>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Request Details</CardTitle>
-          <CardDescription>
-            Fill out the form below to create your request. Be specific about
-            what you need.
-          </CardDescription>
+          <CardTitle>{t("form.cardTitle")}</CardTitle>
+          <CardDescription>{t("form.cardDescription")}</CardDescription>
         </CardHeader>
 
         <CardContent>

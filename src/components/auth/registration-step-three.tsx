@@ -13,6 +13,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { stepThreeSchema, type StepThreeData } from "~/lib/validations/auth";
+import { useTranslations } from "next-intl";
 
 interface RegistrationStepThreeProps {
   onSubmit: (password: string, confirmPassword: string) => void;
@@ -28,6 +29,8 @@ export function RegistrationStepThree({
   isLoading,
   defaultValues = { password: "", confirmPassword: "" },
 }: RegistrationStepThreeProps) {
+  const t = useTranslations("page.sign-up.stepThree");
+
   const form = useForm<StepThreeData>({
     resolver: zodResolver(stepThreeSchema),
     defaultValues,
@@ -49,11 +52,11 @@ export function RegistrationStepThree({
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{t("password")}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder={t("passwordPlaceholder")}
                     {...field}
                     disabled={isLoading}
                   />
@@ -67,11 +70,11 @@ export function RegistrationStepThree({
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel>{t("confirmPassword")}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder="Confirm your password"
+                    placeholder={t("confirmPasswordPlaceholder")}
                     {...field}
                     disabled={isLoading}
                   />
@@ -81,7 +84,7 @@ export function RegistrationStepThree({
             )}
           />
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating Account..." : "Complete Registration"}
+            {isLoading ? t("loading") : t("continue")}
           </Button>
         </form>
       </Form>

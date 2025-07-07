@@ -3,13 +3,14 @@
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { MapPin, Edit, ExternalLink } from "lucide-react";
 import { StackedShopItems } from "./stacked-shop-items";
 import type { ShopWithDetails, ShopItemWithItem } from "~/lib/types/shop";
 import { hasValidTeleportCoordinates } from "~/lib/utils/coordinates";
 import { useSession } from "next-auth/react";
 import { TeleportShopButton } from "./teleport-shop-button";
+import { useTranslations } from "next-intl";
 
 interface ShopCardProps {
   shop: ShopWithDetails & { shopItems?: ShopItemWithItem[] };
@@ -24,6 +25,7 @@ export function ShopCard({
   showEditButton = false,
   className,
 }: ShopCardProps) {
+  const t = useTranslations("component.shop-card");
   const isOwner = currentUserId === shop.owner.id;
   const canEdit = showEditButton && isOwner;
   const canTeleport = hasValidTeleportCoordinates(
@@ -45,7 +47,7 @@ export function ShopCard({
               {shop.name}
             </h3>
             <p className="text-muted-foreground mt-0.5 text-sm">
-              Owner:{" "}
+              {t("owner")}{" "}
               <span className="text-foreground font-medium">
                 {shop.owner.mcUsername}
               </span>
@@ -61,7 +63,7 @@ export function ShopCard({
                 : "border-border bg-muted text-muted-foreground"
             }`}
           >
-            {shop.isActive ? "Active" : "Inactive"}
+            {shop.isActive ? t("active") : t("inactive")}
           </Badge>
         </div>
 
@@ -76,8 +78,9 @@ export function ShopCard({
         {shop.shopItems && (
           <div className="mb-3 space-y-1.5">
             <div className="text-muted-foreground text-xs font-medium">
-              {shop._count.shopItems} item
-              {shop._count.shopItems === 1 ? "" : "s"} available
+              {shop._count.shopItems}{" "}
+              {shop._count.shopItems === 1 ? t("item") : t("items")}{" "}
+              {t("available")}
             </div>
             <StackedShopItems shopItems={shop.shopItems} />
           </div>
@@ -106,7 +109,7 @@ export function ShopCard({
               className="flex items-center justify-center gap-2"
             >
               <ExternalLink className="h-3 w-3" />
-              View Shop
+              {t("viewShop")}
             </Link>
           </Button>
 
@@ -117,7 +120,7 @@ export function ShopCard({
                 className="flex items-center justify-center gap-2"
               >
                 <Edit className="h-3 w-3" />
-                Edit
+                {t("edit")}
               </Link>
             </Button>
           )}

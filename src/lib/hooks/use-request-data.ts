@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "~/lib/i18n/routing";
 import { toast } from "sonner";
 import {
   getRequestDetails,

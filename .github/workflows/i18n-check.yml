@@ -1,0 +1,69 @@
+# i18n Translation Validation Workflow
+#
+# This workflow validates translation files to ensure all keys are present
+# and properly formatted across all supported languages
+#
+name: i18n Translation Check
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Runs on pull requests targeting the default branch
+  pull_request:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Cancel in-progress workflows when a new one is triggered
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # i18n validation job
+  i18n-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        # Uses packageManager field from package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run i18n translation validation
+        run: |
+          echo "🌐 Validating translation files..."
+          pnpm i18n:check --locales messages --source en --format next-intl --unused src --reporter summary
+
+      - name: Run comprehensive i18n checks
+        run: |
+          echo "🔍 Running comprehensive i18n validation..."
+          echo "📋 Checking for missing keys..."
+          pnpm i18n:check --locales messages --source en --format next-intl --only missingKeys --reporter summary
+
+          echo "📋 Checking for invalid keys..."
+          pnpm i18n:check --locales messages --source en --format next-intl --only invalidKeys --reporter summary
+
+          echo "📋 Checking for unused keys..."
+          pnpm i18n:check --locales messages --source en --format next-intl --only unused --unused src --reporter summary
+
+          echo "📋 Checking for undefined keys..."
+          pnpm i18n:check --locales messages --source en --format next-intl --only undefined --unused src --reporter summary
+
+      - name: Validation complete
+        run: |
+          echo "✅ i18n translation validation completed successfully!"
+          echo "All translation files are properly synchronized."
