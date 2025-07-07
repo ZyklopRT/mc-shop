@@ -7,27 +7,30 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { PageHeader } from "~/components/ui/page-header";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 import { Plus, Sparkles, MessageSquare } from "lucide-react";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { getRequests } from "~/server/actions/requests/get-requests";
 import { auth } from "~/server/auth";
 import type { RequestWithDetails } from "~/lib/types/request";
 import { RequestCard } from "~/components/requests/request-card";
+import { getTranslations } from "next-intl/server";
 
 // Force dynamic rendering since we use auth() which internally uses headers()
 export const dynamic = "force-dynamic";
 
 export default async function RequestsPage() {
+  const t = await getTranslations("page.requests");
+
   return (
     <PageWrapper>
       <PageHeader
         icon={<MessageSquare className="h-8 w-8" />}
-        title="Request Board"
-        description="Request items or services from other players"
+        title={t("title")}
+        description={t("description")}
         actions={
           <Button asChild>
             <Link href="/requests/new">
               <Plus className="mr-2 h-4 w-4" />
-              New Request
+              {t("newRequest")}
             </Link>
           </Button>
         }
@@ -37,19 +40,19 @@ export default async function RequestsPage() {
         <div className="overflow-x-auto">
           <TabsList className="bg-muted text-muted-foreground inline-flex h-10 w-max items-center justify-center rounded-md p-1">
             <TabsTrigger value="open" className="whitespace-nowrap">
-              Open
+              {t("tabs.open")}
             </TabsTrigger>
             <TabsTrigger value="negotiation" className="whitespace-nowrap">
-              In Negotiation
+              {t("tabs.negotiation")}
             </TabsTrigger>
             <TabsTrigger value="accepted" className="whitespace-nowrap">
-              Accepted
+              {t("tabs.accepted")}
             </TabsTrigger>
             <TabsTrigger value="completed" className="whitespace-nowrap">
-              Completed
+              {t("tabs.completed")}
             </TabsTrigger>
             <TabsTrigger value="my-requests" className="whitespace-nowrap">
-              My Requests
+              {t("tabs.myRequests")}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -93,6 +96,8 @@ interface RequestsListProps {
 }
 
 async function RequestsList({ status }: RequestsListProps) {
+  const t = await getTranslations("page.requests");
+
   try {
     // Fetch requests from database
     const result = await getRequests({
@@ -107,7 +112,7 @@ async function RequestsList({ status }: RequestsListProps) {
       return (
         <div className="py-12 text-center">
           <p className="text-muted-foreground">
-            Failed to load requests: {result.error}
+            {t("error.failedToLoad")} {result.error}
           </p>
         </div>
       );
@@ -116,7 +121,7 @@ async function RequestsList({ status }: RequestsListProps) {
     const { requests } = result.data as { requests: RequestWithDetails[] };
 
     if (!requests.length) {
-      const emptyMessage = getEmptyMessage(status);
+      const emptyMessage = getEmptyMessage(status, t);
       return (
         <div className="py-12 text-center">
           <div className="bg-muted mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full">
@@ -130,7 +135,7 @@ async function RequestsList({ status }: RequestsListProps) {
             <Button asChild>
               <Link href="/requests/new">
                 <Plus className="mr-2 h-4 w-4" />
-                Create First Request
+                {t("actions.createFirstRequest")}
               </Link>
             </Button>
           )}
@@ -143,24 +148,22 @@ async function RequestsList({ status }: RequestsListProps) {
     console.error("Error fetching requests:", error);
     return (
       <div className="py-12 text-center">
-        <p className="text-muted-foreground">
-          An error occurred while loading requests. Please try again later.
-        </p>
+        <p className="text-muted-foreground">{t("error.generalError")}</p>
       </div>
     );
   }
 }
 
 async function MyRequestsList() {
+  const t = await getTranslations("page.requests");
+
   try {
     const session = await auth();
 
     if (!session?.user?.id) {
       return (
         <div className="py-12 text-center">
-          <p className="text-muted-foreground">
-            Please log in to view your requests.
-          </p>
+          <p className="text-muted-foreground">{t("error.authRequired")}</p>
         </div>
       );
     }
@@ -178,7 +181,7 @@ async function MyRequestsList() {
       return (
         <div className="py-12 text-center">
           <p className="text-muted-foreground">
-            Failed to load your requests: {result.error}
+            {t("error.failedToLoadYours")} {result.error}
           </p>
         </div>
       );
@@ -192,14 +195,16 @@ async function MyRequestsList() {
           <div className="bg-muted mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full">
             <Sparkles className="text-muted-foreground h-12 w-12" />
           </div>
-          <h3 className="mb-2 text-lg font-semibold">No requests yet</h3>
+          <h3 className="mb-2 text-lg font-semibold">
+            {t("empty.myRequestsTitle")}
+          </h3>
           <p className="text-muted-foreground mb-4">
-            Create your first request to start trading!
+            {t("empty.myRequestsDescription")}
           </p>
           <Button asChild>
             <Link href="/requests/new">
               <Plus className="mr-2 h-4 w-4" />
-              Create First Request
+              {t("actions.createFirstRequest")}
             </Link>
           </Button>
         </div>
@@ -211,9 +216,7 @@ async function MyRequestsList() {
     console.error("Error fetching user requests:", error);
     return (
       <div className="py-12 text-center">
-        <p className="text-muted-foreground">
-          An error occurred while loading your requests. Please try again later.
-        </p>
+        <p className="text-muted-foreground">{t("error.generalErrorYours")}</p>
       </div>
     );
   }
@@ -250,30 +253,36 @@ async function RequestGrid({ requests }: RequestGridProps) {
   );
 }
 
-function getEmptyMessage(status?: string) {
+function getEmptyMessage(status?: string, t?: (key: string) => string) {
   switch (status) {
     case "IN_NEGOTIATION":
       return {
-        title: "No negotiations active",
+        title: t?.("empty.negotiationTitle") ?? "No negotiations active",
         description:
+          t?.("empty.negotiationDescription") ??
           "Requests in negotiation will appear here once offers are accepted.",
       };
     case "ACCEPTED":
       return {
-        title: "No accepted requests",
+        title: t?.("empty.acceptedTitle") ?? "No accepted requests",
         description:
+          t?.("empty.acceptedDescription") ??
           "Requests that have been agreed upon and are awaiting completion will appear here.",
       };
     case "COMPLETED":
       return {
-        title: "No completed requests",
-        description: "Completed requests and transactions will appear here.",
+        title: t?.("empty.completedTitle") ?? "No completed requests",
+        description:
+          t?.("empty.completedDescription") ??
+          "Completed requests and transactions will appear here.",
       };
     case "OPEN":
     default:
       return {
-        title: "No open requests",
-        description: "Be the first to create a request and start trading!",
+        title: t?.("empty.openTitle") ?? "No open requests",
+        description:
+          t?.("empty.openDescription") ??
+          "Be the first to create a request and start trading!",
       };
   }
 }

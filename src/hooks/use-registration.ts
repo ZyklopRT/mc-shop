@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "~/lib/i18n/routing";
 import { toast } from "~/lib/utils/toast";
 import type { RegistrationStep, RegistrationState } from "~/lib/types/auth";
 import {

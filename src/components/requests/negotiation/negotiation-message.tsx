@@ -5,6 +5,7 @@ import { UserAvatar } from "~/components/ui/user-avatar";
 import { getMessageTypeConfig, formatDate } from "~/lib/utils/request-status";
 import { CurrencyDisplay } from "../ui/currency-display";
 import type { NegotiationMessageWithSender } from "~/lib/types/request";
+import { useTranslations } from "next-intl";
 
 interface NegotiationMessageProps {
   message: NegotiationMessageWithSender;
@@ -19,6 +20,7 @@ export function NegotiationMessage({
   requestCurrency,
   className = "",
 }: NegotiationMessageProps) {
+  const t = useTranslations("component.negotiation-message");
   const isCurrentUser = message.sender.id === currentUserId;
   const config = getMessageTypeConfig(message.messageType);
   const Icon = config.icon;
@@ -80,7 +82,7 @@ export function NegotiationMessage({
               <div
                 className={`text-sm ${isCurrentUser ? "text-blue-100" : "text-muted-foreground"}`}
               >
-                Accepting terms:
+                {t("acceptingTerms")}
               </div>
               <CurrencyDisplay
                 amount={message.priceOffer}
@@ -102,7 +104,7 @@ export function NegotiationMessage({
             isCurrentUser ? "text-right" : "text-left"
           }`}
         >
-          {isCurrentUser ? "You" : message.sender.mcUsername}
+          {isCurrentUser ? t("you") : message.sender.mcUsername}
         </div>
       </div>
     </div>
@@ -122,10 +124,12 @@ export function MessageList({
   requestCurrency,
   className = "",
 }: MessageListProps) {
+  const t = useTranslations("component.negotiation-message");
+
   if (messages.length === 0) {
     return (
       <div className={`py-8 text-center text-gray-500 ${className}`}>
-        No messages yet. Start the conversation!
+        {t("noMessagesYet")}
       </div>
     );
   }

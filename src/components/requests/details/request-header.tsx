@@ -2,12 +2,13 @@
 
 import { Button } from "~/components/ui/button";
 import { Pencil } from "lucide-react";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { RequestStatusBadge, RequestTypeBadge, CurrencyDisplay } from "../ui";
 import { ItemPreview } from "~/components/items/item-preview";
 import { UserAvatar } from "~/components/ui/user-avatar";
 import { canEditRequest } from "~/lib/utils/request-status";
 import type { RequestWithFullDetails } from "~/lib/types/request";
+import { useTranslations } from "next-intl";
 
 interface RequestHeaderProps {
   request: RequestWithFullDetails;
@@ -20,6 +21,7 @@ export function RequestHeader({
   isOwner,
   className = "",
 }: RequestHeaderProps) {
+  const t = useTranslations("component.request-header");
   const canEdit = canEditRequest(request.status);
 
   return (
@@ -54,7 +56,7 @@ export function RequestHeader({
 
       {/* Request Author - Small and Compact */}
       <div className="text-muted-foreground flex items-center gap-2 text-sm">
-        <span>Requested by</span>
+        <span>{t("requestedBy")}</span>
         <UserAvatar
           username={request.requester.mcUsername}
           size="sm"
@@ -69,7 +71,7 @@ export function RequestHeader({
         {request.requestType === "ITEM" && request.item && (
           <div className="space-y-3">
             <h3 className="text-foreground text-lg font-semibold">
-              Item Requested
+              {t("itemRequested")}
             </h3>
             <ItemPreview
               item={request.item}
@@ -84,7 +86,7 @@ export function RequestHeader({
         {request.suggestedPrice !== null && (
           <div className="flex h-full flex-col space-y-3">
             <h3 className="text-foreground text-lg font-semibold">
-              Suggested Price
+              {t("suggestedPrice")}
             </h3>
             <div className="flex flex-1 flex-col justify-center rounded-lg border bg-green-50 p-4">
               <CurrencyDisplay
@@ -94,7 +96,7 @@ export function RequestHeader({
                 className="font-bold text-green-700"
               />
               <div className="mt-1 text-sm text-green-600">
-                Starting price for offers
+                {t("startingPriceForOffers")}
               </div>
             </div>
           </div>

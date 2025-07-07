@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "~/lib/i18n/routing";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -12,7 +12,7 @@ import {
 } from "~/components/ui/card";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 import { Alert, AlertDescription } from "~/components/ui/alert";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import {
   ArrowLeft,
   Database,

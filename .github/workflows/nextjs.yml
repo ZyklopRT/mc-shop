@@ -5,13 +5,13 @@
 name: Build Validation
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting any branch
   push:
-    branches: ["main"]
+    branches: ["**"]
 
-  # Runs on pull requests targeting the default branch
+  # Runs on pull requests targeting any branch
   pull_request:
-    branches: ["main"]
+    branches: ["**"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -49,3 +49,8 @@ jobs:
 
       - name: Run type checking and linting
         run: pnpm check
+
+      - name: Run i18n translation validation
+        run: |
+          echo "🌐 Validating translation files..."
+          pnpm i18n:check --locales messages --source en --format next-intl --unused src

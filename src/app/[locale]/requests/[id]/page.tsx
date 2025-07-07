@@ -3,7 +3,7 @@ import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { auth } from "~/server/auth";
 import {
   getRequestDetails,
@@ -15,6 +15,7 @@ import {
 } from "~/server/actions/requests";
 import { RequestDetails } from "~/components/requests";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 interface RequestDetailsPageProps {
   params: Promise<{
@@ -26,14 +27,15 @@ export default async function RequestDetailsPage({
   params,
 }: RequestDetailsPageProps) {
   const { id } = await params;
+  const t = await getTranslations("page.requests-id");
 
   return (
     <PageWrapper className="max-w-4xl">
       <div className="mb-8 flex items-center gap-4">
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="outline" asChild>
           <Link href="/requests">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Requests
+            {t("backToRequests")}
           </Link>
         </Button>
       </div>
@@ -47,6 +49,7 @@ export default async function RequestDetailsPage({
 
 async function RequestDetailsContent({ requestId }: { requestId: string }) {
   const session = await auth();
+  const t = await getTranslations("page.requests-id");
 
   try {
     const result = await getRequestDetails({ requestId });
@@ -94,14 +97,14 @@ async function RequestDetailsContent({ requestId }: { requestId: string }) {
     console.error("Error loading request:", error);
     return (
       <div className="py-12 text-center">
-        <h2 className="mb-2 text-xl font-semibold">Error Loading Request</h2>
-        <p className="text-muted-foreground">
-          Failed to load request details. Please try again later.
-        </p>
+        <h2 className="text-foreground mb-2 text-xl font-semibold">
+          {t("errorLoadingRequest")}
+        </h2>
+        <p className="text-muted-foreground">{t("failedToLoadRequest")}</p>
         <Button asChild className="mt-4">
           <Link href="/requests">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Requests
+            {t("backToRequests")}
           </Link>
         </Button>
       </div>

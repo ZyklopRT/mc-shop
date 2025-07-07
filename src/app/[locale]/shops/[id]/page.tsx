@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useRouter } from "~/lib/i18n/routing";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 import { getShopDetails } from "~/server/actions/shops";
 
 import type { ShopWithItems } from "~/lib/types/shop";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { ArrowLeft, MapPin, Package, Plus, Edit } from "lucide-react";
 
 import { ItemPreview } from "~/components/items/item-preview";
@@ -17,6 +19,7 @@ import { ShopTeleport } from "~/components/shops";
 import { hasValidTeleportCoordinates } from "~/lib/utils/coordinates";
 
 export default function ShopDetailsPage() {
+  const t = useTranslations("page.shops-details");
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
@@ -36,7 +39,7 @@ export default function ShopDetailsPage() {
           setError(result.error);
         }
       } catch {
-        setError("Failed to load shop");
+        setError(t("error.failedToLoadShop"));
       } finally {
         setIsLoading(false);
       }
@@ -45,13 +48,13 @@ export default function ShopDetailsPage() {
     if (shopId) {
       void loadShop();
     }
-  }, [shopId]);
+  }, [shopId, t]);
 
   if (isLoading) {
     return (
       <PageWrapper>
         <div className="flex items-center justify-center">
-          <p>Loading shop details...</p>
+          <p>{t("loading")}</p>
         </div>
       </PageWrapper>
     );
@@ -61,12 +64,14 @@ export default function ShopDetailsPage() {
     return (
       <PageWrapper>
         <Card className="p-6 text-center">
-          <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
+          <h1 className="mb-4 text-2xl font-bold text-red-600">
+            {t("error.title")}
+          </h1>
           <p className="text-muted-foreground mb-4">
-            {error ?? "Shop not found"}
+            {error ?? t("error.shopNotFound")}
           </p>
           <Button asChild>
-            <Link href="/shops">Back to Shops</Link>
+            <Link href="/shops">{t("backToShops")}</Link>
           </Button>
         </Card>
       </PageWrapper>
@@ -81,7 +86,7 @@ export default function ShopDetailsPage() {
         <Button variant="outline" asChild className="mb-4">
           <Link href="/shops">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Shops
+            {t("backToShops")}
           </Link>
         </Button>
 
@@ -94,12 +99,12 @@ export default function ShopDetailsPage() {
                   className={`h-3 w-3 rounded-full ${shop.isActive ? "bg-green-500" : "bg-muted-foreground"}`}
                 />
                 <span className="text-muted-foreground text-sm">
-                  {shop.isActive ? "Active" : "Inactive"}
+                  {shop.isActive ? t("active") : t("inactive")}
                 </span>
               </div>
             </div>
             <p className="text-muted-foreground">
-              Owner: {shop.owner.mcUsername}
+              {t("owner")} {shop.owner.mcUsername}
             </p>
           </div>
 
@@ -108,13 +113,13 @@ export default function ShopDetailsPage() {
               <Button asChild variant="outline">
                 <Link href={`/shops/${shop.id}/edit`}>
                   <Edit className="mr-2 h-4 w-4" />
-                  Edit Shop
+                  {t("editShop")}
                 </Link>
               </Button>
               <Button asChild>
                 <Link href={`/shops/${shop.id}/items/add`}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Add Items
+                  {t("addItems")}
                 </Link>
               </Button>
             </div>
@@ -126,12 +131,14 @@ export default function ShopDetailsPage() {
         {/* Shop Info */}
         <div className="lg:col-span-1">
           <Card className="p-6">
-            <h2 className="mb-4 text-xl font-semibold">Shop Information</h2>
+            <h2 className="mb-4 text-xl font-semibold">
+              {t("shopInformation")}
+            </h2>
 
             {shop.description && (
               <div className="mb-4">
                 <h3 className="text-foreground mb-2 font-medium">
-                  Description
+                  {t("description")}
                 </h3>
                 <p className="text-muted-foreground">{shop.description}</p>
               </div>
@@ -141,7 +148,9 @@ export default function ShopDetailsPage() {
               shop.locationY !== null &&
               shop.locationZ !== null && (
                 <div className="mb-4">
-                  <h3 className="text-foreground mb-2 font-medium">Location</h3>
+                  <h3 className="text-foreground mb-2 font-medium">
+                    {t("location")}
+                  </h3>
                   {hasValidTeleportCoordinates(
                     shop.locationX,
                     shop.locationY,
@@ -169,7 +178,7 @@ export default function ShopDetailsPage() {
                       ) &&
                         !session?.user?.mcUsername && (
                           <p className="text-muted-foreground text-sm">
-                            Login to get teleport commands
+                            {t("loginToGetTeleportCommands")}
                           </p>
                         )}
                     </div>
@@ -178,15 +187,21 @@ export default function ShopDetailsPage() {
               )}
 
             <div className="mb-4">
-              <h3 className="text-foreground mb-2 font-medium">Statistics</h3>
+              <h3 className="text-foreground mb-2 font-medium">
+                {t("statistics")}
+              </h3>
               <div className="text-muted-foreground flex items-center gap-2">
                 <Package className="h-4 w-4" />
-                <span>{shop.shopItems.length} items available</span>
+                <span>
+                  {shop.shopItems.length} {t("itemsAvailable")}
+                </span>
               </div>
             </div>
 
             <div>
-              <h3 className="text-foreground mb-2 font-medium">Created</h3>
+              <h3 className="text-foreground mb-2 font-medium">
+                {t("created")}
+              </h3>
               <p className="text-muted-foreground">
                 {new Date(shop.createdAt).toLocaleDateString()}
               </p>
@@ -198,12 +213,12 @@ export default function ShopDetailsPage() {
         <div className="lg:col-span-2">
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Items for Sale</h2>
+              <h2 className="text-xl font-semibold">{t("itemsForSale")}</h2>
               {isOwner && shop.shopItems.length > 0 && (
                 <Button asChild size="sm">
                   <Link href={`/shops/${shop.id}/items/add`}>
                     <Plus className="mr-2 h-4 w-4" />
-                    Add More
+                    {t("addMore")}
                   </Link>
                 </Button>
               )}
@@ -213,17 +228,15 @@ export default function ShopDetailsPage() {
               <div className="py-8 text-center">
                 <Package className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                 <h3 className="text-foreground mb-2 text-lg font-semibold">
-                  No items yet
+                  {t("noItemsYet")}
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  {isOwner
-                    ? "Start adding items to your shop to attract customers."
-                    : "This shop doesn't have any items for sale yet."}
+                  {isOwner ? t("startAddingItems") : t("noItemsForSale")}
                 </p>
                 {isOwner && (
                   <Button asChild>
                     <Link href={`/shops/${shop.id}/items/add`}>
-                      Add Your First Item
+                      {t("addYourFirstItem")}
                     </Link>
                   </Button>
                 )}

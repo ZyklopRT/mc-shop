@@ -3,22 +3,6 @@
     "homepage": {
       "title": "MC Shop",
       "description": "Minecraft Shop Administration Panel"
-    },
-    "shops": {
-      "title": "My Shops - MC Shop",
-      "description": "Manage your Minecraft shops"
-    },
-    "browse": {
-      "title": "Browse Shops - MC Shop",
-      "description": "Browse and search Minecraft shops"
-    },
-    "requests": {
-      "title": "Request Board - MC Shop",
-      "description": "View and manage item requests"
-    },
-    "admin": {
-      "title": "Admin Panel - MC Shop",
-      "description": "Administration panel for MC Shop"
     }
   },
   "navigation": {
@@ -36,10 +20,505 @@
     "navigation": "Navigation",
     "navigationDescription": "Navigate through the MC Shop system"
   },
-  "homepage": {
-    "title": "MC Shop",
-    "subtitle": "Search for players and items across Minecraft shops",
-    "heroAlt": "Minecraft landscape background"
+  "component": {
+    "shop-card": {
+      "owner": "Owner:",
+      "active": "Active",
+      "inactive": "Inactive",
+      "item": "item",
+      "items": "items",
+      "available": "available",
+      "viewShop": "View Shop",
+      "edit": "Edit"
+    },
+    "request-form": {
+      "requestType": "Request Type",
+      "itemRequest": "Item Request",
+      "serviceRequest": "Service Request",
+      "title": "Title",
+      "titlePlaceholderItem": "e.g., Need 64 Iron Ore",
+      "titlePlaceholderService": "e.g., Help building a castle",
+      "description": "Description",
+      "descriptionPlaceholderItem": "Describe the specific item you need, its condition, enchantments, etc.",
+      "descriptionPlaceholderService": "Describe the service you need, requirements, timeline, etc.",
+      "itemDetails": "Item Details",
+      "itemSearchPlaceholder": "Search for a Minecraft item...",
+      "quantity": "Quantity",
+      "quantityPlaceholder": "How many items do you need?",
+      "rewardPayment": "Reward/Payment (Optional)",
+      "price": "Price",
+      "currency": "Currency",
+      "createRequest": "Create Request",
+      "updateRequest": "Update Request"
+    },
+    "request-card": {
+      "requesting": "Requesting:",
+      "offeredReward": "Offered Reward:",
+      "offer": "offer",
+      "offers": "offers",
+      "active": "Active",
+      "viewDetails": "View Details"
+    },
+    "request-details": {
+      "errorLoadingRequest": "Error Loading Request",
+      "refreshing": "Refreshing..."
+    },
+    "request-header": {
+      "requestedBy": "Requested by",
+      "itemRequested": "Item Requested",
+      "suggestedPrice": "Suggested Price",
+      "startingPriceForOffers": "Starting price for offers"
+    },
+    "offer-form": {
+      "makeAnOffer": "Make an Offer",
+      "currency": "Currency",
+      "selectCurrency": "Select currency",
+      "offeredPrice": "Offered Price",
+      "emeraldBlocks": "Emerald Blocks",
+      "emeralds": "Emeralds",
+      "enterYourOffer": "Enter your offer",
+      "suggested": "Suggested",
+      "messageOptional": "Message (Optional)",
+      "addMessageToOffer": "Add a message to your offer...",
+      "submittingOffer": "Submitting Offer...",
+      "submitOffer": "Submit Offer",
+      "offerSubmittedSuccessfully": "Your offer has been submitted successfully.",
+      "failedToSubmitOffer": "Failed to submit offer",
+      "failedToSubmitOfferTryAgain": "Failed to submit offer. Please try again."
+    },
+    "offer-card": {
+      "offeredPrice": "Offered Price",
+      "message": "Message",
+      "accept": "Accept",
+      "reject": "Reject",
+      "withdraw": "Withdraw",
+      "acceptThisOffer": "Accept this offer?",
+      "acceptOfferDescription": "This will accept the offer from {username} and start a negotiation. All other pending offers will be automatically rejected.",
+      "cancel": "Cancel",
+      "acceptOffer": "Accept Offer",
+      "rejectThisOffer": "Reject this offer?",
+      "rejectOfferDescription": "This will reject the offer from {username}. This action cannot be undone.",
+      "rejectOffer": "Reject Offer",
+      "withdrawYourOffer": "Withdraw your offer?",
+      "withdrawOfferDescription": "This will withdraw your offer. This action cannot be undone.",
+      "withdrawOffer": "Withdraw Offer"
+    },
+    "offer-list": {
+      "offers": "Offers",
+      "loadingOffers": "Loading offers...",
+      "errorLoadingOffers": "Error loading offers:",
+      "noOffersYet": "No offers yet.",
+      "beFirstToMakeOffer": "Be the first to make an offer!"
+    },
+    "negotiation-form": {
+      "otherPartyAccepted": "The other party has accepted the current terms",
+      "otherPartyAcceptedDescription": "You can only accept these terms or reject the negotiation. Counter-offers are no longer available.",
+      "messageType": "Message Type",
+      "selectMessageType": "Select message type",
+      "regularMessage": "Regular Message",
+      "counterOffer": "Counter Offer",
+      "acceptTerms": "Accept Terms",
+      "rejectEndNegotiation": "Reject & End Negotiation",
+      "counterOfferPrice": "Counter Offer Price",
+      "enterCounterOffer": "Enter your counter offer...",
+      "currentOffer": "Current offer",
+      "currency": "Currency",
+      "counterOfferDetails": "Counter Offer Details",
+      "acceptanceMessage": "Acceptance Message",
+      "rejectionReason": "Rejection Reason",
+      "message": "Message",
+      "explainCounterOffer": "Explain your counter offer...",
+      "confirmAcceptance": "Confirm your acceptance...",
+      "explainRejection": "Explain why you're rejecting...",
+      "typeYourMessage": "Type your message...",
+      "sendCounterOffer": "Send Counter Offer",
+      "acceptTermsButton": "Accept Terms",
+      "rejectEnd": "Reject & End",
+      "sendMessage": "Send Message"
+    },
+    "negotiation-message": {
+      "acceptingTerms": "Accepting terms:",
+      "you": "You",
+      "noMessagesYet": "No messages yet. Start the conversation!"
+    },
+    "negotiation-interface": {
+      "negotiationChat": "Negotiation Chat",
+      "cannotCompleteRequest": "Cannot complete request",
+      "bothPartiesMustAccept": "Both parties must accept the terms first.",
+      "negotiationComplete": "🎉 Negotiation Complete!",
+      "bothPartiesAgreed": "Both parties have agreed to the terms. You can now mark this request as completed.",
+      "completeRequest": "Complete Request"
+    },
+    "negotiation-status": {
+      "negotiationStatus": "Negotiation Status",
+      "inProgress": "In Progress",
+      "agreed": "Agreed",
+      "failed": "Failed",
+      "currentTerms": "Current Terms",
+      "accepted": "Accepted",
+      "pending": "Pending",
+      "offerer": "Offerer"
+    }
+  },
+  "page": {
+    "homepage": {
+      "title": "MC Shop",
+      "subtitle": "Search for players and items across Minecraft shops",
+      "heroAlt": "Minecraft landscape background"
+    },
+    "sign-in": {
+      "title": "Sign In",
+      "description": "Enter your Minecraft username and password to access MC Shop",
+      "mcUsername": "Minecraft Username",
+      "mcUsernamePlaceholder": "Enter your Minecraft username",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "loading": "Signing in...",
+      "login": "Sign In",
+      "dontHaveAccount": "Don't have an account?",
+      "registerHere": "Register here"
+    },
+    "sign-up": {
+      "title": "Sign Up",
+      "description": "Create your account to get started",
+      "progress": "Registration progress",
+      "step": "Step",
+      "of": "of",
+      "complete": "complete",
+      "stepOne": {
+        "title": "Enter Minecraft username",
+        "description": "Enter your Minecraft usernameto start",
+        "mcUsername": "Minecraft Username",
+        "mcUsernamePlaceholder": "Enter your Minecraft username",
+        "loading": "Loading...",
+        "continue": "Continue"
+      },
+      "stepTwo": {
+        "title": "Verify Account",
+        "description": "Check your Minecraft chat for verification code",
+        "verificationCode": "Verification Code",
+        "resendCode": "Resend Code",
+        "helpDescription": "Enter the 6-digit code sent to {mcUsername} in Minecraft chat.",
+        "loading": "Loading...",
+        "back": "Back"
+      },
+      "stepThree": {
+        "title": "Set Password",
+        "description": "Create a secure password for your account",
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "confirmPassword": "Confirm Password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "loading": "Loading...",
+        "continue": "Create Account"
+      },
+      "stepFour": {
+        "title": "Registration Completed!",
+        "description": "Your account has been created successfully.",
+        "backToLogin": "Go to Login"
+      }
+    },
+    "shops-browse": {
+      "title": "Browse Shops",
+      "description": "Discover shops from players around the server",
+      "loading": "Loading shops...",
+      "searchPlaceholder": "Search shops by player name, item, or keywords...",
+      "activeFilters": "Active filters:",
+      "player": "Player",
+      "item": "Item",
+      "search": "Search",
+      "clearAll": "Clear All",
+      "noShopsFound": "No shops found matching your search criteria",
+      "foundShops": "Found {count} shop{count, plural, one {} other {s}} matching your search",
+      "noActiveShops": "There are currently no active shops on the server.",
+      "noActiveShopsTitle": "No Active Shops",
+      "createFirstShop": "Create the First Shop",
+      "noResultsTitle": "No Results Found",
+      "noResultsDescription": "No shops match your search criteria. Try different keywords or browse all shops.",
+      "browseAllShops": "Browse All Shops",
+      "showingShops": "Showing {count} active shop{count, plural, one {} other {s}}",
+      "toast": {
+        "loadingFailed": "Loading Failed",
+        "searchFailed": "Search Failed",
+        "failedToLoadPlayerShops": "Failed to load player shops",
+        "failedToSearchShops": "Failed to search shops",
+        "failedToLoadShops": "Failed to load shops"
+      }
+    },
+    "shops-new": {
+      "title": "Create New Shop",
+      "description": "Set up your new Minecraft shop",
+      "loading": "Loading...",
+      "authRequired": "Authentication Required",
+      "authRequiredDescription": "Please login to create a shop.",
+      "login": "Login",
+      "backToShops": "Back to Shops",
+      "form": {
+        "shopName": "Shop Name",
+        "shopNamePlaceholder": "Enter shop name",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe your shop (optional)",
+        "location": "Location (Optional)",
+        "xCoordinate": "X Coordinate",
+        "yCoordinate": "Y Coordinate",
+        "zCoordinate": "Z Coordinate",
+        "xPlaceholder": "X",
+        "yPlaceholder": "Y",
+        "zPlaceholder": "Z",
+        "locationHelp": "Enter the coordinates where your shop is located in Minecraft. This helps other players find your shop.",
+        "isActive": "Shop is active and visible to other players",
+        "creating": "Creating Shop...",
+        "createShop": "Create Shop",
+        "cancel": "Cancel"
+      },
+      "help": {
+        "title": "Tips for creating a good shop:",
+        "tip1": "Choose a clear, descriptive name that tells players what you sell",
+        "tip2": "Add a helpful description explaining your shop's specialty",
+        "tip3": "Include coordinates so players can easily find your shop",
+        "tip4": "You can always edit these details later"
+      },
+      "toast": {
+        "created": "Shop Created",
+        "createdDescription": "Your shop has been created successfully",
+        "creationFailed": "Creation Failed",
+        "unexpectedError": "An unexpected error occurred"
+      }
+    },
+    "shops-edit": {
+      "title": "Edit Shop",
+      "description": "Update your shop's information",
+      "loading": "Loading shop details...",
+      "authRequired": "Authentication Required",
+      "authRequiredDescription": "Please login to edit shops.",
+      "login": "Login",
+      "backToShop": "Back to Shop",
+      "backToShops": "Back to Shops",
+      "active": "Active",
+      "inactive": "Inactive",
+      "viewShop": "View Shop",
+      "tryAgain": "Try Again",
+      "form": {
+        "shopName": "Shop Name *",
+        "shopNamePlaceholder": "Enter shop name",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe your shop (optional)",
+        "location": "Location (Optional)",
+        "xCoordinate": "X Coordinate",
+        "yCoordinate": "Y Coordinate",
+        "zCoordinate": "Z Coordinate",
+        "xPlaceholder": "X",
+        "yPlaceholder": "Y",
+        "zPlaceholder": "Z",
+        "isActive": "Shop is active and visible to other players",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "reset": "Reset",
+        "deleteShop": "Delete Shop",
+        "deleting": "Deleting...",
+        "cancel": "Cancel"
+      },
+      "statistics": {
+        "title": "Shop Statistics",
+        "totalItems": "Total Items",
+        "created": "Created",
+        "lastUpdated": "Last Updated",
+        "owner": "Owner"
+      },
+      "deleteDialog": {
+        "title": "Delete Shop",
+        "description": "Are you sure you want to delete \"{shopName}\"? This action cannot be undone. All shop items and data will be permanently removed."
+      },
+      "error": {
+        "title": "Error",
+        "notFound": "Shop Not Found",
+        "notFoundDescription": "The shop you're looking for doesn't exist.",
+        "accessDenied": "Access Denied",
+        "accessDeniedDescription": "You don't have permission to edit this shop."
+      },
+      "toast": {
+        "updated": "Shop Updated",
+        "updatedDescription": "Your shop has been updated successfully",
+        "updateFailed": "Update Failed",
+        "deleted": "Shop Deleted",
+        "deletedDescription": "Your shop has been deleted successfully",
+        "deleteFailed": "Delete Failed",
+        "unexpectedError": "An unexpected error occurred"
+      }
+    },
+    "shops-details": {
+      "loading": "Loading shop details...",
+      "backToShops": "Back to Shops",
+      "active": "Active",
+      "inactive": "Inactive",
+      "owner": "Owner:",
+      "editShop": "Edit Shop",
+      "addItems": "Add Items",
+      "shopInformation": "Shop Information",
+      "description": "Description",
+      "location": "Location",
+      "loginToGetTeleportCommands": "Login to get teleport commands",
+      "statistics": "Statistics",
+      "itemsAvailable": "items available",
+      "created": "Created",
+      "itemsForSale": "Items for Sale",
+      "addMore": "Add More",
+      "noItemsYet": "No items yet",
+      "startAddingItems": "Start adding items to your shop to attract customers.",
+      "noItemsForSale": "This shop doesn't have any items for sale yet.",
+      "addYourFirstItem": "Add Your First Item",
+      "error": {
+        "title": "Error",
+        "shopNotFound": "Shop not found",
+        "failedToLoadShop": "Failed to load shop"
+      }
+    },
+    "shops-items-add": {
+      "title": "Add Item to Shop",
+      "description": "Add a new item to your shop with pricing and currency options.",
+      "backToShop": "Back to Shop",
+      "form": {
+        "cardTitle": "Item Details",
+        "cardDescription": "Select a Minecraft item and set its price and currency type.",
+        "itemSearchPlaceholder": "Search for a Minecraft item...",
+        "amount": "Amount",
+        "amountDescription": "How many items are sold as a bundle (e.g., 32 iron ore)",
+        "price": "Price",
+        "priceDescription": "Price per item",
+        "currency": "Currency",
+        "currencyDescription": "Choose the currency for pricing",
+        "preview": "Preview",
+        "adding": "Adding...",
+        "addItem": "Add Item",
+        "cancel": "Cancel"
+      },
+      "toast": {
+        "selectItem": "Please select an item",
+        "authRequired": "Authentication required",
+        "added": "Item added to shop successfully!",
+        "addFailed": "Failed to add item to shop"
+      }
+    },
+    "shops-items-edit": {
+      "title": "Edit Shop Item",
+      "description": "Update the pricing and availability for this item.",
+      "loading": "Loading shop item...",
+      "checkingPermissions": "Checking permissions...",
+      "backToShop": "Back to {shopName}",
+      "form": {
+        "cardTitle": "Item Details",
+        "cardDescription": "Update the price, amount, currency, and availability for this item.",
+        "currentItem": "Current Item",
+        "price": "Price *",
+        "pricePlaceholder": "Enter price",
+        "amount": "Amount (items per purchase) *",
+        "amountPlaceholder": "Enter amount",
+        "amountHelp": "How many items are sold as a bundle (e.g., 32 for a stack of iron ore)",
+        "currency": "Currency *",
+        "currencyPlaceholder": "Select currency",
+        "isAvailable": "Item is available for purchase",
+        "removeFromShop": "Remove from Shop",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "cancel": "Cancel"
+      },
+      "deleteDialog": {
+        "title": "Remove Item from Shop",
+        "description": "Are you sure you want to remove \"{itemName}\" from your shop? This action cannot be undone.",
+        "cancel": "Cancel",
+        "removeItem": "Remove Item"
+      },
+      "error": {
+        "shopItemNotFound": "Shop item not found",
+        "failedToLoadShopItem": "Failed to load shop item details"
+      },
+      "toast": {
+        "updated": "Shop item updated successfully!",
+        "updateFailed": "Failed to update shop item",
+        "removed": "Item removed from shop successfully!",
+        "removeFailed": "Failed to remove item from shop",
+        "authRequired": "Authentication required",
+        "permissionDenied": "Permission denied. Redirecting to shop...",
+        "checkPermissions": "You don't have permission to edit this shop item. Redirecting..."
+      }
+    },
+    "shops": {
+      "title": "My Shops",
+      "description": "Manage your Minecraft shops",
+      "loading": "Loading shops...",
+      "authRequired": "Authentication Required",
+      "authRequiredDescription": "Please login to manage your shops.",
+      "login": "Login",
+      "error": "Error",
+      "tryAgain": "Try Again",
+      "createShop": "Create Shop",
+      "noShopsYet": "No shops yet",
+      "noShopsYetDescription": "Create your first shop to start selling items to other players.",
+      "createYourFirstShop": "Create Your First Shop"
+    },
+    "requests": {
+      "title": "Request Board",
+      "description": "Request items or services from other players",
+      "newRequest": "New Request",
+      "tabs": {
+        "open": "Open",
+        "negotiation": "In Negotiation",
+        "accepted": "Accepted",
+        "completed": "Completed",
+        "myRequests": "My Requests"
+      },
+      "empty": {
+        "myRequestsTitle": "No requests yet",
+        "myRequestsDescription": "Create your first request to start trading!"
+      },
+      "actions": {
+        "createFirstRequest": "Create First Request"
+      },
+      "error": {
+        "failedToLoad": "Failed to load requests:",
+        "failedToLoadYours": "Failed to load your requests:",
+        "generalError": "An error occurred while loading requests. Please try again later.",
+        "generalErrorYours": "An error occurred while loading your requests. Please try again later.",
+        "authRequired": "Please log in to view your requests."
+      }
+    },
+    "requests-new": {
+      "title": "Create New Request",
+      "description": "Request items or services from other players",
+      "backToRequests": "Back to Requests",
+      "form": {
+        "cardTitle": "Request Details",
+        "cardDescription": "Fill out the form below to create your request. Be specific about what you need."
+      }
+    },
+    "requests-edit": {
+      "title": "Edit Request",
+      "description": "Update your request details below",
+      "loading": "Loading...",
+      "backToRequests": "Back to Requests",
+      "backToRequest": "Back to Request",
+      "deleteRequest": "Delete Request",
+      "form": {
+        "cardTitle": "Edit Request Details",
+        "cardDescription": "Make changes to your request. Only certain fields can be edited."
+      },
+      "deleteDialog": {
+        "title": "Delete Request",
+        "description": "Are you sure you want to delete this request? This action cannot be undone. All associated offers and negotiations will also be deleted.",
+        "cancel": "Cancel",
+        "deleteRequest": "Delete Request"
+      },
+      "toast": {
+        "loadFailed": "Failed to load request data",
+        "deleted": "Request deleted successfully",
+        "deleteFailed": "Failed to delete request"
+      }
+    },
+    "requests-id": {
+      "backToRequests": "Back to Requests",
+      "errorLoadingRequest": "Error Loading Request",
+      "failedToLoadRequest": "Failed to load request details. Please try again later."
+    }
   },
   "footer": {
     "description": "Your ultimate Minecraft shop administration platform. Manage and discover shops across your server with ease.",
@@ -47,15 +526,11 @@
     "browseShops": "Browse Shops",
     "requestBoard": "Request Board",
     "myShops": "My Shops",
-    "helpSupport": "Help & Support",
-    "help": "Help",
-    "contact": "Contact",
     "privacy": "Privacy Policy",
     "settings": "Settings",
     "theme": "Theme",
     "language": "Language",
     "allRightsReserved": "All rights reserved.",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy"
+    "terms": "Terms of Service"
   }
 }

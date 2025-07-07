@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "~/lib/i18n/routing";
+import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -33,7 +35,7 @@ import { z } from "zod";
 import { addItemToShop } from "~/server/actions/shop-items";
 
 import { toast } from "sonner";
-import Link from "next/link";
+import { Link } from "~/lib/i18n/routing";
 import { ArrowLeft, Plus, DollarSign, Package } from "lucide-react";
 import type { MinecraftItem } from "@prisma/client";
 import { ItemPreviewLarge } from "~/components/items/item-preview";
@@ -48,6 +50,7 @@ const addItemFormSchema = z.object({
 type AddItemFormData = z.infer<typeof addItemFormSchema>;
 
 export default function AddItemToShopPage() {
+  const t = useTranslations("page.shops-items-add");
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
@@ -67,12 +70,12 @@ export default function AddItemToShopPage() {
 
   const onSubmit = async (data: AddItemFormData) => {
     if (!selectedItem) {
-      toast.error("Please select an item");
+      toast.error(t("toast.selectItem"));
       return;
     }
 
     if (!session?.user?.id) {
-      toast.error("Authentication required");
+      toast.error(t("toast.authRequired"));
       return;
     }
 
@@ -88,13 +91,13 @@ export default function AddItemToShopPage() {
       });
 
       if (result.success) {
-        toast.success("Item added to shop successfully!");
+        toast.success(t("toast.added"));
         router.push(`/shops/${shopId}`);
       } else {
         toast.error(result.error);
       }
     } catch {
-      toast.error("Failed to add item to shop");
+      toast.error(t("toast.addFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -106,25 +109,21 @@ export default function AddItemToShopPage() {
         <Button variant="outline" asChild className="mb-4">
           <Link href={`/shops/${shopId}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Shop
+            {t("backToShop")}
           </Link>
         </Button>
 
         <div className="mb-2 flex items-center gap-3">
           <Plus className="text-primary h-8 w-8" />
-          <h1 className="text-3xl font-bold">Add Item to Shop</h1>
+          <h1 className="text-3xl font-bold">{t("title")}</h1>
         </div>
-        <p className="text-muted-foreground">
-          Add a new item to your shop with pricing and currency options.
-        </p>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Item Details</CardTitle>
-          <CardDescription>
-            Select a Minecraft item and set its price and currency type.
-          </CardDescription>
+          <CardTitle>{t("form.cardTitle")}</CardTitle>
+          <CardDescription>{t("form.cardDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -134,20 +133,20 @@ export default function AddItemToShopPage() {
                 <SimpleItemSelector
                   selectedItem={selectedItem}
                   onItemSelect={setSelectedItem}
-                  placeholder="Search for a Minecraft item..."
+                  placeholder={t("form.itemSearchPlaceholder")}
                 />
               </div>
 
               <Separator />
 
               {/* Quantity, Price and Currency */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-3">
                 <FormField
                   control={form.control}
                   name="amount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Amount</FormLabel>
+                      <FormLabel>{t("form.amount")}</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Package className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -165,7 +164,7 @@ export default function AddItemToShopPage() {
                         </div>
                       </FormControl>
                       <FormDescription>
-                        How many items are sold as a bundle (e.g., 32 iron ore)
+                        {t("form.amountDescription")}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -177,7 +176,7 @@ export default function AddItemToShopPage() {
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price</FormLabel>
+                      <FormLabel>{t("form.price")}</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <DollarSign className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -194,7 +193,9 @@ export default function AddItemToShopPage() {
                           />
                         </div>
                       </FormControl>
-                      <FormDescription>Price per item</FormDescription>
+                      <FormDescription>
+                        {t("form.priceDescription")}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -205,7 +206,7 @@ export default function AddItemToShopPage() {
                   name="currency"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Currency</FormLabel>
+                      <FormLabel>{t("form.currency")}</FormLabel>
                       <FormControl>
                         <CurrencySelector
                           value={field.value}
@@ -214,7 +215,7 @@ export default function AddItemToShopPage() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Choose the currency for pricing
+                        {t("form.currencyDescription")}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -227,7 +228,9 @@ export default function AddItemToShopPage() {
                 <>
                   <Separator />
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Preview</h3>
+                    <h3 className="text-lg font-semibold">
+                      {t("form.preview")}
+                    </h3>
                     <ItemPreviewLarge
                       item={selectedItem}
                       price={form.watch("price")}
@@ -248,14 +251,14 @@ export default function AddItemToShopPage() {
                   onClick={() => router.push(`/shops/${shopId}`)}
                   className="flex-1"
                 >
-                  Cancel
+                  {t("form.cancel")}
                 </Button>
                 <Button
                   type="submit"
                   disabled={!selectedItem || isLoading}
                   className="flex-1"
                 >
-                  {isLoading ? "Adding..." : "Add Item"}
+                  {isLoading ? t("form.adding") : t("form.addItem")}
                 </Button>
               </div>
             </form>

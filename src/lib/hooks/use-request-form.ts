@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "~/lib/i18n/routing";
 import { toast } from "sonner";
 import type { MinecraftItem } from "@prisma/client";
 import { CURRENCY_TYPES } from "~/lib/validations/shop";

@@ -6,6 +6,7 @@ import { HandHeart, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { OfferCard } from "./offer-card";
 import type { RequestOfferWithDetails } from "~/lib/types/request";
+import { useTranslations } from "next-intl";
 
 interface OfferListProps {
   requestId: string;
@@ -34,6 +35,7 @@ export function OfferList({
   updateOfferAction,
   className = "",
 }: OfferListProps) {
+  const t = useTranslations("component.offer-list");
   const [offers, setOffers] = useState<RequestOfferWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -100,14 +102,14 @@ export function OfferList({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <HandHeart className="h-5 w-5" />
-            Offers
+            {t("offers")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
             <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
             <span className="text-muted-foreground ml-2">
-              Loading offers...
+              {t("loadingOffers")}
             </span>
           </div>
         </CardContent>
@@ -121,12 +123,14 @@ export function OfferList({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <HandHeart className="h-5 w-5" />
-            Offers
+            {t("offers")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="py-8 text-center text-red-600">
-            <p>Error loading offers: {error}</p>
+            <p>
+              {t("errorLoadingOffers")} {error}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -138,16 +142,16 @@ export function OfferList({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <HandHeart className="h-5 w-5" />
-          Offers ({offers.length})
+          {t("offers")} ({offers.length})
         </CardTitle>
       </CardHeader>
       <CardContent>
         {offers.length === 0 ? (
           <div className="text-muted-foreground py-8 text-center">
             <HandHeart className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-            <p>No offers yet.</p>
+            <p>{t("noOffersYet")}</p>
             {!isRequestOwner && (
-              <p className="mt-2 text-sm">Be the first to make an offer!</p>
+              <p className="mt-2 text-sm">{t("beFirstToMakeOffer")}</p>
             )}
           </div>
         ) : (

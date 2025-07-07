@@ -25,6 +25,7 @@ import {
   getMinimumInCurrency,
   formatCurrencyWithRate,
 } from "~/lib/utils/currency-conversion";
+import { useTranslations } from "next-intl";
 
 interface OfferFormProps {
   requestId: string;
@@ -47,6 +48,7 @@ export function OfferForm({
   disabled = false,
   createOfferAction,
 }: OfferFormProps) {
+  const t = useTranslations("component.offer-form");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm({
@@ -100,7 +102,7 @@ export function OfferForm({
       const result = await createOfferAction(formData);
 
       if (result.success) {
-        toast.success("Your offer has been submitted successfully.");
+        toast.success(t("offerSubmittedSuccessfully"));
         form.reset({
           requestId,
           offeredPrice: undefined,
@@ -111,11 +113,11 @@ export function OfferForm({
         });
         onOfferCreated?.();
       } else {
-        toast.error(result.error ?? "Failed to submit offer");
+        toast.error(result.error ?? t("failedToSubmitOffer"));
       }
     } catch (error) {
       console.error("Error creating offer:", error);
-      toast.error("Failed to submit offer. Please try again.");
+      toast.error(t("failedToSubmitOfferTryAgain"));
     } finally {
       setIsSubmitting(false);
     }
@@ -124,10 +126,10 @@ export function OfferForm({
   const getCurrencyDisplay = (currencyType: string) => {
     switch (currencyType) {
       case "emerald_blocks":
-        return "Emerald Blocks";
+        return t("emeraldBlocks");
       case "emeralds":
       default:
-        return "Emeralds";
+        return t("emeralds");
     }
   };
 
@@ -136,7 +138,7 @@ export function OfferForm({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Send className="h-5 w-5" />
-          Make an Offer
+          {t("makeAnOffer")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -147,13 +149,13 @@ export function OfferForm({
               name="currency"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Currency</FormLabel>
+                  <FormLabel>{t("currency")}</FormLabel>
                   <FormControl>
                     <CurrencySelector
                       value={field.value ?? "emeralds"}
                       onValueChange={field.onChange}
                       disabled={disabled || isSubmitting}
-                      placeholder="Select currency"
+                      placeholder={t("selectCurrency")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -167,14 +169,14 @@ export function OfferForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Offered Price (
+                    {t("offeredPrice")} (
                     {getCurrencyDisplay(form.watch("currency") ?? "emeralds")})
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       step="0.01"
-                      placeholder="Enter your offer"
+                      placeholder={t("enterYourOffer")}
                       disabled={disabled || isSubmitting}
                       {...field}
                       onChange={(e) => {
@@ -195,14 +197,14 @@ export function OfferForm({
                           currentCurrency &&
                           currentCurrency !== currency ? (
                             <>
-                              Suggested:{" "}
+                              {t("suggested")}:{" "}
                               {formatCurrencyWithRate(suggestedPrice, currency)}{" "}
                               ={suggestedInCurrentCurrency.toFixed(2)}{" "}
                               {getCurrencyDisplay(currentCurrency)}
                             </>
                           ) : (
                             <>
-                              Suggested: {suggestedPrice.toFixed(2)}{" "}
+                              {t("suggested")}: {suggestedPrice.toFixed(2)}{" "}
                               {getCurrencyDisplay(
                                 currentCurrency ?? "emeralds",
                               )}
@@ -222,10 +224,10 @@ export function OfferForm({
               name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Message (Optional)</FormLabel>
+                  <FormLabel>{t("messageOptional")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Add a message to your offer..."
+                      placeholder={t("addMessageToOffer")}
                       disabled={disabled || isSubmitting}
                       {...field}
                     />
@@ -243,12 +245,12 @@ export function OfferForm({
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Submitting Offer...
+                  {t("submittingOffer")}
                 </>
               ) : (
                 <>
                   <Send className="mr-2 h-4 w-4" />
-                  Submit Offer
+                  {t("submitOffer")}
                 </>
               )}
             </Button>
