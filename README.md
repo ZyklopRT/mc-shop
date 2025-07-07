@@ -83,8 +83,9 @@ _Sign in with your Minecraft username and password_
 
 ### 🎨 Modern UI/UX
 
+- **Dark/Light Theme**: Automatic theme switching with system preference and manual toggle
+- **Language Support (i18n)**: Full internalization for English and German, with easy language switching
 - **ShadCN/UI Components**: Beautiful, accessible component library
-- **Dark/Light Theme**: Automatic theme switching with system preference
 - **Responsive Design**: Mobile-first design that works on all devices
 - **Mobile Navigation**: Slide-out drawer navigation with Sheet component
 - **Horizontal Scrolling**: Mobile-optimized tabs that scroll horizontally
@@ -165,6 +166,8 @@ Administrator users can:
    - Must be online on the Minecraft server to register
    - Complete the 4-step verification process (see Registration section above)
    - First user automatically becomes admin
+   - **Choose your language:** Easily switch between English and German at any time
+   - **Theme selection:** Toggle between dark and light mode to suit your preference
 
 2. **Creating a Shop:**
    - Navigate to "My Shops" → "Create Shop"
@@ -222,6 +225,7 @@ Administrator users can:
 - **RCON:** @minecraft-js/rcon
 - **State Management:** React hooks with server actions
 - **Type Safety:** Full TypeScript integration
+- **Internationalization (i18n):** Built-in support for English and German, with runtime language switching
 
 ### Key Architectural Principles
 
