@@ -3,22 +3,6 @@
     "homepage": {
       "title": "MC Shop",
       "description": "Minecraft Shop Administration Panel"
-    },
-    "shops": {
-      "title": "My Shops - MC Shop",
-      "description": "Manage your Minecraft shops"
-    },
-    "browse": {
-      "title": "Browse Shops - MC Shop",
-      "description": "Browse and search Minecraft shops"
-    },
-    "requests": {
-      "title": "Request Board - MC Shop",
-      "description": "View and manage item requests"
-    },
-    "admin": {
-      "title": "Admin Panel - MC Shop",
-      "description": "Administration panel for MC Shop"
     }
   },
   "navigation": {
@@ -213,11 +197,9 @@
         "title": "Verify Account",
         "description": "Check your Minecraft chat for verification code",
         "verificationCode": "Verification Code",
-        "verificationCodePlaceholder": "Enter your verification code",
         "resendCode": "Resend Code",
         "helpDescription": "Enter the 6-digit code sent to {mcUsername} in Minecraft chat.",
         "loading": "Loading...",
-        "continue": "Continue",
         "back": "Back"
       },
       "stepThree": {
@@ -233,8 +215,6 @@
       "stepFour": {
         "title": "Registration Completed!",
         "description": "Your account has been created successfully.",
-        "greeting": "Welcome, {mcUsername}! You will be redirected to the login page in a few seconds...",
-        "loading": "Loading...",
         "backToLogin": "Go to Login"
       }
     },
@@ -396,7 +376,6 @@
     "shops-items-add": {
       "title": "Add Item to Shop",
       "description": "Add a new item to your shop with pricing and currency options.",
-      "loading": "Loading...",
       "backToShop": "Back to Shop",
       "form": {
         "cardTitle": "Item Details",
@@ -489,14 +468,6 @@
         "myRequests": "My Requests"
       },
       "empty": {
-        "openTitle": "No open requests",
-        "openDescription": "Be the first to create a request and start trading!",
-        "negotiationTitle": "No negotiations active",
-        "negotiationDescription": "Requests in negotiation will appear here once offers are accepted.",
-        "acceptedTitle": "No accepted requests",
-        "acceptedDescription": "Requests that have been agreed upon and are awaiting completion will appear here.",
-        "completedTitle": "No completed requests",
-        "completedDescription": "Completed requests and transactions will appear here.",
         "myRequestsTitle": "No requests yet",
         "myRequestsDescription": "Create your first request to start trading!"
       },
@@ -555,9 +526,6 @@
     "browseShops": "Browse Shops",
     "requestBoard": "Request Board",
     "myShops": "My Shops",
-    "helpSupport": "Help & Support",
-    "help": "Help",
-    "contact": "Contact",
     "privacy": "Privacy Policy",
     "settings": "Settings",
     "theme": "Theme",
