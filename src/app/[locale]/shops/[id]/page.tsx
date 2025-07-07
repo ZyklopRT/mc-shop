@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useRouter } from "~/lib/i18n/routing";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Button } from "~/components/ui/button";
