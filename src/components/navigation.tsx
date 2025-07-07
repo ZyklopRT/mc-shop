@@ -85,6 +85,15 @@ export function Navigation() {
                 <Link href="/requests" className={linkClass("/requests")}>
                   {t("requestBoard")}
                 </Link>
+                <Link
+                  href="http://map.buzed.de"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={linkClass("/bluemap")}
+                >
+                  {t("bluemap")}
+                </Link>
+
                 {session?.user && (
                   <Link href="/shops" className={linkClass("/shops")}>
                     {t("myShops")}
@@ -144,6 +153,21 @@ export function Navigation() {
                               </Link>
                             </Button>
                           ))}
+                          {/* BlueMap external link for mobile nav */}
+                          <Button
+                            variant="ghost"
+                            asChild
+                            className={mobileLinkClass("/bluemap")}
+                            onClick={closeMobileMenu}
+                          >
+                            <Link
+                              href="http://map.buzed.de"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {t("bluemap")}
+                            </Link>
+                          </Button>
                         </div>
 
                         {/* User Section */}

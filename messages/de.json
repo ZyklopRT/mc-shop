@@ -45,7 +45,8 @@
       "serverInfo": "Server Informationen",
       "ping": "Ping: {ping}ms",
       "version": "Version: {version}"
-    }
+    },
+    "bluemap": "Spielkarte"
   },
   "component": {
     "shop-card": {

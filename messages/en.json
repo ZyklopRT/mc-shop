@@ -29,7 +29,8 @@
       "serverInfo": "Server Information",
       "ping": "Ping: {ping}ms",
       "version": "Version: {version}"
-    }
+    },
+    "bluemap": "Ingame-Map"
   },
   "component": {
     "shop-card": {
