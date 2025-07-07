@@ -18,7 +18,18 @@
     "user": "User",
     "toggleMenu": "Toggle menu",
     "navigation": "Navigation",
-    "navigationDescription": "Navigate through the MC Shop system"
+    "navigationDescription": "Navigate through the MC Shop system",
+    "serverStatus": {
+      "players": "Players: {online}/{max}",
+      "offline": "Server Offline",
+      "loading": "Loading...",
+      "error": "Connection Error",
+      "onlinePlayers": "Online Players:",
+      "noPlayersOnline": "No players online",
+      "serverInfo": "Server Information",
+      "ping": "Ping: {ping}ms",
+      "version": "Version: {version}"
+    }
   },
   "component": {
     "shop-card": {
