@@ -141,7 +141,7 @@ export default function LoginPage() {
               </form>
             </Form>
 
-            <div className="mt-6 text-center">
+            <div className="mt-6 space-y-3 text-center">
               <p className="text-muted-foreground text-sm">
                 {t("dontHaveAccount")}{" "}
                 <Link
@@ -149,6 +149,15 @@ export default function LoginPage() {
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
                   {t("registerHere")}
+                </Link>
+              </p>
+              <p className="text-muted-foreground text-sm">
+                {t("forgotPassword")}{" "}
+                <Link
+                  href="/auth/password-recovery"
+                  className="font-medium text-blue-600 hover:text-blue-500"
+                >
+                  {t("recoverPassword")}
                 </Link>
               </p>
             </div>

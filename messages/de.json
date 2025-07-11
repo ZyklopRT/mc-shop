@@ -204,7 +204,9 @@
       "loading": "Anmelden...",
       "login": "Anmelden",
       "dontHaveAccount": "Noch kein Konto?",
-      "registerHere": "Hier registrieren"
+      "registerHere": "Hier registrieren",
+      "forgotPassword": "Passwort vergessen?",
+      "recoverPassword": "Hier zurücksetzen"
     },
     "sign-up": {
       "title": "Registrieren",
@@ -247,6 +249,46 @@
         "description": "Dein Account wurde erfolgreich erstellt.",
         "greeting": "Willkommen, {mcUsername}! Du wirst in wenigen Sekunden zur Login-Seite weitergeleitet...",
         "loading": "Lade...",
+        "backToLogin": "Zum Login"
+      }
+    },
+    "password-recovery": {
+      "title": "Passwort-Wiederherstellung",
+      "description": "Dein Account-Passwort wiederherstellen",
+      "progress": "Wiederherstellungsfortschritt",
+      "step": "Schritt",
+      "of": "von",
+      "complete": "abgeschlossen",
+      "stepOne": {
+        "title": "Minecraft-Benutzernamen eingeben",
+        "description": "Gib deinen Minecraft-Benutzernamen ein, um die Passwort-Wiederherstellung zu starten",
+        "mcUsername": "Minecraft-Benutzername",
+        "mcUsernamePlaceholder": "Gib deinen Minecraft-Benutzernamen ein",
+        "loading": "Lade...",
+        "continue": "Weiter"
+      },
+      "stepTwo": {
+        "title": "Konto verifizieren",
+        "description": "Prüfe deinen Minecraft-Chat auf den Verifizierungscode",
+        "verificationCode": "Verifizierungscode",
+        "resendCode": "Code erneut senden",
+        "helpDescription": "Gib den 6-stelligen Code ein, der an {mcUsername} im Minecraft-Chat gesendet wurde.",
+        "loading": "Lade...",
+        "back": "Zurück"
+      },
+      "stepThree": {
+        "title": "Neues Passwort festlegen",
+        "description": "Erstelle ein neues sicheres Passwort für deinen Account",
+        "password": "Neues Passwort",
+        "passwordPlaceholder": "Gib dein neues Passwort ein",
+        "confirmPassword": "Neues Passwort bestätigen",
+        "confirmPasswordPlaceholder": "Bestätige dein neues Passwort",
+        "loading": "Lade...",
+        "continue": "Passwort zurücksetzen"
+      },
+      "stepFour": {
+        "title": "Passwort-Wiederherstellung abgeschlossen!",
+        "description": "Dein Passwort wurde erfolgreich zurückgesetzt.",
         "backToLogin": "Zum Login"
       }
     },

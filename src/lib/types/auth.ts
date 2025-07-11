@@ -24,3 +24,19 @@ export type RegistrationResult =
 export type LoginResult =
   | { success: false; error: string }
   | { success: true; message: string };
+
+export interface PasswordRecoveryState {
+  mcUsername: string;
+  otpCode: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export type PasswordRecoveryStep = 1 | 2 | 3 | 4;
+
+export interface PasswordRecoveryResult {
+  success: boolean;
+  error?: string;
+  message?: string;
+  step?: "otp-sent" | "otp-verified" | "completed";
+}

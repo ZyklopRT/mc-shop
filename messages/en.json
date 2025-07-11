@@ -188,7 +188,9 @@
       "loading": "Signing in...",
       "login": "Sign In",
       "dontHaveAccount": "Don't have an account?",
-      "registerHere": "Register here"
+      "registerHere": "Register here",
+      "forgotPassword": "Forgot your password?",
+      "recoverPassword": "Reset it here"
     },
     "sign-up": {
       "title": "Sign Up",
@@ -227,6 +229,46 @@
       "stepFour": {
         "title": "Registration Completed!",
         "description": "Your account has been created successfully.",
+        "backToLogin": "Go to Login"
+      }
+    },
+    "password-recovery": {
+      "title": "Password Recovery",
+      "description": "Recover your account password",
+      "progress": "Recovery progress",
+      "step": "Step",
+      "of": "of",
+      "complete": "complete",
+      "stepOne": {
+        "title": "Enter Minecraft username",
+        "description": "Enter your Minecraft username to start password recovery",
+        "mcUsername": "Minecraft Username",
+        "mcUsernamePlaceholder": "Enter your Minecraft username",
+        "loading": "Loading...",
+        "continue": "Continue"
+      },
+      "stepTwo": {
+        "title": "Verify Account",
+        "description": "Check your Minecraft chat for verification code",
+        "verificationCode": "Verification Code",
+        "resendCode": "Resend Code",
+        "helpDescription": "Enter the 6-digit code sent to {mcUsername} in Minecraft chat.",
+        "loading": "Loading...",
+        "back": "Back"
+      },
+      "stepThree": {
+        "title": "Set New Password",
+        "description": "Create a new secure password for your account",
+        "password": "New Password",
+        "passwordPlaceholder": "Enter your new password",
+        "confirmPassword": "Confirm New Password",
+        "confirmPasswordPlaceholder": "Confirm your new password",
+        "loading": "Loading...",
+        "continue": "Reset Password"
+      },
+      "stepFour": {
+        "title": "Password Recovery Completed!",
+        "description": "Your password has been reset successfully.",
         "backToLogin": "Go to Login"
       }
     },
