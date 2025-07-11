@@ -57,6 +57,23 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+export const completePasswordRecoverySchema = z
+  .object({
+    mcUsername: z.string().min(1, "Username is required"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(100, "Password must be at most 100 characters"),
+    confirmPassword: z.string().optional(),
+  })
+  .refine(
+    (data) => !data.confirmPassword || data.password === data.confirmPassword,
+    {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    },
+  );
+
 // Type exports
 export type StepOneData = z.infer<typeof stepOneSchema>;
 export type StepTwoData = z.infer<typeof stepTwoSchema>;
@@ -65,3 +82,6 @@ export type CompleteRegistrationData = z.infer<
   typeof completeRegistrationSchema
 >;
 export type LoginData = z.infer<typeof loginSchema>;
+export type CompletePasswordRecoveryData = z.infer<
+  typeof completePasswordRecoverySchema
+>;
