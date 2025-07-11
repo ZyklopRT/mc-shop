@@ -7,7 +7,7 @@ import { GlobalSearchBar } from "~/components/search/global-search-bar";
 import { PageWrapper } from "~/components/ui/page-wrapper";
 
 type Props = {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: "de" | "en" }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

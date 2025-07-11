@@ -522,6 +522,14 @@
         "myRequests": "My Requests"
       },
       "empty": {
+        "openTitle": "No open requests",
+        "openDescription": "Be the first to create a request and start trading!",
+        "negotiationTitle": "No negotiations active",
+        "negotiationDescription": "Requests in negotiation will appear here once offers are accepted.",
+        "acceptedTitle": "No accepted requests",
+        "acceptedDescription": "Requests that have been agreed upon and are awaiting completion will appear here.",
+        "completedTitle": "No completed requests",
+        "completedDescription": "Completed requests and transactions will appear here.",
         "myRequestsTitle": "No requests yet",
         "myRequestsDescription": "Create your first request to start trading!"
       },

@@ -27,7 +27,7 @@ export function LocaleSelector() {
     if (nextLocale === currentLocale) return;
 
     startTransition(() => {
-      router.replace(pathname, { locale: nextLocale });
+      router.replace(pathname, { locale: nextLocale as "en" | "de" });
     });
   };
 

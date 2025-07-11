@@ -253,7 +253,10 @@ async function RequestGrid({ requests }: RequestGridProps) {
   );
 }
 
-function getEmptyMessage(status?: string, t?: (key: string) => string) {
+function getEmptyMessage(
+  status?: string,
+  t?: Awaited<ReturnType<typeof getTranslations<"page.requests">>>,
+): { title: string; description: string } {
   switch (status) {
     case "IN_NEGOTIATION":
       return {
